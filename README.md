@@ -1,14 +1,8 @@
-# ELTA Track Manager v2.0.18
+# ELTA Track Manager v2.0.19
 
-Ajuste específico de la vista Alertas.
-
-- Vista Alertas compacta.
-- Botón Verificar visible.
-- Tabla con columnas: Alerta, Embarque, Km, Fecha/hora, Localidad, Chofer, Origen, Destino, Cliente y Acción.
-- Resumen superior de últimas alertas con formato solicitado.
-- Archivos anti-caché v2.0.18.
-
-
-## v2.0.18
-- Vista Torre de Control: bloque Últimas alertas en una sola línea igual a referencia.
-- Archivos anti-caché v2.0.18.
+Cambios:
+- Vista Tránsitos ordenada con datos de flota/embarque a la izquierda y alertas del tránsito a la derecha.
+- En vista Tránsitos se muestran todas las alertas del embarque, verificadas y sin verificar.
+- Vista Seguimiento vuelve a la base/diseño de la versión 2.0.17.
+- Versión unificada 2.0.19.
+- Archivos anti-caché: app.v2.0.19.js y style.v2.0.19.css.
