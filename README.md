@@ -1,8 +1,8 @@
-# ELTA Track Manager v2.0.19
+# ELTA Track Manager v2.0.20
 
 Cambios:
 - Vista Tránsitos ordenada con datos de flota/embarque a la izquierda y alertas del tránsito a la derecha.
 - En vista Tránsitos se muestran todas las alertas del embarque, verificadas y sin verificar.
 - Vista Seguimiento vuelve a la base/diseño de la versión 2.0.17.
-- Versión unificada 2.0.19.
-- Archivos anti-caché: app.v2.0.19.js y style.v2.0.19.css.
+- Versión unificada 2.0.20.
+- Archivos anti-caché: app.v2.0.20.js y style.v2.0.20.css.
