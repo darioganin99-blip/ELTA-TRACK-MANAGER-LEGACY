@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ITS Intelligent Traffic System</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="style.v2.0.25.css">
+<link rel="stylesheet" href="style.v2.0.26.css">
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 </head>
@@ -42,7 +42,7 @@
   <footer class="loginFooter">
     <span>🛡 Sistema seguro</span>
     <span>© 2025 ELTA Tracking Solutions</span>
-    <span>Versión 2.0.25</span>
+    <span>Versión 2.0.26</span>
   </footer>
 </section>
 
@@ -85,7 +85,7 @@
       <div class="headerTitle">
         <h1 class="systemTitleSmall">ITS Intelligent Traffic System</h1>
         <p>Panel tráfico / coordinación</p>
-        <span>Versión 2.0.25</span>
+        <span>Versión 2.0.26</span>
       </div>
 
       <div class="headerActions">
@@ -235,23 +235,28 @@
 
     <section id="clima" class="panel">
       <div class="sectionTitle"><h2>Clima</h2><p>Situación climática por flotas, pasos fronterizos y destinos</p></div>
-      <div class="climaLayout climaLayoutV1237">
-        <div class="glassPanel climaLeft">
-          <div class="panelHead">
-            <h3>Flotas en tránsito</h3>
-            <button onclick="refresh()">Actualizar</button>
-          </div>
+      <div class="climaFilterBar226">
+        <div class="climaFilterField226">
+          <label for="climaEmbarqueFilter">Filtrar por embarque</label>
+          <select id="climaEmbarqueFilter" onchange="window.renderClima && window.renderClima()">
+            <option value="">Todos los embarques</option>
+          </select>
+        </div>
+        <button class="climaClearBtn226" onclick="window.clearClimaEmbarqueFilter && window.clearClimaEmbarqueFilter()">Limpiar filtro</button>
+        <button class="climaRefreshBtn226" onclick="refresh()">Actualizar</button>
+      </div>
+      <div class="climaLayout climaLayoutV226">
+        <div class="glassPanel climaSection226 climaFleetsSection226">
+          <div class="panelHead"><h3>Flotas en tránsito</h3></div>
           <div id="weatherFleets" class="weatherCards"></div>
         </div>
-        <div class="climaRight">
-          <div class="glassPanel">
-            <div class="panelHead"><h3>Pasos fronterizos</h3></div>
-            <div id="weatherPasses" class="weatherCards compactWeatherCards"></div>
-          </div>
-          <div class="glassPanel">
-            <div class="panelHead"><h3>Destinos registrados</h3></div>
-            <div id="weatherDestinations" class="weatherCards compactWeatherCards"></div>
-          </div>
+        <div class="glassPanel climaSection226 climaPassesSection226">
+          <div class="panelHead"><h3>Pasos fronterizos</h3></div>
+          <div id="weatherPasses" class="weatherCards compactWeatherCards"></div>
+        </div>
+        <div class="glassPanel climaSection226 climaDestSection226">
+          <div class="panelHead"><h3>Destinos registrados</h3></div>
+          <div id="weatherDestinations" class="weatherCards compactWeatherCards"></div>
         </div>
       </div>
     </section>
@@ -314,12 +319,12 @@
     <footer class="appFooter">
       <span>🛡 Sistema seguro</span>
       <span>© 2025 ELTA Tracking Solutions</span>
-      <span>Versión 2.0.25</span>
+      <span>Versión 2.0.26</span>
     </footer>
   </main>
 </section>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="app.v2.0.25.js"></script>
+<script src="app.v2.0.26.js"></script>
 </body>
 </html>
