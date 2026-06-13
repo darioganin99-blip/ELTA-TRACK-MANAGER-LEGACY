@@ -3992,7 +3992,7 @@ tab = function(id){
 };
 
 /* ===== V1.2.50 - Publicacion desde docs: version unica + filtros sin cambiar formato ===== */
-const ELTA_APP_VERSION = "2.0.1";
+const ELTA_APP_VERSION = "2.0.3";
 
 function updateVersionLabels(){
   document.querySelectorAll('span, small, p, div').forEach(el=>{
@@ -4204,9 +4204,9 @@ if(_refresh_v1250){
 
 
 
-/* ===== V2.0.1 - Nombre oficial del sistema ===== */
+/* ===== V2.0.2 - Nombre oficial del sistema ===== */
 (function(){
-  const APP_VERSION_V2 = "2.0.1";
+  const APP_VERSION_V2 = "2.0.3";
 
   function setVersionV2(){
     document.querySelectorAll('span, small, p, div').forEach(el=>{

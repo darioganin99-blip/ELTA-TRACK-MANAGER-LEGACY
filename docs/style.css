@@ -3678,7 +3678,7 @@ body.sidebarCollapsed .sideNav button{justify-content:flex-start !important;}
 @media(max-width:900px){.weatherDataV2,.weatherFleetTransitV2,.alertItemMetaV2{grid-template-columns:1fr !important}.weatherTempRight{font-size:34px !important;min-width:70px !important}}
 
 
-/* ===== V2.0.1 - Nombre oficial del sistema ===== */
+/* ===== V2.0.2 - Nombre oficial del sistema ===== */
 .systemTitleSmall{
   font-size:22px !important;
   letter-spacing:.2px !important;
@@ -3777,4 +3777,132 @@ body.sidebarCollapsed .sideNav button .menuIcon{
   .sideNav button{justify-content:center !important;gap:0 !important;padding:9px !important;}
   .sideNav button .menuText,.adminBox div,.logoutBtn{display:none !important;}
   .sideNav button .menuIcon{flex-basis:32px !important;width:32px !important;min-width:32px !important;font-size:20px !important;}
+}
+
+
+/* ===== V2.0.3 - Menú lateral definitivo ===== */
+.sidebar{
+  width:210px !important;
+  min-width:210px !important;
+  max-width:210px !important;
+  padding:18px 10px !important;
+  overflow:hidden !important;
+}
+.dashboardShell{
+  margin-left:210px !important;
+}
+.brandBox{
+  height:92px !important;
+  padding:0 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:10px !important;
+  overflow:hidden !important;
+}
+.brandBox img{
+  width:118px !important;
+  max-width:118px !important;
+  height:auto !important;
+  display:block !important;
+  object-fit:contain !important;
+}
+.brandDivider{
+  width:82% !important;
+  margin:0 auto !important;
+}
+.sideNav{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:7px !important;
+  margin-top:12px !important;
+}
+.sideNav button{
+  width:100% !important;
+  min-height:44px !important;
+  padding:9px 12px !important;
+  border-radius:10px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  gap:11px !important;
+  overflow:hidden !important;
+  font-size:15px !important;
+  line-height:1.08 !important;
+  text-align:left !important;
+}
+.sideNav button .menuIcon{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex:0 0 30px !important;
+  width:30px !important;
+  min-width:30px !important;
+  height:30px !important;
+  font-size:20px !important;
+  line-height:1 !important;
+}
+.sideNav button .menuText{
+  display:block !important;
+  flex:1 1 auto !important;
+  min-width:0 !important;
+  max-width:145px !important;
+  color:inherit !important;
+  font-family:Arial,Helvetica,sans-serif !important;
+  font-size:15px !important;
+  font-weight:900 !important;
+  line-height:1.08 !important;
+  white-space:normal !important;
+  overflow:hidden !important;
+  text-overflow:clip !important;
+}
+.sideNav button[onclick*="clima"] .menuText{
+  display:block !important;
+  font-family:Arial,Helvetica,sans-serif !important;
+  font-size:15px !important;
+  font-weight:900 !important;
+  line-height:1.08 !important;
+}
+body.sidebarCollapsed .sidebar{
+  width:72px !important;
+  min-width:72px !important;
+  max-width:72px !important;
+  padding:18px 8px !important;
+}
+body.sidebarCollapsed .dashboardShell{
+  margin-left:72px !important;
+}
+body.sidebarCollapsed .brandBox{
+  height:82px !important;
+}
+body.sidebarCollapsed .brandBox img{
+  width:54px !important;
+  max-width:54px !important;
+}
+body.sidebarCollapsed .sideNav button{
+  justify-content:center !important;
+  gap:0 !important;
+  padding:9px !important;
+  min-height:44px !important;
+}
+body.sidebarCollapsed .sideNav button .menuText,
+body.sidebarCollapsed .adminBox div,
+body.sidebarCollapsed .logoutBtn{
+  display:none !important;
+}
+body.sidebarCollapsed .sideNav button .menuIcon{
+  flex:0 0 32px !important;
+  width:32px !important;
+  min-width:32px !important;
+  font-size:21px !important;
+}
+@media(max-width:1000px){
+  .sidebar{width:72px !important;min-width:72px !important;max-width:72px !important;padding:18px 8px !important;}
+  .dashboardShell{margin-left:72px !important;}
+  .brandBox{height:82px !important;}
+  .brandBox img{width:54px !important;max-width:54px !important;}
+  .sideNav button{justify-content:center !important;gap:0 !important;padding:9px !important;}
+  .sideNav button .menuText,.adminBox div,.logoutBtn{display:none !important;}
+  .sideNav button .menuIcon{flex:0 0 32px !important;width:32px !important;min-width:32px !important;font-size:21px !important;}
 }
