@@ -1,3 +1,1 @@
-# ELTA Track Manager
-
-Versión 2.0.3 - Corrección definitiva del menú lateral.
+ELTA Track Manager v2.0.4 - menu lateral y version corregidos.

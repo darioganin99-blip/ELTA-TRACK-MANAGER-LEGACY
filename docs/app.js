@@ -3992,7 +3992,7 @@ tab = function(id){
 };
 
 /* ===== V1.2.50 - Publicacion desde docs: version unica + filtros sin cambiar formato ===== */
-const ELTA_APP_VERSION = "2.0.3";
+const ELTA_APP_VERSION = "2.0.4";
 
 function updateVersionLabels(){
   document.querySelectorAll('span, small, p, div').forEach(el=>{
@@ -4204,9 +4204,9 @@ if(_refresh_v1250){
 
 
 
-/* ===== V2.0.2 - Nombre oficial del sistema ===== */
+/* ===== V2.0.4 - Nombre oficial del sistema ===== */
 (function(){
-  const APP_VERSION_V2 = "2.0.3";
+  const APP_VERSION_V2 = "2.0.4";
 
   function setVersionV2(){
     document.querySelectorAll('span, small, p, div').forEach(el=>{
@@ -4373,4 +4373,39 @@ if(_refresh_v1250){
     q('alertCards').innerHTML=html||'<div class="alertEmpty">No hay alertas para el filtro seleccionado.</div>';
   };
 
+})();
+
+
+/* ===== V2.0.4 - Version y menu lateral robustos ===== */
+(function(){
+  const VERSION='2.0.4';
+  window.ELTA_APP_VERSION = VERSION;
+  function setVersion(){
+    document.querySelectorAll('span, small, p, div').forEach(el=>{
+      if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/.test(el.textContent||'')){
+        el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/g,'Versión '+VERSION);
+      }
+    });
+  }
+  function normalizeMenu(){
+    const menuMap=[
+      ['dash','🏠','Torre de Control'],['transitos','🚚','Tránsitos'],['mapa','📍','Seguimiento'],['clima','🌦️','Clima'],
+      ['unidades','🚛','Unidades / Choferes'],['alertas','🔔','Alertas'],['clientes','🏢','Clientes / Destinos'],['abm','⚙️','Configuración']
+    ];
+    menuMap.forEach(([id,icon,text])=>{
+      const btn=document.querySelector(`.sideNav button[onclick*="${id}"]`);
+      if(btn) btn.innerHTML=`<span class="menuIcon">${icon}</span><span class="menuText">${text}</span>`;
+    });
+    // Arrancar expandido para que se lea bien; el boton hamburguesa alterna a colapsado.
+    if(!document.body.dataset.menuInitialized){
+      document.body.classList.remove('sidebarCollapsed');
+      document.body.dataset.menuInitialized='1';
+    }
+  }
+  document.addEventListener('DOMContentLoaded',()=>{setVersion(); normalizeMenu(); setTimeout(()=>{setVersion(); normalizeMenu();},300);});
+  const oldToggle=window.toggleSidebar;
+  window.toggleSidebar=function(){
+    if(typeof oldToggle==='function') oldToggle(); else document.body.classList.toggle('sidebarCollapsed');
+    setTimeout(normalizeMenu,0);
+  };
 })();
