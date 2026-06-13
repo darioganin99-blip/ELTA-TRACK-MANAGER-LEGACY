@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ITS Intelligent Traffic System</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="style.v2.0.28.css">
+<link rel="stylesheet" href="style.v2.0.29.css">
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 </head>
@@ -42,7 +42,7 @@
   <footer class="loginFooter">
     <span>🛡 Sistema seguro</span>
     <span>© 2025 ELTA Tracking Solutions</span>
-    <span>Versión 2.0.28</span>
+    <span>Versión 2.0.29</span>
   </footer>
 </section>
 
@@ -85,7 +85,7 @@
       <div class="headerTitle">
         <h1 class="systemTitleSmall">ITS Intelligent Traffic System</h1>
         <p>Panel tráfico / coordinación</p>
-        <span>Versión 2.0.28</span>
+        <span>Versión 2.0.29</span>
       </div>
 
       <div class="headerActions">
@@ -160,7 +160,7 @@
       <div class="glassPanel tablePanel">
         <div class="panelHead">
           <h3>Últimos tránsitos</h3>
-          <button onclick="refresh()">Actualizar</button>
+          <button onclick="window.forceRefreshClima ? window.forceRefreshClima() : refresh()">Actualizar</button>
         </div>
         <div id="dashTable" class="darkTable"></div>
       </div>
@@ -204,7 +204,7 @@
         <div class="glassPanel trackingSidePanel">
           <div class="panelHead">
             <h3>Flotas en seguimiento</h3>
-            <button onclick="refresh()">Actualizar</button>
+            <button onclick="window.forceRefreshClima ? window.forceRefreshClima() : refresh()">Actualizar</button>
           </div>
           <div id="mapList" class="trackingFleetList"></div>
         </div>
@@ -225,7 +225,7 @@
               <button data-unit-filter="sin" onclick="setUnitFilter('sin')">Sin tránsito</button>
             </div>
           </div>
-          <button onclick="refresh()">Actualizar</button>
+          <button onclick="window.forceRefreshClima ? window.forceRefreshClima() : refresh()">Actualizar</button>
         </div>
         <div id="unitsList" class="fleetUsersGrid"></div>
       </div>
@@ -242,7 +242,7 @@
             <option value="">Todos los embarques</option>
           </select>
         </div>
-        <button class="climaRefreshBtn226" onclick="refresh()">Actualizar</button>
+        <button class="climaRefreshBtn226" onclick="window.forceRefreshClima ? window.forceRefreshClima() : refresh()">Actualizar</button>
       </div>
       <div class="climaLayout climaLayoutV226">
         <div class="glassPanel climaSection226 climaFleetsSection226">
@@ -266,7 +266,7 @@
         <div class="glassPanel">
           <div class="panelHead">
             <h3>Clientes registrados</h3>
-            <button onclick="refresh()">Actualizar</button>
+            <button onclick="window.forceRefreshClima ? window.forceRefreshClima() : refresh()">Actualizar</button>
           </div>
           <div id="clientsList" class="clientCards"></div>
         </div>
@@ -291,7 +291,7 @@
               <button data-alert-filter="todas" onclick="setAlertFilter('todas')">Todas</button>
             </div>
           </div>
-          <button onclick="refresh()">Actualizar</button>
+          <button onclick="window.forceRefreshClima ? window.forceRefreshClima() : refresh()">Actualizar</button>
         </div>
         <div id="alertCharts" class="alertChartsGrid"></div>
         <div id="alertCards" class="alertFleetCards"></div>
@@ -318,12 +318,12 @@
     <footer class="appFooter">
       <span>🛡 Sistema seguro</span>
       <span>© 2025 ELTA Tracking Solutions</span>
-      <span>Versión 2.0.28</span>
+      <span>Versión 2.0.29</span>
     </footer>
   </main>
 </section>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="app.v2.0.28.js"></script>
+<script src="app.v2.0.29.js"></script>
 </body>
 </html>
