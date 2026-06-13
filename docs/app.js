@@ -3992,7 +3992,7 @@ tab = function(id){
 };
 
 /* ===== V1.2.50 - Publicacion desde docs: version unica + filtros sin cambiar formato ===== */
-const ELTA_APP_VERSION = "2.0.0";
+const ELTA_APP_VERSION = "2.0.1";
 
 function updateVersionLabels(){
   document.querySelectorAll('span, small, p, div').forEach(el=>{
@@ -4204,9 +4204,9 @@ if(_refresh_v1250){
 
 
 
-/* ===== V2.0.0 - Base limpia ELTA para publicacion desde docs ===== */
+/* ===== V2.0.1 - Nombre oficial del sistema ===== */
 (function(){
-  const APP_VERSION_V2 = "2.0.0";
+  const APP_VERSION_V2 = "2.0.1";
 
   function setVersionV2(){
     document.querySelectorAll('span, small, p, div').forEach(el=>{
@@ -4222,6 +4222,11 @@ if(_refresh_v1250){
       if((btn.getAttribute('onclick')||'').includes("tab('clima')")) { btn.innerHTML='🌦️ <span>Clima</span>'; btn.title='Clima'; }
     });
     document.querySelectorAll('.sectionTitle h2').forEach(h=>{ if((h.textContent||'').trim()==='Dashboard') h.textContent='Torre de Control'; });
+    document.querySelectorAll('.loginCard h1, .headerTitle h1').forEach(h=>{
+      h.textContent='ITS Intelligent Traffic System';
+      h.classList.add('systemTitleSmall');
+    });
+    if(document.title !== 'ITS Intelligent Traffic System') document.title='ITS Intelligent Traffic System';
   }
 
   window.addEventListener('DOMContentLoaded',()=>{setVersionV2(); normalizeTitlesV2();});

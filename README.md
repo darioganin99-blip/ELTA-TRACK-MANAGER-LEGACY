@@ -1,9 +1,3 @@
-# ELTA Track Manager
+# ITS Intelligent Traffic System
 
-Version limpia v2.0.0 para GitHub Pages.
-
-Publicacion:
-- Settings > Pages
-- Source: Deploy from a branch
-- Branch: main
-- Folder: /docs
+Versión 2.0.1. Publicación desde `docs/`.

@@ -3676,3 +3676,25 @@ body.sidebarCollapsed .sideNav button{justify-content:flex-start !important;}
 @keyframes bellBlinkV2{0%,100%{filter:brightness(1)}50%{filter:brightness(1.6);transform:scale(1.04)}}
 .sectionTitle h2{white-space:nowrap !important;}
 @media(max-width:900px){.weatherDataV2,.weatherFleetTransitV2,.alertItemMetaV2{grid-template-columns:1fr !important}.weatherTempRight{font-size:34px !important;min-width:70px !important}}
+
+
+/* ===== V2.0.1 - Nombre oficial del sistema ===== */
+.systemTitleSmall{
+  font-size:22px !important;
+  letter-spacing:.2px !important;
+  line-height:1.12 !important;
+  text-transform:none !important;
+  white-space:normal !important;
+}
+.loginCard .systemTitleSmall{
+  font-size:20px !important;
+  max-width:100% !important;
+}
+.headerTitle .systemTitleSmall{
+  font-size:24px !important;
+  max-width:100% !important;
+}
+@media(max-width:640px){
+  .loginCard .systemTitleSmall{font-size:18px !important;}
+  .headerTitle .systemTitleSmall{font-size:20px !important;}
+}
