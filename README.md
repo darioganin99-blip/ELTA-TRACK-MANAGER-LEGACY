@@ -1,1 +1,1 @@
-ELTA TRACK MANAGER v2.0.45 - Nuevo modulo Embarques
+ELTA Track Manager v2.0.47 - Embarques filtros fecha y flotas por carga
