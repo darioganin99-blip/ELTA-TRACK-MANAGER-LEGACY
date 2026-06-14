@@ -7371,3 +7371,6 @@ body.sidebarCollapsed .sideNav button .menuIcon{display:inline-flex !important; 
 /* v2.0.49 - Embarques: filtro por fecha pura */
 #embFilterDesde,#embFilterHasta{height:46px;font-family:inherit;font-size:14px;letter-spacing:.2px;}
 #embFilterDesde::-webkit-calendar-picker-indicator,#embFilterHasta::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.85;cursor:pointer;}
+
+.embarquesActions .primaryAction{min-width:180px;white-space:nowrap;padding:0 18px;height:54px}
+.embarquesActions button{height:54px}
