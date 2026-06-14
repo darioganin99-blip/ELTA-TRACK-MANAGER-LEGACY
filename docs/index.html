@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ITS Intelligent Traffic System</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="style.v2.0.48.css">
+<link rel="stylesheet" href="style.v2.0.49.css">
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 </head>
@@ -42,7 +42,7 @@
   <footer class="loginFooter">
     <span>🛡 Sistema seguro</span>
     <span>© 2025 ELTA Tracking Solutions</span>
-    <span>Versión 2.0.48</span>
+    <span>Versión 2.0.49</span>
   </footer>
 </section>
 
@@ -86,7 +86,7 @@
       <div class="headerTitle">
         <h1 class="systemTitleSmall">ITS Intelligent Traffic System</h1>
         <p>Panel tráfico / coordinación</p>
-        <span>Versión 2.0.48</span>
+        <span>Versión 2.0.49</span>
       </div>
 
       <div class="headerActions">
@@ -273,8 +273,8 @@
           <label>Cliente<select id="embFilterCliente"><option value="">Todos los clientes</option></select></label>
           <label>Origen<select id="embFilterOrigen"><option value="">Todos los orígenes</option></select></label>
           <label>Destino<select id="embFilterDestino"><option value="">Todos los destinos</option></select></label>
-          <label>Desde<input id="embFilterDesde" type="datetime-local"></label>
-          <label>Hasta<input id="embFilterHasta" type="datetime-local"></label>
+          <label>Desde<input id="embFilterDesde" type="date" inputmode="none"></label>
+          <label>Hasta<input id="embFilterHasta" type="date" inputmode="none"></label>
         </div>
         <div class="embarquesActions">
           <button type="button" onclick="window.resetEmbarqueFiltersV244 && window.resetEmbarqueFiltersV244()">Limpiar</button>
@@ -361,12 +361,12 @@
     <footer class="appFooter">
       <span>🛡 Sistema seguro</span>
       <span>© 2025 ELTA Tracking Solutions</span>
-      <span>Versión 2.0.48</span>
+      <span>Versión 2.0.49</span>
     </footer>
   </main>
 </section>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="app.v2.0.48.js"></script>
+<script src="app.v2.0.49.js"></script>
 </body>
 </html>
