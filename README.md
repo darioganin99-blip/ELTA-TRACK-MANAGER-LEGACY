@@ -1,5 +1,2 @@
-# ELTA TRACK MANAGER
-
-Versión 2.0.66
-
-Correcciones: versión unificada, clima compacto y combo flotas desde Firebase usuarios role=flota.
+ELTA Track Manager Legacy - v2.0.67
+Cambios: Embarques Agregar carga agrega boton Ver cargas sin tocar otros modulos.
