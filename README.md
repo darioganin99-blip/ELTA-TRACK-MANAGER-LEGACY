@@ -1,5 +1,5 @@
-# ELTA TRACK MANAGER v2.0.64
+# ELTA TRACK MANAGER
 
-- Clima: tarjetas 25% mas compactas.
-- Embarques: combo Flota al agregar carga lee usuarios con role flota desde Firestore.
-- No se modifican otros modulos.
+Versión 2.0.65
+
+Correcciones: versión unificada, clima compacto y combo flotas desde Firebase usuarios role=flota.
