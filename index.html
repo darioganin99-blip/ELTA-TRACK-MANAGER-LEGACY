@@ -1,6 +1,17 @@
 <!doctype html>
 <html lang="es">
 <head>
+<script>
+(function(){
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function(regs){ regs.forEach(function(r){ r.unregister(); }); });
+  }
+  if (window.caches) {
+    caches.keys().then(function(keys){ keys.forEach(function(k){ caches.delete(k); }); });
+  }
+})();
+</script>
+
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -8,7 +19,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ITS Intelligent Traffic System</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="style.v2.0.75.css?v=2.0.75.20260620-2075">
+<link rel="stylesheet" href="style.v2.0.100.css?v=2.0.100.20260628">
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -46,7 +57,7 @@
   <footer class="loginFooter">
     <span>🛡 Sistema seguro</span>
     <span>© 2025 ELTA Tracking Solutions</span>
-    <span>Versión 2.0.75</span>
+    <span>Versión 2.0.100</span>
   </footer>
 </section>
 
@@ -90,7 +101,7 @@
       <div class="headerTitle">
         <h1 class="systemTitleSmall">ITS Intelligent Traffic System</h1>
         <p>Panel tráfico / coordinación</p>
-        <span>Versión 2.0.75</span>
+        <span>Versión 2.0.100</span>
       </div>
 
       <div class="headerActions">
@@ -364,12 +375,12 @@
     <footer class="appFooter">
       <span>🛡 Sistema seguro</span>
       <span>© 2025 ELTA Tracking Solutions</span>
-      <span>Versión 2.0.75</span>
+      <span>Versión 2.0.100</span>
     </footer>
   </main>
 </section>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="app.v2.0.75.js?v=2.0.75.20260620-2075"></script>
+<script src="app.v2.0.100.js?v=2.0.100.20260628"></script>
 </body>
 </html>
