@@ -1,0 +1,16 @@
+VERSION 2.0.100 SINCRONIZADA
+
+La raiz del proyecto y la carpeta docs tienen el mismo index.html y los mismos archivos de ejecucion.
+Esto permite publicar GitHub Pages desde / (root) o desde /docs mostrando la misma version.
+
+Archivos necesarios:
+- index.html
+- app.v2.0.100.js
+- style.v2.0.100.css
+- assets/logo-elta.png
+- assets/fondo-camion.png
+- docs/index.html
+- docs/app.v2.0.100.js
+- docs/style.v2.0.100.css
+- docs/assets/logo-elta.png
+- docs/assets/fondo-camion.png
