@@ -8706,6 +8706,3 @@ html body.sidebarCollapsed .sidebar .sideNav button .menuText,
 html body.sidebarCollapsed .sidebar .adminBox div,
 html body.sidebarCollapsed .sidebar .logoutBtn{display:none!important;visibility:hidden!important;opacity:0!important;width:0!important;min-width:0!important;max-width:0!important;overflow:hidden!important;}
 html body.sidebarCollapsed .sidebar .sideNav button .menuIcon{display:inline-flex!important;visibility:visible!important;opacity:1!important;width:30px!important;min-width:30px!important;max-width:30px!important;height:30px!important;align-items:center!important;justify-content:center!important;font-size:20px!important;line-height:1!important;}
-
-/* v2.0.139 menu Entregas estable */
-.sideNav button[data-menu-id='entrega'] .menuText{white-space:nowrap!important;}

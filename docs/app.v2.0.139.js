@@ -3992,7 +3992,7 @@ tab = function(id){
 };
 
 /* ===== V1.2.50 - Publicacion desde docs: version unica + filtros sin cambiar formato ===== */
-const ELTA_APP_VERSION = "2.0.138";
+const ELTA_APP_VERSION = "2.0.139";
 
 function updateVersionLabels(){
   document.querySelectorAll('span, small, p, div').forEach(el=>{
@@ -4212,7 +4212,7 @@ if(_refresh_v1250){
 
 /* ===== V2.0.138 - Nombre oficial del sistema ===== */
 (function(){
-  const APP_VERSION_V2 = "2.0.138";
+  const APP_VERSION_V2 = "2.0.139";
 
   function setVersionV2(){
     document.querySelectorAll('span, small, p, div').forEach(el=>{
@@ -6950,7 +6950,7 @@ if(_refresh_v1250){
 
 /* ===== V2.0.138 - Alertas: graficos en una linea, campana completa, contador funcional ===== */
 (function(){
-  const VERSION_ALERTS_2035 = "2.0.138";
+  const VERSION_ALERTS_2035 = "2.0.139";
   const $ = (id)=>document.getElementById(id);
   const esc2 = (v)=>{ try { return typeof esc === 'function' ? esc(v) : String(v ?? '').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); } catch(e){ return String(v ?? ''); } };
   const clean = (v)=>String(v ?? '').trim() || '-';
@@ -7236,7 +7236,7 @@ if(_refresh_v1250){
 
 /* ===== V2.0.138 - contador real y badge compacto de menu ===== */
 (function(){
-  const APP_VERSION_MENU_2039 = '2.0.138';
+  const APP_VERSION_MENU_2039 = '2.0.139';
   function setVersions2039(){
     document.querySelectorAll('span,small,p,div').forEach(el=>{
       if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/.test(el.textContent||'')){
@@ -7666,7 +7666,7 @@ if(_refresh_v1250){
 
 /* ===== v2.0.138 - PDF profesional con logo original ELTA para Vista Tránsitos ===== */
 (function(){
-  const APP_VERSION_PDF = '2.0.138';
+  const APP_VERSION_PDF = '2.0.139';
   function sx53(v){return String(v ?? '').trim() || '-';}
   function escAttr53(v){return String(v ?? '').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,' ');}
   function route53(t){try{return typeof ruta==='function' ? (ruta(t)||{}) : {};}catch(e){return {};}}
@@ -7778,7 +7778,7 @@ if(_refresh_v1250){
       <div class="transitRight"><h4 class="alertsTitle">⚠️ Alertas del tránsito</h4>${typeof transitAlertsCompact==='function'?transitAlertsCompact(t):''}</div>
     </div>`;
   };
-  document.querySelectorAll('.loginFooter span, .headerTitle span').forEach(el=>{if(/Versi[oó]n/i.test(el.textContent||''))el.textContent='Versión 2.0.139';});
+  document.querySelectorAll('.loginFooter span, .headerTitle span').forEach(el=>{if(/Versi[oó]n/i.test(el.textContent||''))el.textContent='Versión 2.0.138';});
 })();
 
 
@@ -7874,7 +7874,7 @@ if(_refresh_v1250){
 
 /* ===== V2.0.138 - Configuracion redisenada sin JSON y sin pestana Embarques ===== */
 (function(){
-  const APP_VERSION_CFG = "2.0.138";
+  const APP_VERSION_CFG = "2.0.139";
   function byId(id){return document.getElementById(id)}
   function safe(v){return (typeof esc==='function'?esc(String(v ?? "")):String(v ?? "").replace(/[&<>'"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;"}[m])))}
   function getActiveText(v){return v===false||String(v).toLowerCase()==='false'?'Inactivo':'Activo'}
@@ -8352,7 +8352,7 @@ if(_refresh_v1250){
 
 /* ===== V2.0.138 - Datos reales del usuario logueado en sidebar ===== */
 (function(){
-  const APP_VERSION_LOGGED_USER_FIX = "2.0.138";
+  const APP_VERSION_LOGGED_USER_FIX = "2.0.139";
 
   function _q(id){ return document.getElementById(id); }
   function _txt(v){ return (v===undefined || v===null) ? '' : String(v).trim(); }
@@ -9064,7 +9064,7 @@ if(_refresh_v1250){
 
 /* ===== V2.0.138 - Recuperar password, ajustes Configuracion, Embarques y KM Alertas ===== */
 (function(){
-  const APP_VERSION_FIX='2.0.138';
+  const APP_VERSION_FIX='2.0.139';
   window.ELTA_APP_VERSION=APP_VERSION_FIX;
   window.APP_VERSION_V2=APP_VERSION_FIX;
   const $=(id)=>document.getElementById(id);
@@ -9195,7 +9195,7 @@ if(_refresh_v1250){
 
 /* ===== V2.0.138 - Password visible en Configuracion y version unificada ===== */
 (function(){
-  const APP_VERSION_273='2.0.138';
+  const APP_VERSION_273='2.0.139';
   window.ELTA_APP_VERSION=APP_VERSION_273;
   window.APP_VERSION_V2=APP_VERSION_273;
 
@@ -11268,135 +11268,116 @@ if(_refresh_v1250){
 })();
 
 
-/* ===== V2.0.139 - CORRECCION DEFINITIVA: menu Entregas unico, sin refresh visual ===== */
+/* ===== V2.0.139 - FIX REAL: Entregas sin refresco ni doble icono ===== */
 (function(){
   'use strict';
-  const VERSION = '2.0.139';
-  const ENTREGA_ICON = '🏁';
-  let normalizing = false;
-  let observerStarted = false;
-  window.ELTA_APP_VERSION = VERSION;
-  window.APP_VERSION_V2 = VERSION;
-
-  function q(id){ return document.getElementById(id); }
+  const VERSION='2.0.139';
+  const ENTREGA_ICON='🏁';
+  window.ELTA_APP_VERSION=VERSION;
+  window.APP_VERSION=VERSION;
+  window.APP_VERSION_V2=VERSION;
 
   function setVersion139(){
     try{
-      document.title = 'ELTA ITS - Versión ' + VERSION;
       document.querySelectorAll('span,small,p,div,footer').forEach(function(el){
-        if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/.test(el.textContent||'')){
-          el.textContent = (el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/g,'Versión '+VERSION);
+        if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/i.test(el.textContent||'')){
+          el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/ig,'Versión '+VERSION);
         }
       });
-    }catch(e){ console.warn('version 2.0.139', e); }
+      document.title=(document.title||'ELTA ITS').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/i,'Versión '+VERSION);
+    }catch(e){}
   }
 
-  function isEntregaButton(b){
-    if(!b) return false;
-    const oc = String(b.getAttribute('onclick')||'').toLowerCase();
-    const txt = String(b.textContent||'').trim().toLowerCase();
-    return b.dataset.menuId==='entrega' || oc.includes("tab('entrega')") || oc.includes('tab("entrega")') || txt==='entregas';
+  function entregaButtonSelector(btn){
+    const oc=String(btn.getAttribute('onclick')||'');
+    const txt=String(btn.textContent||'').trim().toLowerCase();
+    return btn.dataset.menuId==='entrega' || oc.includes("tab('entrega')") || oc.includes('tab("entrega")') || txt==='entregas';
   }
 
-  function findPanelButton(id){
-    const nav = document.querySelector('.sideNav');
-    if(!nav) return null;
-    return [...nav.querySelectorAll('button')].find(function(b){
-      const oc = String(b.getAttribute('onclick')||'');
-      return b.dataset.menuId===id || oc.includes("tab('"+id+"')") || oc.includes('tab("'+id+'")');
-    }) || null;
-  }
-
+  let normalizing=false;
   function normalizeEntregaMenu139(){
     if(normalizing) return;
-    normalizing = true;
+    normalizing=true;
     try{
-      setVersion139();
-      const nav = document.querySelector('.sideNav');
-      if(!nav) return;
-      const buttons = [...nav.querySelectorAll('button')];
-      const entregaButtons = buttons.filter(isEntregaButton);
-      const embarquesBtn = findPanelButton('embarques');
-      let keep = entregaButtons.find(function(b){ return b.classList.contains('active'); }) || entregaButtons[0];
+      const nav=document.querySelector('.sideNav');
+      if(!nav){ setVersion139(); return; }
+      const all=[...nav.querySelectorAll('button')];
+      const entregaBtns=all.filter(entregaButtonSelector);
+      let keep=entregaBtns[0];
       if(!keep){
-        keep = document.createElement('button');
-        keep.type = 'button';
+        keep=document.createElement('button');
+        keep.type='button';
+        keep.dataset.menuId='entrega';
       }
-      entregaButtons.forEach(function(b){ if(b!==keep) b.remove(); });
-      keep.type = 'button';
-      keep.dataset.menuId = 'entrega';
-      keep.title = 'Entregas';
+      entregaBtns.slice(1).forEach(function(b){ if(b!==keep) b.remove(); });
+      keep.type='button';
+      keep.dataset.menuId='entrega';
+      keep.title='Entregas';
       keep.removeAttribute('onclick');
-      keep.onclick = function(ev){ if(ev) ev.preventDefault(); window.tab('entrega'); };
-      keep.innerHTML = '<span class="menuIcon" aria-hidden="true">'+ENTREGA_ICON+'</span><span class="menuText">Entregas</span>';
-      if(embarquesBtn){
-        if(embarquesBtn.nextElementSibling !== keep) embarquesBtn.insertAdjacentElement('afterend', keep);
+      keep.innerHTML='<span class="menuIcon" aria-hidden="true">'+ENTREGA_ICON+'</span><span class="menuText">Entregas</span>';
+      const emb=[...nav.querySelectorAll('button')].find(function(b){return String(b.getAttribute('onclick')||'').includes("tab('embarques')");});
+      if(emb && emb.nextElementSibling!==keep){
+        emb.insertAdjacentElement('afterend', keep);
       }else if(!keep.parentNode){
         nav.appendChild(keep);
       }
-    }catch(e){ console.warn('normalize entrega 2.0.139', e); }
-    finally{ normalizing = false; }
-  }
-
-  function safeTab139(id){
-    normalizeEntregaMenu139();
-    if(id==='entrega' && q('entrega') && q('entrega').classList.contains('active')){
-      return false;
-    }
-    try{
-      document.querySelectorAll('.sideNav button').forEach(function(b){ b.classList.remove('active'); });
-      document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
-      const panel = q(id);
-      if(panel) panel.classList.add('active');
-      const btn = id==='entrega' ? findPanelButton('entrega') : findPanelButton(id);
-      if(btn) btn.classList.add('active');
-      if(id==='abm' && typeof window.renderABM==='function') window.renderABM();
-      if(id==='reportes' && typeof window.renderRep==='function') window.renderRep();
-      if(id==='unidades' && typeof window.renderUnits==='function') window.renderUnits();
-      if(id==='conductores' && typeof window.renderDrivers==='function') window.renderDrivers();
-      if(id==='clientes' && typeof window.renderClients==='function') window.renderClients();
-      if(id==='alertas' && typeof window.renderAlerts==='function') window.renderAlerts();
-      if(id==='clima'){
-        if(typeof window.ensureClimaDataAndRender==='function') setTimeout(function(){ window.ensureClimaDataAndRender(false); },0);
-        else if(typeof window.renderClima==='function') setTimeout(function(){ window.renderClima(false); },0);
-      }
-      if(id==='embarques'){
-        if(typeof window.renderEmbarquesV245==='function') setTimeout(function(){ window.renderEmbarquesV245(); },0);
-        else if(typeof window.renderEmbarquesV244==='function') setTimeout(function(){ window.renderEmbarquesV244(); },0);
-      }
-      if(id==='entrega'){
-        if(!q('entrega') && typeof window.renderEntrega==='function') window.renderEntrega(false);
-        if(typeof window.renderEntrega==='function') setTimeout(function(){ window.renderEntrega(false); normalizeEntregaMenu139(); },0);
-      }
       setVersion139();
+    }finally{
+      normalizing=false;
+    }
+  }
+
+  let activatingEntrega=false;
+  async function openEntrega139(){
+    if(activatingEntrega) return;
+    activatingEntrega=true;
+    try{
       normalizeEntregaMenu139();
-    }catch(e){ console.error('tab 2.0.139', e); }
-    return false;
+      if(typeof window.renderEntrega==='function'){
+        await window.renderEntrega(false);
+      }
+      document.querySelectorAll('.sideNav button').forEach(function(b){b.classList.remove('active');});
+      const btn=[...document.querySelectorAll('.sideNav button')].find(entregaButtonSelector);
+      if(btn) btn.classList.add('active');
+      document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+      const sec=document.getElementById('entrega');
+      if(sec) sec.classList.add('active');
+      setVersion139();
+    }catch(e){
+      console.error('No se pudo abrir Entregas',e);
+    }finally{
+      activatingEntrega=false;
+    }
   }
+  window.openEntregaStable139=openEntrega139;
 
+  // Intercepta el click de Entregas antes del onclick original o wrappers de tab.
+  document.addEventListener('click', function(ev){
+    const btn=ev.target && ev.target.closest ? ev.target.closest('.sideNav button') : null;
+    if(btn && entregaButtonSelector(btn)){
+      ev.preventDefault();
+      ev.stopPropagation();
+      ev.stopImmediatePropagation();
+      openEntrega139();
+    }
+  }, true);
+
+  // Normaliza solo cuando cambia el menu; no toca tarjetas ni filtros.
   function installObserver139(){
-    if(observerStarted) return;
-    const nav = document.querySelector('.sideNav');
-    if(!nav) return;
-    observerStarted = true;
-    let pending = false;
-    const obs = new MutationObserver(function(){
-      if(pending) return;
-      pending = true;
-      requestAnimationFrame(function(){ pending=false; normalizeEntregaMenu139(); });
+    const nav=document.querySelector('.sideNav');
+    if(!nav || nav.__entregaStableObserver139) return;
+    const mo=new MutationObserver(function(){
+      if(!normalizing) normalizeEntregaMenu139();
     });
-    obs.observe(nav,{childList:true,subtree:true,attributes:true,characterData:true});
+    mo.observe(nav,{childList:true,subtree:true});
+    nav.__entregaStableObserver139=mo;
   }
 
-  function install139(){
-    setVersion139();
-    normalizeEntregaMenu139();
-    installObserver139();
-    window.tab = safeTab139;
-  }
-
-  document.addEventListener('DOMContentLoaded', install139);
-  window.addEventListener('load', install139);
-  setTimeout(install139, 0);
-  setTimeout(install139, 300);
+  document.addEventListener('DOMContentLoaded', function(){
+    normalizeEntregaMenu139(); installObserver139(); setVersion139();
+  });
+  window.addEventListener('load', function(){
+    normalizeEntregaMenu139(); installObserver139(); setVersion139();
+  });
+  setTimeout(function(){normalizeEntregaMenu139(); installObserver139(); setVersion139();},100);
 })();
