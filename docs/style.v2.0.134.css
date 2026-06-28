@@ -3649,7 +3649,7 @@ body.sidebarCollapsed .sideNav button[onclick*="clima"] b{display:inline !import
 .weatherDescInline{font-weight:900 !important;color:white !important;white-space:nowrap !important;overflow:hidden !important;text-overflow:ellipsis !important;}
 
 
-/* ===== V2.0.134 limpieza visual y correcciones finales ===== */
+/* ===== V2.0.132 limpieza visual y correcciones finales ===== */
 .sideNav button b{display:inline !important;font:inherit !important;font-weight:800 !important;}
 .sideNav button span{display:inline !important;}
 body.sidebarCollapsed .sideNav button span{display:inline !important;}
@@ -3678,7 +3678,7 @@ body.sidebarCollapsed .sideNav button{justify-content:flex-start !important;}
 @media(max-width:900px){.weatherDataV2,.weatherFleetTransitV2,.alertItemMetaV2{grid-template-columns:1fr !important}.weatherTempRight{font-size:34px !important;min-width:70px !important}}
 
 
-/* ===== V2.0.134 - Nombre oficial del sistema ===== */
+/* ===== V2.0.132 - Nombre oficial del sistema ===== */
 .systemTitleSmall{
   font-size:22px !important;
   letter-spacing:.2px !important;
@@ -3700,7 +3700,7 @@ body.sidebarCollapsed .sideNav button{justify-content:flex-start !important;}
 }
 
 
-/* ===== V2.0.134 - Corrección menú lateral iconos/textos ===== */
+/* ===== V2.0.132 - Corrección menú lateral iconos/textos ===== */
 .sidebar{
   width:190px !important;
   overflow:hidden !important;
@@ -3780,7 +3780,7 @@ body.sidebarCollapsed .sideNav button .menuIcon{
 }
 
 
-/* ===== V2.0.134 - Menú lateral definitivo ===== */
+/* ===== V2.0.132 - Menú lateral definitivo ===== */
 .sidebar{
   width:210px !important;
   min-width:210px !important;
@@ -3908,7 +3908,7 @@ body.sidebarCollapsed .sideNav button .menuIcon{
 }
 
 
-/* ===== V2.0.134 - FIX DEFINITIVO MENU LATERAL ===== */
+/* ===== V2.0.132 - FIX DEFINITIVO MENU LATERAL ===== */
 /* Estado expandido por defecto */
 body:not(.sidebarCollapsed) .sidebar{
   width:210px !important; min-width:210px !important; max-width:210px !important;
@@ -3967,7 +3967,7 @@ body.sidebarCollapsed .sideNav button .menuIcon{
   body:not(.sidebarCollapsed) .dashboardShell{margin-left:210px !important;}
 }
 
-/* ===== V2.0.134 - Anti-cache menu lateral final ===== */
+/* ===== V2.0.132 - Anti-cache menu lateral final ===== */
 .systemTitleSmall{font-size:24px !important; letter-spacing:.2px !important; line-height:1.12 !important; text-transform:none !important;}
 .headerTitle .systemTitleSmall{font-size:26px !important;}
 .loginCard .systemTitleSmall{font-size:22px !important;}
@@ -3996,7 +3996,7 @@ body.sidebarCollapsed .sideNav button .menuIcon{display:inline-flex !important;v
 @media(max-width:1000px){body:not(.sidebarCollapsed) .sidebar{width:210px !important;min-width:210px !important;max-width:210px !important;}body:not(.sidebarCollapsed) .dashboardShell{margin-left:210px !important;}}
 
 
-/* ===== V2.0.134 - Menú lateral ancho y sin cortes ===== */
+/* ===== V2.0.132 - Menú lateral ancho y sin cortes ===== */
 body:not(.sidebarCollapsed) .sidebar{
   width:280px !important;
   min-width:280px !important;
@@ -4154,7 +4154,7 @@ body.sidebarCollapsed .sideNav button .menuIcon{
 }
 
 
-/* ===== V2.0.134 - Menu compacto final + usuario visible ===== */
+/* ===== V2.0.132 - Menu compacto final + usuario visible ===== */
 body:not(.sidebarCollapsed) .sidebar{
   width:215px !important;
   min-width:215px !important;
@@ -4320,7 +4320,7 @@ body.sidebarCollapsed .logoutBtn{display:none !important;visibility:hidden !impo
   body:not(.sidebarCollapsed) .logoutBtn{padding-top:6px !important;padding-bottom:6px !important;}
 }
 
-/* ===== V2.0.134 - Correcciones visuales finales ===== */
+/* ===== V2.0.132 - Correcciones visuales finales ===== */
 .sideNav button{align-items:center !important;}
 .sideNav button .menuIcon{display:inline-flex !important;align-items:center !important;justify-content:center !important;line-height:1 !important;transform:none !important;}
 .sideNav button .menuText{display:block !important;line-height:1.08 !important;}
@@ -4367,7 +4367,7 @@ body:not(.sidebarCollapsed) .sideNav button[onclick*="clima"] .menuText{font-siz
   .weatherFleetTransit208{grid-template-columns:1fr 1fr !important;}
 }
 
-/* ===== V2.0.134 - Menu compacto y contador alertas amarillo/negro ===== */
+/* ===== V2.0.132 - Menu compacto y contador alertas amarillo/negro ===== */
 body:not(.sidebarCollapsed) .sidebar{
   width:240px !important;
   min-width:240px !important;
@@ -4478,7 +4478,7 @@ body:not(.sidebarCollapsed) .logoutBtn{display:block !important;font-size:12px !
 }
 
 
-/* ===== V2.0.134 - Ajustes de legibilidad Clima / Alertas / Menu ===== */
+/* ===== V2.0.132 - Ajustes de legibilidad Clima / Alertas / Menu ===== */
 /* Menú: alinear icono y texto Clima igual que el resto */
 body:not(.sidebarCollapsed) .sideNav button{align-items:center !important;}
 body:not(.sidebarCollapsed) .sideNav button .menuIcon{display:inline-flex !important;align-items:center !important;justify-content:center !important;line-height:1 !important;vertical-align:middle !important;transform:none !important;}
@@ -4535,7 +4535,7 @@ body:not(.sidebarCollapsed) .sideNav button[onclick*="clima"] .menuText{margin:0
   .alertAction210{justify-content:flex-start !important;}
 }
 
-/* ===== V2.0.134 - Correccion real menu, clima, KM y alertas compactas ===== */
+/* ===== V2.0.132 - Correccion real menu, clima, KM y alertas compactas ===== */
 body:not(.sidebarCollapsed) .sidebar{
   width:260px !important;
   padding:18px 12px !important;
@@ -4760,7 +4760,7 @@ body:not(.sidebarCollapsed) .logoutBtn{display:block !important;font-size:12px !
 }
 
 
-/* ===== V2.0.134 - Ajustes visuales finales compactos ===== */
+/* ===== V2.0.132 - Ajustes visuales finales compactos ===== */
 body:not(.sidebarCollapsed) .sidebar{width:250px !important;min-width:250px !important;}
 body:not(.sidebarCollapsed) .sideNav{gap:4px !important;padding:4px 8px !important;}
 body:not(.sidebarCollapsed) .sideNav button{
@@ -4835,7 +4835,7 @@ body:not(.sidebarCollapsed) .sideNav button[onclick*="clima"] .menuText{white-sp
 @media (max-width:1200px){.alertHeader213{display:none !important}.alertItemCard213{grid-template-columns:1fr 1fr !important;align-items:start !important}.alertAction213{text-align:left !important}.alertInfo213{grid-template-columns:1fr 1fr !important}.weatherData213,.weatherFleetTransit213{grid-template-columns:1fr !important}}
 
 
-/* ===== V2.0.134 - Torre de Control: Últimas alertas formato compacto ===== */
+/* ===== V2.0.132 - Torre de Control: Últimas alertas formato compacto ===== */
 .alertStrip{
   width:100% !important;
   min-height:92px !important;
@@ -4904,7 +4904,7 @@ body:not(.sidebarCollapsed) .sideNav button[onclick*="clima"] .menuText{white-sp
   .alertStrip button{width:100% !important;min-width:0 !important;}
 }
 
-/* ===== V2.0.134 - Solo vista Alertas compacta ===== */
+/* ===== V2.0.132 - Solo vista Alertas compacta ===== */
 #alertas .glassPanel{padding:18px 20px !important;overflow:hidden !important;}
 #alertas .panelHead{margin-bottom:12px !important;}
 #alertas .alertChartsGrid{display:block !important;margin:0 0 14px 0 !important;}
@@ -4933,7 +4933,7 @@ body:not(.sidebarCollapsed) .sideNav button[onclick*="clima"] .menuText{white-sp
 }
 
 
-/* ===== V2.0.134 - Torre de Control: ultimas alertas igual a referencia ===== */
+/* ===== V2.0.132 - Torre de Control: ultimas alertas igual a referencia ===== */
 #dash .alertStrip,
 .alertStrip{
   min-height:84px !important;
@@ -5019,7 +5019,7 @@ body:not(.sidebarCollapsed) .sideNav button[onclick*="clima"] .menuText{white-sp
   #dash .alertStrip button,.alertStrip button{width:100% !important;min-width:0 !important;}
 }
 
-/* ===== V2.0.134 - Solo Tránsitos: layout izquierda/derecha y todas las alertas ===== */
+/* ===== V2.0.132 - Solo Tránsitos: layout izquierda/derecha y todas las alertas ===== */
 #transitos .transitCardV219{
   display:grid !important;
   grid-template-columns:minmax(0,1fr) minmax(360px,.78fr) !important;
@@ -5055,7 +5055,7 @@ body:not(.sidebarCollapsed) .sideNav button[onclick*="clima"] .menuText{white-sp
   #transitos .transitRight219{border-left:none !important;border-top:1px solid rgba(255,255,255,.15) !important;padding-left:0 !important;padding-top:12px !important;}
 }
 
-/* ===== V2.0.134 - SOLO vista Tránsitos/Seguimiento listado: tarjetas más compactas ===== */
+/* ===== V2.0.132 - SOLO vista Tránsitos/Seguimiento listado: tarjetas más compactas ===== */
 #transitos .transitCardV219{
   padding:12px 14px !important;
   gap:14px !important;
@@ -5138,7 +5138,7 @@ body:not(.sidebarCollapsed) .sideNav button[onclick*="clima"] .menuText{white-sp
   #transitos .transitRight219{border-left:none !important;border-top:1px solid rgba(255,255,255,.15) !important;padding-left:0 !important;padding-top:10px !important;}
 }
 
-/* ===== V2.0.134 - SOLO vista Tránsitos: finalizados en gris, no verde ===== */
+/* ===== V2.0.132 - SOLO vista Tránsitos: finalizados en gris, no verde ===== */
 #transitos .transitCardV219.closed,
 #transitos .item.closed.transitCardV219{
   border-color:rgba(148,163,184,.38) !important;
@@ -5163,7 +5163,7 @@ body:not(.sidebarCollapsed) .sideNav button[onclick*="clima"] .menuText{white-sp
   color:#cbd5e1 !important;
 }
 
-/* ===== V2.0.134 - Iconos por tipo de alerta en Tránsitos y Seguimiento ===== */
+/* ===== V2.0.132 - Iconos por tipo de alerta en Tránsitos y Seguimiento ===== */
 .alertNameWithIconV222{display:inline-flex;align-items:center;gap:8px;min-width:0;white-space:nowrap;}
 .alertTypeIconV222{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;font-size:18px;line-height:1;flex:0 0 22px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.45));}
 .transitAlertHead219 .alertNameWithIconV222 b,
@@ -5171,7 +5171,7 @@ body:not(.sidebarCollapsed) .sideNav button[onclick*="clima"] .menuText{white-sp
 .alertsTitle219::before,.trackingAlerts h4::before{content:'🔔 ';}
 
 
-/* ===== V2.0.134 - SOLO vista Clima: formato aprobado ===== */
+/* ===== V2.0.132 - SOLO vista Clima: formato aprobado ===== */
 #clima .climaLayout,
 #clima .climaLayoutV1237{
   display:flex !important;
@@ -5324,7 +5324,7 @@ body:not(.sidebarCollapsed) .sideNav button[onclick*="clima"] .menuText{white-sp
   #clima .weatherMetricsV223,#clima .weatherFleetDataV223,#clima .weatherPassDataV223{grid-template-columns:1fr 1fr !important;}
 }
 
-/* ===== V2.0.134 - SOLO vista Clima: Flotas -> Pasos -> Destinos, datos completos ===== */
+/* ===== V2.0.132 - SOLO vista Clima: Flotas -> Pasos -> Destinos, datos completos ===== */
 #clima .climaGrid{display:flex !important;flex-direction:column !important;gap:14px !important;align-items:stretch !important;}
 #clima .climaLeft,#clima .climaRight{width:100% !important;display:flex !important;flex-direction:column !important;gap:14px !important;}
 #clima .glassPanel{padding:14px 16px !important;}
@@ -5357,7 +5357,7 @@ body:not(.sidebarCollapsed) .sideNav button[onclick*="clima"] .menuText{white-sp
 @media(max-width:1100px){#clima .climaCardBody225{grid-template-columns:1fr !important;}#clima .climaMid225,#clima .climaWxRight225{padding-left:0 !important;border-left:0 !important;}#clima .climaWxRight225{align-items:flex-start !important;text-align:left !important;}#clima .climaBottom225{grid-template-columns:1fr 1fr !important;}}
 
 
-/* ===== V2.0.134 - SOLO vista Clima: filtro por embarque y orden vertical ===== */
+/* ===== V2.0.132 - SOLO vista Clima: filtro por embarque y orden vertical ===== */
 #clima .climaFilterBar226{
   display:flex !important;
   align-items:end !important;
@@ -5407,7 +5407,7 @@ body:not(.sidebarCollapsed) .sideNav button[onclick*="clima"] .menuText{white-sp
   #clima .climaBottom225{grid-template-columns:1fr 1fr !important;}
 }
 
-/* ===== V2.0.134 - SOLO vista Clima: filtro, orden y tarjetas compactas ===== */
+/* ===== V2.0.132 - SOLO vista Clima: filtro, orden y tarjetas compactas ===== */
 #clima{max-width:none !important;overflow-x:hidden !important;}
 #clima .climaClearBtn226{display:none !important;}
 #clima .climaFilterBar226{display:grid !important;grid-template-columns:minmax(260px,420px) 160px !important;justify-content:space-between !important;align-items:end !important;gap:16px !important;padding:16px 20px !important;}
@@ -5448,7 +5448,7 @@ body.sidebarCollapsed .dashboardShell{margin-left:72px !important;width:calc(100
 @media(max-width:1180px){#clima .climaCardGrid227{grid-template-columns:1fr 1fr !important}#clima .climaWxRight227{grid-column:1/-1;align-items:flex-start;text-align:left;border-left:0;border-top:1px solid rgba(255,255,255,.14);padding-left:0;padding-top:10px}#clima .climaWxLine227{flex-direction:row !important}#clima .climaBottom227{grid-template-columns:repeat(3,minmax(0,1fr)) !important}}
 @media(max-width:760px){#clima .climaFilterBar226{grid-template-columns:1fr !important}#clima .climaCardGrid227{grid-template-columns:1fr !important}#clima .climaMid227{grid-template-columns:1fr !important;border-left:0 !important;padding-left:0 !important}#clima .climaBottom227{grid-template-columns:1fr 1fr !important}#clima .climaMain227 h4{font-size:20px !important}#clima .climaWxTemp227{font-size:34px !important}#clima .climaWxIcon227{font-size:34px !important}}
 
-/* ===== V2.0.134 - SOLO vista Clima: tarjetas reorganizadas, compactas y legibles ===== */
+/* ===== V2.0.132 - SOLO vista Clima: tarjetas reorganizadas, compactas y legibles ===== */
 #clima .climaSection226{padding:14px 16px !important;}
 #clima .panelHead h3{font-size:18px !important;}
 #clima .weatherCards{gap:10px !important;}
@@ -5481,7 +5481,7 @@ body.sidebarCollapsed .dashboardShell{margin-left:72px !important;width:calc(100
 @media(max-width:1220px){#clima .climaBody228{grid-template-columns:1fr 1fr !important;}#clima .climaWx228{grid-column:1/-1;border-left:0 !important;border-top:1px solid rgba(255,255,255,.13) !important;padding-left:0 !important;padding-top:8px !important;align-items:flex-start !important;text-align:left !important;}#clima .climaWxTop228{justify-content:flex-start !important;}#clima .climaBottom228{grid-template-columns:repeat(3,minmax(0,1fr)) !important;}}
 @media(max-width:760px){#clima .climaBody228{grid-template-columns:1fr !important;}#clima .climaCenter228{border-left:0 !important;padding-left:0 !important;}#clima .climaBottom228{grid-template-columns:1fr 1fr !important;}#clima .climaLeft228 h4{font-size:18px !important;}#clima .climaTemp228{font-size:28px !important;}#clima .climaIcon228{font-size:32px !important;}}
 
-/* ===== V2.0.134 - SOLO vista Clima: tarjetas prolijas, compactas y botón actualizar funcional ===== */
+/* ===== V2.0.132 - SOLO vista Clima: tarjetas prolijas, compactas y botón actualizar funcional ===== */
 #clima{max-width:none !important;overflow-x:hidden !important;box-sizing:border-box !important;}
 body:not(.sidebarCollapsed) .dashboardShell{margin-left:230px !important;width:calc(100vw - 230px) !important;max-width:calc(100vw - 230px) !important;box-sizing:border-box !important;}
 body.sidebarCollapsed .dashboardShell{margin-left:72px !important;width:calc(100vw - 72px) !important;max-width:calc(100vw - 72px) !important;box-sizing:border-box !important;}
@@ -5542,7 +5542,7 @@ body.sidebarCollapsed .dashboardShell{margin-left:72px !important;width:calc(100
   #clima .climaLeft229 h4{font-size:16px !important;}
 }
 
-/* ===== V2.0.134 - SOLO vista Clima: layout 2 columnas y tarjetas compactas ===== */
+/* ===== V2.0.132 - SOLO vista Clima: layout 2 columnas y tarjetas compactas ===== */
 #clima .climaLayoutV226{
   display:grid !important;
   grid-template-columns:minmax(0,1.35fr) minmax(360px,.85fr) !important;
@@ -5679,7 +5679,7 @@ body.sidebarCollapsed .dashboardShell{margin-left:72px !important;width:calc(100
   #clima .climaBottom230{grid-template-columns:1fr 1fr !important;}
 }
 
-/* ===== V2.0.134 - SOLO vista Clima: tarjetas compactas que entran en ancho ===== */
+/* ===== V2.0.132 - SOLO vista Clima: tarjetas compactas que entran en ancho ===== */
 #clima .climaCard230,#clima .climaCard229,#clima .climaCard228,#clima .climaCard227,#clima .climaCard225{display:none !important;}
 #clima .climaLayoutV226{
   display:grid !important;
@@ -5812,7 +5812,7 @@ body.sidebarCollapsed .dashboardShell{margin-left:72px !important;width:calc(100
 }
 
 
-/* ===== V2.0.134 - Clima: tarjetas ordenadas, compactas y dos por ancho ===== */
+/* ===== V2.0.132 - Clima: tarjetas ordenadas, compactas y dos por ancho ===== */
 #clima .climaCard231,#clima .climaCard230,#clima .climaCard229,#clima .climaCard228,#clima .climaCard227,#clima .climaCard225{display:none !important;}
 #clima .climaLayoutV226{
   display:grid !important;
@@ -5865,7 +5865,7 @@ body.sidebarCollapsed .dashboardShell{margin-left:72px !important;width:calc(100
 @media(max-width:1180px){#clima .climaLayoutV226{grid-template-columns:1fr !important;grid-template-areas:"fleets" "passes" "dests" !important;}#clima #weatherFleets.weatherCards{grid-template-columns:1fr !important;}}
 @media(max-width:760px){#clima .climaFilterBar226{grid-template-columns:1fr !important;}#clima .climaGrid232,#clima .climaSideGrid232{grid-template-columns:1fr !important;}#clima .climaMid232{border-left:0 !important;padding-left:0 !important;}#clima .climaWx232{border-left:0 !important;border-top:1px solid rgba(255,255,255,.13) !important;padding-left:0 !important;padding-top:7px !important;align-items:flex-start !important;text-align:left !important;}#clima .climaWxTop232{justify-content:flex-start !important;}}
 
-/* ===== V2.0.134 - SOLO Clima: ajustar tarjetas Paso y Destinos ===== */
+/* ===== V2.0.132 - SOLO Clima: ajustar tarjetas Paso y Destinos ===== */
 #clima #weatherPasses .climaCard232,
 #clima #weatherDestinations .climaCard232{
   min-height:104px !important;
@@ -5938,7 +5938,7 @@ body.sidebarCollapsed .dashboardShell{margin-left:72px !important;width:calc(100
 }
 
 
-/* ===== V2.0.134 - Vista Alertas final compacta con graficos ===== */
+/* ===== V2.0.132 - Vista Alertas final compacta con graficos ===== */
 #alertas .glassPanel{padding:14px 16px !important;overflow:hidden !important;}
 #alertas .panelHead{align-items:center !important;margin-bottom:12px !important;}
 #alertas .panelHead h3{font-size:15px !important;margin:0 0 8px !important;}
@@ -5987,7 +5987,7 @@ body.sidebarCollapsed .dashboardShell{margin-left:72px !important;width:calc(100
   #alertas .alertAction234{justify-content:flex-start !important;}
 }
 
-/* ===== V2.0.134 - Alertas: 4 graficos alineados, tabla compacta y campana completa ===== */
+/* ===== V2.0.132 - Alertas: 4 graficos alineados, tabla compacta y campana completa ===== */
 #alertas .alertChartsGrid{
   display:grid !important;
   grid-template-columns:repeat(4,minmax(0,1fr)) !important;
@@ -6051,7 +6051,7 @@ body.sidebarCollapsed .dashboardShell{margin-left:72px !important;width:calc(100
   #alertas .alertHeader35,#alertas .alertRow35{grid-template-columns:88px 48px 60px 36px 90px 86px 62px 76px 84px 68px !important;font-size:10px !important;column-gap:5px !important;}
 }
 
-/* ===== V2.0.134 - Menu lateral compacto/alineado + campana activa ===== */
+/* ===== V2.0.132 - Menu lateral compacto/alineado + campana activa ===== */
 :root{--sidebarW236:170px;--sidebarCollapsedW236:72px;}
 .sidebar{
   width:var(--sidebarW236) !important;
@@ -6182,7 +6182,7 @@ body.sidebarCollapsed .sideAlertBadge{right:2px !important;top:8px !important;tr
 }
 
 
-/* ===== V2.0.134 - FIX DEFINITIVO TEXTO CLIMA EN MENU ===== */
+/* ===== V2.0.132 - FIX DEFINITIVO TEXTO CLIMA EN MENU ===== */
 body:not(.sidebarCollapsed) .sidebar{
   width:230px !important;
   min-width:230px !important;
@@ -6250,7 +6250,7 @@ body.sidebarCollapsed .sidebar{width:72px !important;min-width:72px !important;m
 body.sidebarCollapsed .dashboardShell{margin-left:72px !important;}
 body.sidebarCollapsed .sideNav button .menuText{display:none !important;}
 
-/* ===== V2.0.134 - Correccion real menu lateral: Clima, linea logo, alineacion y campana ===== */
+/* ===== V2.0.132 - Correccion real menu lateral: Clima, linea logo, alineacion y campana ===== */
 body:not(.sidebarCollapsed) .sidebar{
   width:224px !important;
   min-width:224px !important;
@@ -6444,7 +6444,7 @@ body.sidebarCollapsed .logoutBtn{
   body:not(.sidebarCollapsed) .dashboardShell{margin-left:224px !important;}
 }
 
-/* ===== V2.0.134 - MENU DEFINITIVO COMPACTO / CLIMA / BADGE ===== */
+/* ===== V2.0.132 - MENU DEFINITIVO COMPACTO / CLIMA / BADGE ===== */
 body:not(.sidebarCollapsed) .sidebar{
   width:248px !important;
   min-width:248px !important;
@@ -6611,7 +6611,7 @@ body:not(.sidebarCollapsed) .logoutBtn{height:36px !important;font-size:12px !im
   body:not(.sidebarCollapsed) .dashboardShell{margin-left:232px !important;}
 }
 
-/* ===== V2.0.134 - MENU FINAL REAL: ancho correcto, compacto, textos completos y badge chico ===== */
+/* ===== V2.0.132 - MENU FINAL REAL: ancho correcto, compacto, textos completos y badge chico ===== */
 body:not(.sidebarCollapsed) .sidebar{
   width:300px !important;
   min-width:300px !important;
@@ -6795,7 +6795,7 @@ body:not(.sidebarCollapsed) .logoutBtn{
   body:not(.sidebarCollapsed) .dashboardShell{margin-left:300px !important;}
 }
 
-/* ===== V2.0.134 - AJUSTE DEFINITIVO SOLO MENU LATERAL ===== */
+/* ===== V2.0.132 - AJUSTE DEFINITIVO SOLO MENU LATERAL ===== */
 html,body{max-width:100vw !important;overflow-x:hidden !important;}
 body:not(.sidebarCollapsed) .sidebar{
   width:248px !important;
@@ -6985,7 +6985,7 @@ body:not(.sidebarCollapsed) .logoutBtn{height:34px !important;font-size:12px !im
   body:not(.sidebarCollapsed) .sideNav button[onclick*="clientes"] .menuText{font-size:12.2px !important;}
 }
 
-/* ===== V2.0.134 - MENU LATERAL DEFINITIVO SIN AFECTAR VISTAS ===== */
+/* ===== V2.0.132 - MENU LATERAL DEFINITIVO SIN AFECTAR VISTAS ===== */
 :root{--sidebarWFinal:300px;}
 body:not(.sidebarCollapsed) .sidebar{
   width:var(--sidebarWFinal) !important;
@@ -7160,7 +7160,7 @@ body.sidebarCollapsed .dashboardShell{margin-left:82px !important;width:calc(100
 }
 
 
-/* ===== V2.0.134 - Menú lateral definitivo sin contador numérico ===== */
+/* ===== V2.0.132 - Menú lateral definitivo sin contador numérico ===== */
 :root{ --sidebar-w-final: 260px; --sidebar-collapsed-final: 78px; }
 body:not(.sidebarCollapsed) .sidebar{
   width:var(--sidebar-w-final) !important;
@@ -7348,7 +7348,7 @@ body.sidebarCollapsed .sideNav button .menuIcon{display:inline-flex !important; 
 }
 
 
-/* ===== V2.0.134 - Modulo Embarques ===== */
+/* ===== V2.0.132 - Modulo Embarques ===== */
 .embarquesToolbar{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:14px;padding:18px!important}
 .embarquesFilters{display:grid;grid-template-columns:minmax(160px,1.1fr) minmax(160px,1.1fr) minmax(160px,1.1fr) minmax(150px,.8fr) minmax(150px,.8fr);gap:12px;flex:1;align-items:end}
 .embarquesFilters label,.embarqueFormGrid label{font-weight:800;color:#e9f0f6;font-size:13px;display:flex;flex-direction:column;gap:7px}
@@ -7368,11 +7368,11 @@ body.sidebarCollapsed .sideNav button .menuIcon{display:inline-flex !important; 
 @media(max-width:1250px){.embarquesToolbar{flex-direction:column;align-items:stretch}.embarquesFilters{grid-template-columns:repeat(2,minmax(160px,1fr))}.embarqueFormGrid{grid-template-columns:repeat(2,minmax(140px,1fr))}}
 @media(max-width:720px){.embarquesFilters,.embarqueFormGrid{grid-template-columns:1fr}.embarquesActions{flex-wrap:wrap}}
 
-/* v2.0.134 - Embarques: filtro por fecha pura */
+/* v2.0.132 - Embarques: filtro por fecha pura */
 #embFilterDesde,#embFilterHasta{height:46px;font-family:inherit;font-size:14px;letter-spacing:.2px;}
 #embFilterDesde::-webkit-calendar-picker-indicator,#embFilterHasta::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.85;cursor:pointer;}
 
-/* ===== V2.0.134 - Embarques: barra de filtros compacta y sin desbordes ===== */
+/* ===== V2.0.132 - Embarques: barra de filtros compacta y sin desbordes ===== */
 #embarques .embarquesToolbar{
   display:grid !important;
   grid-template-columns:minmax(120px,1fr) minmax(120px,1fr) minmax(120px,1fr) minmax(122px,.78fr) minmax(122px,.78fr) 104px 104px 104px !important;
@@ -7480,7 +7480,7 @@ body.sidebarCollapsed .sideNav button .menuIcon{display:inline-flex !important; 
 }
 
 
-/* ===== V2.0.134 - Fix version + Clima filter button contained ===== */
+/* ===== V2.0.132 - Fix version + Clima filter button contained ===== */
 #clima .climaFilterBar226{
   display:grid !important;
   grid-template-columns:minmax(220px,520px) 118px !important;
@@ -7542,7 +7542,7 @@ body:not(.sidebarCollapsed) #clima .climaRefreshBtn226{
   #clima .climaRefreshBtn226{justify-self:stretch !important;width:100% !important;max-width:none !important;}
 }
 
-/* ===== v2.0.134 - PDF profesional en tarjetas de Tránsitos ===== */
+/* ===== v2.0.132 - PDF profesional en tarjetas de Tránsitos ===== */
 .transitCardV1210{position:relative;}
 .transitPdfBox53{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:14px;}
 .transitPdfBtn53{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(255,255,255,.18);background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.04));color:#fff;border-radius:14px;padding:10px 13px;font-weight:900;font-size:13px;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.22);transition:transform .15s ease, border-color .15s ease, background .15s ease;}
@@ -7551,16 +7551,16 @@ body:not(.sidebarCollapsed) #clima .climaRefreshBtn226{
 .transitPdfText53{line-height:1.05;white-space:nowrap;}
 @media(max-width:900px){.transitPdfBox53{justify-content:flex-start}.transitPdfBtn53{width:100%;}}
 
-/* v2.0.134 - PDF icono compacto junto a Ult. reporte */
+/* v2.0.132 - PDF icono compacto junto a Ult. reporte */
 .transitPdfBox53{display:none!important;}
 .lastReportLine{display:flex!important;align-items:center!important;gap:8px!important;flex-wrap:nowrap!important;}
 .transitPdfIconBtn54{width:24px!important;height:24px!important;min-width:24px!important;padding:0!important;border:1px solid rgba(255,255,255,.18)!important;border-radius:7px!important;background:rgba(255,255,255,.08)!important;color:#fff!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;font-size:15px!important;line-height:1!important;cursor:pointer!important;box-shadow:none!important;margin-left:6px!important;}
 .transitPdfIconBtn54:hover{border-color:rgba(84,202,61,.75)!important;background:rgba(84,202,61,.18)!important;transform:translateY(-1px);}
 
-/* V2.0.134 update button busy state */
+/* V2.0.132 update button busy state */
 button:disabled{opacity:.65;cursor:wait;}
 
-/* ===== V2.0.134 - Configuracion redisenada ===== */
+/* ===== V2.0.132 - Configuracion redisenada ===== */
 #abm .glassPanel{padding:22px;background:rgba(7,25,38,.86);border:1px solid rgba(130,170,200,.25);border-radius:18px;}
 #abm .abmtabs{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px;}
 #abm .abmtabs button{height:48px;padding:0 20px;border-radius:10px;border:1px solid rgba(120,160,190,.22);background:rgba(22,42,58,.72);color:#e8eef4;font-weight:800;font-size:15px;display:flex;align-items:center;gap:9px;cursor:pointer;}
@@ -7600,7 +7600,7 @@ button:disabled{opacity:.65;cursor:wait;}
 .cfgEmpty{color:#cbd5df;padding:16px!important;}
 @media(max-width:1200px){.cfgLayout{grid-template-columns:1fr}.cfgFormGrid{grid-template-columns:repeat(2,minmax(150px,1fr));}.cfgSearchWrap{min-width:260px}}
 
-/* ===== V2.0.134 - Clima: render robusto del filtro por embarque ===== */
+/* ===== V2.0.132 - Clima: render robusto del filtro por embarque ===== */
 .weatherLoading{color:#d6e2ea;font-weight:700;padding:18px;opacity:.95}
 .climaFleet260,.climaPass260,.climaDest260{border-radius:18px;padding:18px;margin:10px 0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:16px;align-items:center;min-height:104px;overflow:hidden}
 .climaFleet260{background:linear-gradient(135deg,rgba(16,70,46,.96),rgba(14,58,44,.92));border:1px solid #39c95f;box-shadow:inset 4px 0 0 #47d56a}
@@ -7609,7 +7609,7 @@ button:disabled{opacity:.65;cursor:wait;}
 .climaCol260,.climaSideInfo260{min-width:0}.climaCol260 h4,.climaSideInfo260 h4{margin:0 0 8px 0;font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.climaKv260{font-size:15px;line-height:1.38;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.climaKv260 b{color:#fff}.climaWx260{text-align:right;min-width:120px}.climaWx260>div{display:flex;align-items:center;justify-content:flex-end;gap:8px}.climaTemp260{font-size:36px;font-weight:900;color:#fff;line-height:1}.climaIcon260{font-size:30px}.climaWx260 small{display:block;margin-top:4px;font-weight:800;color:#d8e6f1;max-width:140px;white-space:normal}.climaPassStatus260{display:inline-block;margin:0 0 8px 0;padding:5px 10px;border-radius:999px;background:rgba(255,196,0,.18);border:1px solid rgba(255,196,0,.7);color:#ffe48a;font-weight:900;font-size:12px;white-space:nowrap}
 @media(max-width:1100px){.climaFleet260{grid-template-columns:1fr}.climaPass260,.climaDest260{grid-template-columns:1fr}.climaWx260{text-align:left}.climaWx260>div{justify-content:flex-start}}
 
-/* ===== V2.0.134 - SOLO Clima: recuperar formato compacto manteniendo funcionalidad v2.0.134 ===== */
+/* ===== V2.0.132 - SOLO Clima: recuperar formato compacto manteniendo funcionalidad v2.0.132 ===== */
 #clima .weatherLoading{
   padding:12px 14px !important;
   font-size:13px !important;
@@ -7731,11 +7731,11 @@ button:disabled{opacity:.65;cursor:wait;}
 }
 
 
-/* V2.0.134 - usuario logueado visible */
+/* V2.0.132 - usuario logueado visible */
 .adminBox small{display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .adminBox small[title]{cursor:default;}
 
-/* ===== V2.0.134 - Ajustes puntuales: Clima, PDF OEA y correcciones ===== */
+/* ===== V2.0.132 - Ajustes puntuales: Clima, PDF OEA y correcciones ===== */
 #clima .climaLayoutV226{display:grid!important;grid-template-columns:1.15fr .85fr!important;gap:14px!important;align-items:start!important;}
 #clima .climaFleetsSection226{grid-row:1 / span 2!important;min-height:540px!important;}
 #clima .climaPassesSection226,#clima .climaDestSection226{min-height:245px!important;}
@@ -7763,7 +7763,7 @@ button:disabled{opacity:.65;cursor:wait;}
 .deleteBtn,.dangerBtn,.configDetailPanel .deleteBtn,.configDeleteBtn,button.delete,button.danger,.btnDelete{color:#fff!important;font-weight:800!important;}
 @media(max-width:1200px){#clima .climaLayoutV226{grid-template-columns:1fr!important}.climaFleetCard263{grid-template-columns:1fr!important}.climaFleetMid263,.climaCardWx263{border-left:0;padding-left:0;text-align:left}.climaPassCard263,.climaDestCard263{grid-template-columns:1fr!important}.climaCardTemp263{font-size:38px!important}.climaCardIcon263{font-size:34px!important}}
 
-/* ===== V2.0.134 - Ajustes solicitados: Clima 25% mas compacto + combo flotas usuarios ===== */
+/* ===== V2.0.132 - Ajustes solicitados: Clima 25% mas compacto + combo flotas usuarios ===== */
 #clima .weatherCardV223{
   padding:8px 10px !important;
   min-height:118px !important;
@@ -7812,7 +7812,7 @@ button:disabled{opacity:.65;cursor:wait;}
 #clima .climaRight .glassPanel{padding:10px !important;}
 #clima .panelHead h3{font-size:14px !important;}
 
-/* ===== V2.0.134 - Clima formato referencia: tipografia compacta ===== */
+/* ===== V2.0.132 - Clima formato referencia: tipografia compacta ===== */
 #clima .climaFleetCard263,#clima .climaPassCard263,#clima .climaDestCard263{padding:10px 13px!important;min-height:0!important;line-height:1.12!important;gap:9px!important;border-width:1.5px!important;}
 #clima .climaFleetCard263{grid-template-columns:minmax(185px,.85fr) minmax(220px,1fr) 130px!important;}
 #clima .climaPassCard263,#clima .climaDestCard263{grid-template-columns:minmax(0,1fr) 120px!important;}
@@ -7827,7 +7827,7 @@ button:disabled{opacity:.65;cursor:wait;}
 #clima .passOk263{font-size:10.2px!important;padding:3px 8px!important;margin:0 0 7px!important;}
 #clima .weatherCol h3{font-size:16px!important;margin-bottom:9px!important;}
 
-/* ===== V2.0.134 - ajustes solicitados ===== */
+/* ===== V2.0.132 - ajustes solicitados ===== */
 #login #msg{min-height:22px;margin-top:8px;font-weight:800;text-align:center;}
 #abm .abmtabs button,
 #abm .cfgNewBtn,
@@ -7854,13 +7854,13 @@ button:disabled{opacity:.65;cursor:wait;}
 #transitos .trackingAlertMeta span:empty,
 #alertas .alertItemMeta div:empty{display:none!important;}
 
-/* ===== V2.0.134 - Configuracion password visible ===== */
+/* ===== V2.0.132 - Configuracion password visible ===== */
 .cfgPassValueV273{display:inline-flex;align-items:center;gap:8px;max-width:100%;}
 .cfgPassTextV273{font-style:normal;color:#eaf3f9;font-weight:700;letter-spacing:1px;}
 .cfgPassEyeV273{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);color:#fff;border-radius:8px;padding:4px 8px;cursor:pointer;line-height:1;font-size:14px;}
 .cfgPassEyeV273:hover{background:rgba(122,255,74,.15);border-color:rgba(122,255,74,.45);}
 
-/* ===== V2.0.134 - Menu lateral: iconos solo colapsado + textos compactos ===== */
+/* ===== V2.0.132 - Menu lateral: iconos solo colapsado + textos compactos ===== */
 body:not(.sidebarCollapsed) .sideNav button{
   justify-content:flex-start !important;
   gap:0 !important;
@@ -7908,7 +7908,7 @@ body.sidebarCollapsed .sideNav button > span:last-child{
 }
 body:not(.sidebarCollapsed) .sideNav{gap:6px !important;}
 
-/* ===== V2.0.134 - Ajuste menu expandido sin iconos + alertas sin efecto ===== */
+/* ===== V2.0.132 - Ajuste menu expandido sin iconos + alertas sin efecto ===== */
 body:not(.sidebarCollapsed) .sideNav button{
   justify-content:flex-start !important;
   gap:0 !important;
@@ -7982,7 +7982,7 @@ body.sidebarCollapsed .sideNav button[onclick*="alertas"].active{
 }
 
 
-/* ===== V2.0.134 - SOLO MENU LATERAL: textos alineados, iconos solo colapsado, alertas sin efecto en texto ===== */
+/* ===== V2.0.132 - SOLO MENU LATERAL: textos alineados, iconos solo colapsado, alertas sin efecto en texto ===== */
 body:not(.sidebarCollapsed) .sideNav{
   align-items:stretch !important;
 }
@@ -8063,7 +8063,7 @@ body.sidebarCollapsed .sideNav button[onclick*="alertas"] .menuIcon{
   filter:drop-shadow(0 0 8px rgba(250,204,21,.75));
 }
 
-/* ===== V2.0.134 - Menu expandido: textos alineados, sin iconos, sin efecto en texto Alertas ===== */
+/* ===== V2.0.132 - Menu expandido: textos alineados, sin iconos, sin efecto en texto Alertas ===== */
 body:not(.sidebarCollapsed) .sideNav{
   align-items:stretch !important;
 }
@@ -8141,7 +8141,7 @@ body.sidebarCollapsed .sideNav button .menuText{
   display:none !important;
 }
 
-/* ===== V2.0.134 - Correccion real menu lateral ===== */
+/* ===== V2.0.132 - Correccion real menu lateral ===== */
 /* En menu expandido todos los textos parten de la misma columna */
 body:not(.sidebarCollapsed) .sideNav{
   align-items:stretch !important;
@@ -8235,7 +8235,7 @@ body.sidebarCollapsed .sideNav button > span:last-child:not(.menuIcon){
   display:none !important;
 }
 
-/* ===== V2.0.134 - primer pintado menu alineado ===== */
+/* ===== V2.0.132 - primer pintado menu alineado ===== */
 body:not(.sidebarCollapsed) .sidebar{width:230px!important;min-width:230px!important;max-width:230px!important;padding:14px 12px!important;overflow:hidden!important;}
 body:not(.sidebarCollapsed) .dashboardShell{margin-left:230px!important;}
 body:not(.sidebarCollapsed) .sideNav{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:4px!important;margin-top:8px!important;width:100%!important;}
@@ -8246,7 +8246,7 @@ body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"],body:not(.sideba
 body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"] .menuText{color:rgba(255,255,255,.88)!important;text-shadow:none!important;filter:none!important;animation:none!important;transform:none!important;box-shadow:none!important;}
 
 
-/* ===== V2.0.134 - FIX FINAL: menu expandido alineado a izquierda y sin efecto en texto ===== */
+/* ===== V2.0.132 - FIX FINAL: menu expandido alineado a izquierda y sin efecto en texto ===== */
 body:not(.sidebarCollapsed) .sideNav{
   align-items:stretch !important;
   gap:6px !important;
@@ -8327,7 +8327,7 @@ body.sidebarCollapsed .sideNav button .menuText{
   display:none !important;
 }
 
-/* ===== V2.0.134 - FIX RAIZ MENU LATERAL =====
+/* ===== V2.0.132 - FIX RAIZ MENU LATERAL =====
    Problema detectado: el menu acumulaba reglas repetidas y scripts que volvian
    a centrar los textos. Esta capa final fija una columna izquierda unica para
    todos los labels, sin depender de justify-content ni text-align heredados. */
@@ -8499,7 +8499,7 @@ body.sidebarCollapsed .sideNav button .menuText{
   opacity:0 !important;
 }
 
-/* ===== V2.0.134 - FIX RAIZ MENU LATERAL ESTABLE =====
+/* ===== V2.0.132 - FIX RAIZ MENU LATERAL ESTABLE =====
    Unico criterio final del sidebar: expandido = textos alineados a izquierda sin iconos,
    colapsado = solo iconos y contenedor contraido. */
 body:not(.sidebarCollapsed) .sidebar{
@@ -8564,7 +8564,7 @@ body.sidebarCollapsed .logoutBtn{display:none !important;visibility:hidden !impo
 body.sidebarCollapsed .sideNav button .menuIcon{display:inline-flex !important;visibility:visible !important;opacity:1 !important;align-items:center !important;justify-content:center !important;flex:0 0 30px !important;width:30px !important;min-width:30px !important;max-width:30px !important;height:30px !important;font-size:20px !important;line-height:1 !important;}
 
 
-/* ===== V2.0.134 - MENU LATERAL ESTABLE FINAL ===== */
+/* ===== V2.0.132 - MENU LATERAL ESTABLE FINAL ===== */
 html body:not(.sidebarCollapsed) aside.sidebar,
 html body:not(.sidebarCollapsed) .sidebar{
   width:230px!important;
