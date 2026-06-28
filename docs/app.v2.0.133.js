@@ -11208,120 +11208,87 @@ if(_refresh_v1250){
   setTimeout(install,100);
 })();
 
-
-/* ===== V2.0.133 - FIX SEGURO: menu Entregas unico, sin re-render duplicado ===== */
+/* ===== V2.0.133 - HOTFIX SEGURO: Entregas sin doble render ni cambio de icono ===== */
 (function(){
   const VERSION='2.0.133';
-  window.ELTA_APP_VERSION=VERSION;
-  window.APP_VERSION_V2=VERSION;
+  const ENTREGA_ICON='🏁';
+  const ENTREGA_LABEL='Entregas';
+  const originalTab=window.tab;
 
-  function qs(sel){ return document.querySelector(sel); }
-  function qsa(sel){ return Array.from(document.querySelectorAll(sel)); }
-
-  function setVersionText(){
-    document.title='ELTA ITS - Versión '+VERSION;
-    qsa('span,small,p,div,footer').forEach(el=>{
-      if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/i.test(el.textContent||'')){
-        el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/gi,'Versión '+VERSION);
-      }
-    });
+  function setVersion(){
+    try{
+      window.ELTA_APP_VERSION=VERSION;
+      window.APP_VERSION_V2=VERSION;
+      document.title='ELTA ITS - Versión '+VERSION;
+      document.querySelectorAll('span,small,p,div').forEach(el=>{
+        if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/.test(el.textContent||'')){
+          el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/g,'Versión '+VERSION);
+        }
+      });
+    }catch(e){}
   }
 
-  function entregaButtons(nav){
-    return qsa('.sideNav button').filter(b=>{
-      const oc=b.getAttribute('onclick')||'';
-      const txt=(b.textContent||'').toLowerCase();
-      return b.dataset.menuId==='entrega' || oc.includes("tab('entrega')") || oc.includes('tab("entrega")') || txt.includes('entregas');
-    });
+  function isEntregaBtn(btn){
+    const on=btn?.getAttribute?.('onclick')||'';
+    return btn?.dataset?.menuId==='entrega' || on.includes("tab('entrega')") || on.includes('tab("entrega")');
   }
 
-  function normalizeEntregasMenu(){
-    const nav=qs('.sideNav');
-    if(!nav) return;
-    let buttons=entregaButtons(nav);
-    let btn=buttons[0];
+  function normalizeEntregaMenu(){
+    const nav=document.querySelector('.sideNav');
+    if(!nav)return null;
+    const entregaBtns=[...nav.querySelectorAll('button')].filter(isEntregaBtn);
+    let btn=entregaBtns[0]||null;
+    entregaBtns.slice(1).forEach(b=>b.remove());
     if(!btn){
       btn=document.createElement('button');
-      nav.appendChild(btn);
+      const emb=[...nav.querySelectorAll('button')].find(b=>(b.getAttribute('onclick')||'').includes("tab('embarques')"));
+      if(emb) emb.insertAdjacentElement('afterend',btn); else nav.appendChild(btn);
     }
-    buttons.slice(1).forEach(b=>b.remove());
     btn.type='button';
     btn.dataset.menuId='entrega';
     btn.setAttribute('onclick',"tab('entrega')");
-    btn.title='Entregas';
-    btn.innerHTML='<span class="menuIcon" aria-hidden="true">🏁</span><span class="menuText">Entregas</span>';
-
-    const emb=qsa('.sideNav button').find(b=>(b.getAttribute('onclick')||'').includes("tab('embarques')") || (b.getAttribute('onclick')||'').includes('tab("embarques")'));
-    if(emb && emb.nextSibling!==btn) nav.insertBefore(btn, emb.nextSibling);
+    btn.innerHTML='<span class="menuIcon">'+ENTREGA_ICON+'</span><span class="menuText">'+ENTREGA_LABEL+'</span>';
+    const emb=[...nav.querySelectorAll('button')].find(b=>(b.getAttribute('onclick')||'').includes("tab('embarques')"));
+    if(emb && emb.nextElementSibling!==btn) emb.insertAdjacentElement('afterend',btn);
+    return btn;
   }
 
-  function stableTab(id){
-    qsa('.sideNav button').forEach(b=>b.classList.remove('active'));
-    qsa('.panel').forEach(p=>p.classList.remove('active'));
-    const navBtn=qsa('.sideNav button').find(b=>(b.getAttribute('onclick')||'').includes("'"+id+"'") || (b.getAttribute('onclick')||'').includes('"'+id+'"'));
-    if(navBtn) navBtn.classList.add('active');
-    const panel=document.getElementById(id);
-    if(panel) panel.classList.add('active');
-
-    try{ if(id==='abm' && typeof window.renderABM==='function') window.renderABM(); }catch(e){console.warn(e);}
-    try{ if(id==='reportes' && typeof window.renderRep==='function') window.renderRep(); }catch(e){console.warn(e);}
-    try{ if(id==='unidades' && typeof window.renderUnits==='function') window.renderUnits(); }catch(e){console.warn(e);}
-    try{ if(id==='conductores' && typeof window.renderDrivers==='function') window.renderDrivers(); }catch(e){console.warn(e);}
-    try{ if(id==='clientes' && typeof window.renderClients==='function') window.renderClients(); }catch(e){console.warn(e);}
-    try{ if(id==='alertas' && typeof window.renderAlerts==='function') window.renderAlerts(); }catch(e){console.warn(e);}
-    try{ if(id==='embarques' && typeof window.renderEmbarquesV244==='function') window.renderEmbarquesV244(); }catch(e){console.warn(e);}
-    try{ if(id==='clima' && typeof window.ensureClimaDataAndRender==='function') window.ensureClimaDataAndRender(false); }catch(e){console.warn(e);}
-    try{ if(id==='entrega' && typeof window.renderEntrega==='function') window.renderEntrega(false); }catch(e){console.warn(e);}
-
-    normalizeEntregasMenu();
-    setVersionText();
+  function activateEntregaPanel(){
+    document.querySelectorAll('.sideNav button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    const btn=normalizeEntregaMenu();
+    if(btn) btn.classList.add('active');
+    const sec=document.getElementById('entrega');
+    if(sec) sec.classList.add('active');
   }
 
-  window.tab=stableTab;
-  window.normalizeEntregasMenuV20133=normalizeEntregasMenu;
-
-  function boot(){ normalizeEntregasMenu(); setVersionText(); }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
-  window.addEventListener('load',boot,{once:true});
-})();
-
-
-/* ===== V2.0.133 - GUARD MENU ENTREGAS: evita reescritura bandera/camion ===== */
-(function(){
-  let scheduled=false;
-  function qsa(sel){return Array.from(document.querySelectorAll(sel));}
-  function normalize(){
-    scheduled=false;
-    const nav=document.querySelector('.sideNav');
-    if(!nav)return;
-    const entrega=qsa('.sideNav button').filter(b=>{
-      const oc=b.getAttribute('onclick')||'';
-      const txt=(b.textContent||'').toLowerCase();
-      return b.dataset.menuId==='entrega'||oc.includes("tab('entrega')")||oc.includes('tab("entrega")')||txt.includes('entregas');
-    });
-    let btn=entrega[0];
-    if(!btn){btn=document.createElement('button'); nav.appendChild(btn);} 
-    entrega.slice(1).forEach(b=>b.remove());
-    const wasActive=btn.classList.contains('active') || document.getElementById('entrega')?.classList.contains('active');
-    btn.type='button';
-    btn.dataset.menuId='entrega';
-    btn.setAttribute('onclick',"tab('entrega')");
-    btn.title='Entregas';
-    btn.innerHTML='<span class="menuIcon" aria-hidden="true">🏁</span><span class="menuText">Entregas</span>';
-    if(wasActive) btn.classList.add('active');
-    const emb=qsa('.sideNav button').find(b=>(b.getAttribute('onclick')||'').includes("tab('embarques')") || (b.getAttribute('onclick')||'').includes('tab("embarques")'));
-    if(emb && emb.nextSibling!==btn) nav.insertBefore(btn, emb.nextSibling);
+  async function openEntrega(){
+    normalizeEntregaMenu();
+    setVersion();
+    try{
+      if(typeof window.renderEntrega==='function') await window.renderEntrega(false);
+    }catch(e){ console.warn('renderEntrega error',e); }
+    activateEntregaPanel();
+    setTimeout(()=>{normalizeEntregaMenu();activateEntregaPanel();setVersion();},40);
+    return false;
   }
-  function schedule(){ if(!scheduled){scheduled=true; setTimeout(normalize,0);} }
-  const ready=()=>{
-    normalize();
-    const nav=document.querySelector('.sideNav');
-    if(nav && !nav.__entregaMenuGuard20133){
-      nav.__entregaMenuGuard20133=true;
-      new MutationObserver(schedule).observe(nav,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['onclick','class','data-menu-id']});
-    }
-    setTimeout(normalize,100); setTimeout(normalize,500); setTimeout(normalize,1200);
-  };
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',ready,{once:true}); else ready();
-  window.addEventListener('load',ready,{once:true});
+
+  if(typeof originalTab==='function' && !window.__ELTA_ENTREGA_SAFE_TAB_20133__){
+    window.__ELTA_ENTREGA_SAFE_TAB_20133__=true;
+    window.tab=function(id){
+      if(id==='entrega') return openEntrega();
+      return originalTab.apply(this,arguments);
+    };
+  }
+
+  function install(){
+    normalizeEntregaMenu();
+    setVersion();
+  }
+  document.addEventListener('DOMContentLoaded',()=>{install();setTimeout(install,250);});
+  window.addEventListener('load',()=>{install();setTimeout(install,250);});
+  setTimeout(install,100);
+  try{
+    new MutationObserver(()=>normalizeEntregaMenu()).observe(document.documentElement,{childList:true,subtree:true});
+  }catch(e){}
 })();
