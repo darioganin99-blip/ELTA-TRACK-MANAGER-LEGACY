@@ -9863,9 +9863,8 @@ if(_refresh_v1250){
     btn.innerHTML='<span class="menuIcon">🏁</span><span class="menuText">Entregas</span>';
     const trans=[...nav.querySelectorAll('button')].find(b=>(b.getAttribute('onclick')||'').includes("tab('transitos')"));
     const emb=[...nav.querySelectorAll('button')].find(b=>(b.getAttribute('onclick')||'').includes("tab('embarques')"));
-    // Entregas va debajo de Embarques. Embarques se mantiene sin cambios.
-    if(emb && emb.nextSibling!==btn) nav.insertBefore(btn, emb.nextSibling);
-    else if(!emb && trans && trans.nextSibling!==btn) nav.insertBefore(btn, trans.nextSibling);
+    // Entregas va después de Tránsito. Embarques se mantiene sin cambios.
+    if(trans && trans.nextSibling!==btn) nav.insertBefore(btn, trans.nextSibling);
     if(emb){
       const txt=emb.querySelector('.menuText'); if(txt) txt.textContent='Embarques';
       emb.setAttribute('onclick',"tab('embarques')");
@@ -9899,7 +9898,7 @@ if(_refresh_v1250){
   function boot(){ensureEntregasMenu(); injectFinalCss(); setV();}
   document.addEventListener('DOMContentLoaded',boot); window.addEventListener('load',boot); setTimeout(boot,200); setTimeout(boot,900);
   const oldTab=window.tab; if(typeof oldTab==='function'&&!oldTab.__v2108){
-    const f=function(id){boot(); const r=oldTab.apply(this,arguments); setTimeout(boot,0); return r;}; f.__v2108=true; window.tab=f;
+    const f=function(id){boot(); const r=oldTab.apply(this,arguments); boot(); if(id==='entrega'&&typeof window.renderEntrega==='function') setTimeout(()=>window.renderEntrega(false),50); return r;}; f.__v2108=true; window.tab=f;
   }
 })();
 
@@ -10196,7 +10195,7 @@ if(_refresh_v1250){
   function menuOrder114(){
     const nav=document.querySelector('.sideNav'); if(!nav)return;
     let entrega=[...nav.querySelectorAll('button')].find(b=>b.dataset.menuId==='entrega'||(b.getAttribute('onclick')||'').includes("tab('entrega')"));
-    if(entrega){ entrega.dataset.menuId='entrega'; entrega.setAttribute('onclick',"tab('entrega')"); entrega.innerHTML='<span class="menuIcon">🏁</span><span class="menuText">Entregas</span>'; }
+    if(entrega){ entrega.dataset.menuId='entrega'; entrega.setAttribute('onclick',"tab('entrega')"); entrega.innerHTML='<span class="menuIcon">🚛</span><span class="menuText">Entregas</span>'; }
     const emb=[...nav.querySelectorAll('button')].find(b=>(b.getAttribute('onclick')||'').includes("tab('embarques')"));
     if(emb && entrega && emb.nextSibling!==entrega) emb.parentNode.insertBefore(entrega, emb.nextSibling);
   }
@@ -10228,7 +10227,7 @@ if(_refresh_v1250){
   }
   const prevTab=window.tab;
   if(typeof prevTab==='function' && !prevTab.__v20114Final){
-    const t=function(id){const r=prevTab.apply(this,arguments); setTimeout(boot114,0); return r;};
+    const t=function(id){boot114(); const r=prevTab.apply(this,arguments); boot114(); if(id==='entrega') setTimeout(()=>{ if(typeof window.renderEntrega==='function') window.renderEntrega(false); boot114(); },80); return r;};
     t.__v20114Final=true; window.tab=t;
   }
   document.addEventListener('DOMContentLoaded',()=>{boot114(); setTimeout(boot114,300); setTimeout(boot114,900);});
@@ -11207,4 +11206,152 @@ if(_refresh_v1250){
   document.addEventListener('DOMContentLoaded',()=>{install(); setTimeout(install,250);});
   window.addEventListener('load',()=>{install(); setTimeout(install,250);});
   setTimeout(install,100);
+})();
+
+/* ===== V2.0.140 - CORRECCION DEFINITIVA MENU ENTREGAS SIN WRAPPERS ===== */
+(function(){
+  const VERSION='2.0.140';
+  const ENTREGA_ICON='🚛';
+  window.ELTA_APP_VERSION=VERSION;
+  window.APP_VERSION_V2=VERSION;
+
+  function setVersionText(){
+    try{
+      document.title='ELTA ITS - Versión '+VERSION;
+      document.querySelectorAll('span,small,p,div,footer,title').forEach(el=>{
+        if(!el || el.childElementCount>0) return;
+        const txt=el.textContent||'';
+        if(/Versi[oó]n\s+\d+\.\d+\.\d+/i.test(txt)){
+          el.textContent=txt.replace(/Versi[oó]n\s+\d+\.\d+\.\d+/gi,'Versión '+VERSION);
+        }
+      });
+    }catch(e){console.warn('version text error',e);}
+  }
+
+  function buttonId(btn){
+    const raw=(btn && (btn.getAttribute('onclick')||btn.dataset.menuId||'')) || '';
+    const m=raw.match(/tab\('([^']+)'\)/);
+    return (m && m[1]) || btn?.dataset?.menuId || '';
+  }
+
+  function ensureMenuStable(){
+    const nav=document.querySelector('.sideNav');
+    if(!nav) { setVersionText(); return; }
+
+    const order=['dash','transitos','mapa','clima','alertas','embarques','entrega','unidades','clientes','abm'];
+    const labels={dash:['🏠','Torre de Control'],transitos:['🚚','Tránsitos'],mapa:['📍','Seguimiento'],clima:['🌦️','Clima'],alertas:['🔔','Alertas'],embarques:['📦','Embarques'],entrega:[ENTREGA_ICON,'Entregas'],unidades:['🚛','Unidades / Choferes'],clientes:['🏢','Clientes / Destinos'],abm:['⚙️','Configuración']};
+
+    // Eliminar duplicados exactos de Entregas: conservar solo uno.
+    const entregaButtons=[...nav.querySelectorAll('button')].filter(b=>buttonId(b)==='entrega' || b.dataset.menuId==='entrega' || /Entregas/i.test(b.textContent||''));
+    let entregaBtn=entregaButtons[0] || null;
+    entregaButtons.slice(1).forEach(b=>b.remove());
+    if(!entregaBtn){
+      entregaBtn=document.createElement('button');
+      nav.appendChild(entregaBtn);
+    }
+    entregaBtn.type='button';
+    entregaBtn.dataset.menuId='entrega';
+    entregaBtn.setAttribute('onclick',"tab('entrega')");
+
+    // Normalizar botones existentes sin recrear todo el menu.
+    order.forEach(id=>{
+      let btn=(id==='entrega') ? entregaBtn : [...nav.querySelectorAll('button')].find(b=>buttonId(b)===id);
+      if(!btn) return;
+      const [icon,text]=labels[id];
+      btn.dataset.menuId=id;
+      btn.setAttribute('onclick',`tab('${id}')`);
+      let ic=btn.querySelector(':scope > .menuIcon');
+      let tx=btn.querySelector(':scope > .menuText');
+      if(!ic || !tx){
+        btn.innerHTML='<span class="menuIcon" aria-hidden="true"></span><span class="menuText"></span>';
+        ic=btn.querySelector('.menuIcon');
+        tx=btn.querySelector('.menuText');
+      }
+      ic.textContent=icon;
+      tx.textContent=text;
+      btn.title=text;
+      if(id==='entrega'){
+        btn.querySelectorAll('.sideAlertBadge,.badgeCount,.alertBadge,.topAlertCount').forEach(x=>x.remove());
+      }
+    });
+
+    // Ordenar Entregas debajo de Embarques sin reconstruir el nav completo.
+    const emb=[...nav.querySelectorAll('button')].find(b=>buttonId(b)==='embarques');
+    if(emb && entregaBtn.previousElementSibling!==emb){
+      nav.insertBefore(entregaBtn, emb.nextElementSibling);
+    }
+    setVersionText();
+  }
+
+  function ensureEntregaPanel(){
+    let sec=document.getElementById('entrega');
+    if(sec) return sec;
+    sec=document.createElement('section');
+    sec.id='entrega';
+    sec.className='panel entregaPanel';
+    sec.innerHTML='<div class="sectionTitle"><h2>Entregas</h2><p>Seguimiento de flotas en tránsito</p></div><div id="entregaCards" class="entregaCards"></div>';
+    const emb=document.getElementById('embarques');
+    if(emb && emb.parentNode) emb.parentNode.insertBefore(sec, emb.nextSibling);
+    else (document.querySelector('.dashboardShell')||document.body).appendChild(sec);
+    return sec;
+  }
+
+  // Reemplazo limpio de navegación: NO llama a oldTab para evitar todos los wrappers duplicados.
+  window.tab=function(id){
+    try{
+      ensureMenuStable();
+      if(id==='entrega') ensureEntregaPanel();
+      const target=document.getElementById(id);
+      if(!target) return false;
+
+      const current=document.querySelector('.panel.active')?.id;
+      if(current===id){
+        ensureMenuStable();
+        return true;
+      }
+
+      document.querySelectorAll('.sideNav button').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+      const btn=[...document.querySelectorAll('.sideNav button')].find(b=>buttonId(b)===id);
+      if(btn) btn.classList.add('active');
+      target.classList.add('active');
+
+      if(id==='abm' && typeof window.renderABM==='function') window.renderABM();
+      if(id==='reportes' && typeof window.renderRep==='function') window.renderRep();
+      if(id==='unidades' && typeof window.renderUnits==='function') window.renderUnits();
+      if(id==='conductores' && typeof window.renderDrivers==='function') window.renderDrivers();
+      if(id==='clientes' && typeof window.renderClients==='function') window.renderClients();
+      if(id==='alertas' && typeof window.renderAlerts==='function') window.renderAlerts();
+      if(id==='embarques' && typeof window.renderEmbarquesV244==='function') window.renderEmbarquesV244();
+      if(id==='entrega' && typeof window.renderEntrega==='function') setTimeout(()=>window.renderEntrega(false),0);
+      if(id==='clima' && typeof window.ensureClimaDataAndRender==='function') window.ensureClimaDataAndRender(false);
+
+      ensureMenuStable();
+      return true;
+    }catch(e){
+      console.error('Error navegacion tab', id, e);
+      return false;
+    }
+  };
+
+  // Si algun parche anterior intenta reescribir el menu al cargar, lo normalizamos sin regenerar la vista.
+  let guard=false;
+  function guardedNormalize(){
+    if(guard) return;
+    guard=true;
+    try{ ensureMenuStable(); }finally{ guard=false; }
+  }
+  document.addEventListener('DOMContentLoaded',()=>{guardedNormalize(); setTimeout(guardedNormalize,300); setTimeout(guardedNormalize,1200);});
+  window.addEventListener('load',()=>{guardedNormalize(); setTimeout(guardedNormalize,500); setTimeout(guardedNormalize,1500);});
+  // Observador acotado solo al menu: corrige duplicados o cambios de icono sin tocar vistas.
+  const installObserver=()=>{
+    const nav=document.querySelector('.sideNav');
+    if(!nav || nav.__entregaStableObserver) return;
+    nav.__entregaStableObserver=true;
+    const mo=new MutationObserver(()=>{ setTimeout(guardedNormalize,0); });
+    mo.observe(nav,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['onclick','data-menu-id','class']});
+  };
+  document.addEventListener('DOMContentLoaded',installObserver);
+  window.addEventListener('load',installObserver);
+  setTimeout(installObserver,800);
 })();
