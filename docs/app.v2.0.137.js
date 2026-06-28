@@ -11209,54 +11209,123 @@ if(_refresh_v1250){
 })();
 
 
-/* ===== V2.0.137 - FIX SOLO ENTREGAS: evitar re-render/refresco si Entregas ya esta activa ===== */
+/* ===== V2.0.137 - FIX REAL: Entregas sin doble icono ni refresh, sin tocar inicio/tarjetas/filtros ===== */
 (function(){
+  'use strict';
   const VERSION='2.0.137';
-  function setVersion(){
-    try{window.ELTA_APP_VERSION=VERSION; window.APP_VERSION=VERSION; window.APP_VERSION_V2=VERSION;}catch(e){}
-    document.querySelectorAll('span,small,p,div,footer').forEach(el=>{
-      if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/i.test(el.textContent||'')){
-        el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/gi,'Versión '+VERSION);
+  const ENTREGA_ICON='🚛';
+  let internal=false;
+  function setVersion137(){
+    try{
+      window.ELTA_APP_VERSION=VERSION;
+      window.APP_VERSION_V2=VERSION;
+      document.title='ELTA ITS - Versión '+VERSION;
+      document.querySelectorAll('span,small,p,div,footer').forEach(function(el){
+        if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/i.test(el.textContent||'')){
+          el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/gi,'Versión '+VERSION);
+        }
+      });
+    }catch(e){}
+  }
+  function getNav(){return document.querySelector('.sideNav');}
+  function isEntregaBtn(b){
+    if(!b) return false;
+    const oc=String(b.getAttribute('onclick')||'');
+    const tx=String(b.textContent||'').trim().toLowerCase();
+    return (b.dataset && b.dataset.menuId==='entrega') || oc.indexOf('entrega')>=0 || tx==='entregas';
+  }
+  function setEntregaButton(btn){
+    if(!btn) return;
+    btn.type='button';
+    btn.dataset.menuId='entrega';
+    btn.setAttribute('onclick',"tab('entrega')");
+    btn.title='Entregas';
+    let ic=btn.querySelector('.menuIcon');
+    let tx=btn.querySelector('.menuText');
+    if(!ic || !tx){
+      btn.innerHTML='<span class="menuIcon" aria-hidden="true"></span><span class="menuText"></span>';
+      ic=btn.querySelector('.menuIcon');
+      tx=btn.querySelector('.menuText');
+    }
+    ic.textContent=ENTREGA_ICON;
+    tx.textContent='Entregas';
+  }
+  function normalizeEntregaMenu137(){
+    if(internal) return;
+    const nav=getNav(); if(!nav) return;
+    internal=true;
+    try{
+      const buttons=[].slice.call(nav.querySelectorAll('button'));
+      let entregaBtns=buttons.filter(isEntregaBtn);
+      let emb=[].slice.call(nav.querySelectorAll('button')).find(function(b){return String(b.getAttribute('onclick')||'').indexOf('embarques')>=0 || String(b.textContent||'').trim().toLowerCase()==='embarques';});
+      let keep=entregaBtns[0];
+      if(!keep){
+        keep=document.createElement('button');
+        if(emb) emb.insertAdjacentElement('afterend',keep); else nav.appendChild(keep);
       }
-    });
+      entregaBtns.forEach(function(b){if(b!==keep) b.remove();});
+      setEntregaButton(keep);
+      if(emb && emb.nextElementSibling!==keep) emb.insertAdjacentElement('afterend',keep);
+      setEntregaButton(keep);
+    }finally{internal=false;}
   }
-  function isEntregaActive(){
-    const p=document.getElementById('entrega');
-    return !!(p && p.classList.contains('active'));
+  function activatePanel(id){
+    document.querySelectorAll('.sideNav button').forEach(function(b){b.classList.remove('active');});
+    document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+    const nav=getNav();
+    if(nav){
+      const btn=[].slice.call(nav.querySelectorAll('button')).find(function(b){
+        const oc=String(b.getAttribute('onclick')||'');
+        return (id==='entrega' && isEntregaBtn(b)) || oc.indexOf("'"+id+"'")>=0 || oc.indexOf('"'+id+'"')>=0 || oc.indexOf(id)>=0;
+      });
+      if(btn) btn.classList.add('active');
+    }
+    const panel=document.getElementById(id);
+    if(panel) panel.classList.add('active');
   }
-  function markEntregaActive(){
-    document.querySelectorAll('.sideNav button').forEach(b=>{
-      const is=(b.dataset.menuId==='entrega') || ((b.getAttribute('onclick')||'').includes("tab('entrega')") || (b.getAttribute('onclick')||'').includes('tab(&quot;entrega&quot;)'));
-      if(is) b.classList.add('active');
-    });
-  }
-  function stabilizeEntregaButton(){
-    const nav=document.querySelector('.sideNav'); if(!nav) return;
-    const btn=[...nav.querySelectorAll('button')].find(b=>b.dataset.menuId==='entrega'||(b.getAttribute('onclick')||'').includes("tab('entrega')"));
-    if(btn){
-      btn.dataset.menuId='entrega';
-      btn.setAttribute('onclick',"tab('entrega')");
-      const mi=btn.querySelector('.menuIcon'); if(mi && mi.textContent!=='🚛') mi.textContent='🚛';
-      const mt=btn.querySelector('.menuText'); if(mt) mt.textContent='Entregas';
+  function ensureEntregaRenderedOnce(){
+    if(typeof window.renderEntrega==='function'){
+      try{ window.renderEntrega(false); }catch(e){ console.warn('renderEntrega',e); }
     }
   }
-  const previousTab=window.tab;
-  if(typeof previousTab==='function' && !previousTab.__sinRefreshEntrega20137){
+  const chainedTab=window.tab;
+  if(typeof chainedTab==='function' && !chainedTab.__entregaStable137){
     const stableTab=function(id){
-      if(id==='entrega' && isEntregaActive()){
-        stabilizeEntregaButton();
-        markEntregaActive();
-        setVersion();
+      id=String(id||'');
+      normalizeEntregaMenu137();
+      setVersion137();
+      if(id==='entrega'){
+        const panel=document.getElementById('entrega');
+        const already=panel && panel.classList.contains('active');
+        activatePanel('entrega');
+        if(!already || !panel || !panel.querySelector('#entregaCards')) ensureEntregaRenderedOnce();
+        setTimeout(function(){normalizeEntregaMenu137();setVersion137();},0);
         return false;
       }
-      const r=previousTab.apply(this, arguments);
-      stabilizeEntregaButton();
-      setVersion();
-      return r;
+      return chainedTab.apply(this,arguments);
     };
-    stableTab.__sinRefreshEntrega20137=true;
+    stableTab.__entregaStable137=true;
     window.tab=stableTab;
   }
-  document.addEventListener('DOMContentLoaded',()=>{stabilizeEntregaButton(); setVersion();});
-  window.addEventListener('load',()=>{stabilizeEntregaButton(); setVersion();});
+  function injectCss137(){
+    if(document.getElementById('fix-entrega-menu-137-css')) return;
+    const st=document.createElement('style');
+    st.id='fix-entrega-menu-137-css';
+    st.textContent=`
+      .sideNav button[data-menu-id="entrega"] .menuIcon,
+      .sideNav button[onclick*="entrega"] .menuIcon{font-size:0!important;line-height:1!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;min-width:24px!important;}
+      .sideNav button[data-menu-id="entrega"] .menuIcon:before,
+      .sideNav button[onclick*="entrega"] .menuIcon:before{content:'${ENTREGA_ICON}'!important;font-size:22px!important;line-height:1!important;}
+      #embarques .darkTable table td,#embarques .darkTable table th{padding-top:8px!important;padding-bottom:8px!important;font-size:13px!important;}
+      #embarques .darkTable .btn,#embarques button{min-height:34px;}
+    `;
+    document.head.appendChild(st);
+  }
+  function boot137(){injectCss137();normalizeEntregaMenu137();setVersion137();}
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot137); else boot137();
+  window.addEventListener('load',function(){boot137();setTimeout(boot137,250);});
+  const nav=getNav();
+  const obs=new MutationObserver(function(){ if(!internal) requestAnimationFrame(boot137); });
+  function startObs(){const n=getNav(); if(n) obs.observe(n,{childList:true,subtree:true,characterData:true});}
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',startObs); else startObs();
 })();
