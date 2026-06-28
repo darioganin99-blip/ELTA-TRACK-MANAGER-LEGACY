@@ -9863,8 +9863,9 @@ if(_refresh_v1250){
     btn.innerHTML='<span class="menuIcon">🏁</span><span class="menuText">Entregas</span>';
     const trans=[...nav.querySelectorAll('button')].find(b=>(b.getAttribute('onclick')||'').includes("tab('transitos')"));
     const emb=[...nav.querySelectorAll('button')].find(b=>(b.getAttribute('onclick')||'').includes("tab('embarques')"));
-    // Entregas va después de Tránsito. Embarques se mantiene sin cambios.
-    if(trans && trans.nextSibling!==btn) nav.insertBefore(btn, trans.nextSibling);
+    // Entregas va debajo de Embarques. Embarques se mantiene sin cambios.
+    if(emb && emb.nextSibling!==btn) nav.insertBefore(btn, emb.nextSibling);
+    else if(!emb && trans && trans.nextSibling!==btn) nav.insertBefore(btn, trans.nextSibling);
     if(emb){
       const txt=emb.querySelector('.menuText'); if(txt) txt.textContent='Embarques';
       emb.setAttribute('onclick',"tab('embarques')");
@@ -9898,7 +9899,7 @@ if(_refresh_v1250){
   function boot(){ensureEntregasMenu(); injectFinalCss(); setV();}
   document.addEventListener('DOMContentLoaded',boot); window.addEventListener('load',boot); setTimeout(boot,200); setTimeout(boot,900);
   const oldTab=window.tab; if(typeof oldTab==='function'&&!oldTab.__v2108){
-    const f=function(id){boot(); const r=oldTab.apply(this,arguments); boot(); if(id==='entrega'&&typeof window.renderEntrega==='function') setTimeout(()=>window.renderEntrega(false),50); return r;}; f.__v2108=true; window.tab=f;
+    const f=function(id){boot(); const r=oldTab.apply(this,arguments); setTimeout(boot,0); return r;}; f.__v2108=true; window.tab=f;
   }
 })();
 
@@ -10195,7 +10196,7 @@ if(_refresh_v1250){
   function menuOrder114(){
     const nav=document.querySelector('.sideNav'); if(!nav)return;
     let entrega=[...nav.querySelectorAll('button')].find(b=>b.dataset.menuId==='entrega'||(b.getAttribute('onclick')||'').includes("tab('entrega')"));
-    if(entrega){ entrega.dataset.menuId='entrega'; entrega.setAttribute('onclick',"tab('entrega')"); entrega.innerHTML='<span class="menuIcon">🚛</span><span class="menuText">Entregas</span>'; }
+    if(entrega){ entrega.dataset.menuId='entrega'; entrega.setAttribute('onclick',"tab('entrega')"); entrega.innerHTML='<span class="menuIcon">🏁</span><span class="menuText">Entregas</span>'; }
     const emb=[...nav.querySelectorAll('button')].find(b=>(b.getAttribute('onclick')||'').includes("tab('embarques')"));
     if(emb && entrega && emb.nextSibling!==entrega) emb.parentNode.insertBefore(entrega, emb.nextSibling);
   }
@@ -10227,7 +10228,7 @@ if(_refresh_v1250){
   }
   const prevTab=window.tab;
   if(typeof prevTab==='function' && !prevTab.__v20114Final){
-    const t=function(id){boot114(); const r=prevTab.apply(this,arguments); boot114(); if(id==='entrega') setTimeout(()=>{ if(typeof window.renderEntrega==='function') window.renderEntrega(false); boot114(); },80); return r;};
+    const t=function(id){const r=prevTab.apply(this,arguments); setTimeout(boot114,0); return r;};
     t.__v20114Final=true; window.tab=t;
   }
   document.addEventListener('DOMContentLoaded',()=>{boot114(); setTimeout(boot114,300); setTimeout(boot114,900);});
