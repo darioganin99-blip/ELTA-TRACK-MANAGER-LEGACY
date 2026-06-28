@@ -4395,7 +4395,7 @@ if(_refresh_v1250){
   }
   function normalizeMenu(){
     const menuMap=[
-      ['dash','🏠','Torre de Control'],['transitos','🚚','Tránsitos'],['entrega','🚚','Entregas'],['mapa','📍','Seguimiento'],['clima','🌦️','Clima'],
+      ['dash','🏠','Torre de Control'],['transitos','🚚','Tránsitos'],['entrega','🏁','Entregas'],['mapa','📍','Seguimiento'],['clima','🌦️','Clima'],
       ['unidades','🚛','Unidades / Choferes'],['alertas','🔔','Alertas'],['clientes','🏢','Clientes / Destinos'],['abm','⚙️','Configuración']
     ];
     menuMap.forEach(([id,icon,text])=>{
@@ -5009,7 +5009,7 @@ if(_refresh_v1250){
     document.title='ITS Intelligent Traffic System';
   }
   function normalizeMenu(){
-    const map=[['dash','🏠','Torre de Control'],['transitos','🚚','Tránsitos'],['mapa','📍','Seguimiento'],['clima','🌦️','Clima'],['alertas','🔔','Alertas'],['embarques','📦','Embarques'],['entrega','🚚','Entregas'],['unidades','🚛','Unidades / Choferes'],['clientes','🏢','Clientes / Destinos'],['abm','⚙️','Configuración']];
+    const map=[['dash','🏠','Torre de Control'],['transitos','🚚','Tránsitos'],['mapa','📍','Seguimiento'],['clima','🌦️','Clima'],['alertas','🔔','Alertas'],['embarques','📦','Embarques'],['entrega','🏁','Entregas'],['unidades','🚛','Unidades / Choferes'],['clientes','🏢','Clientes / Destinos'],['abm','⚙️','Configuración']];
     map.forEach(([id,ic,txt])=>{const b=document.querySelector(`.sideNav button[onclick*="${id}"]`); if(b){b.innerHTML=`<span class="menuIcon">${ic}</span><span class="menuText">${txt}</span>`; b.title=txt;}});
   }
 
@@ -7149,7 +7149,7 @@ if(_refresh_v1250){
     ['clima','🌦️','Clima'],
     ['alertas','🔔','Alertas'],
     ['embarques','📦','Embarques'],
-    ['entrega','🚚','Entregas'],
+    ['entrega','🏁','Entregas'],
     ['unidades','🚛','Unidades / Choferes'],
     ['clientes','🏢','Clientes / Destinos'],
     ['abm','⚙️','Configuración']
@@ -9411,8 +9411,313 @@ if(_refresh_v1250){
   document.head.appendChild(css);
 })();
 
+/* ===== V2.0.134 - MENU LATERAL ESTABLE: sin intervalos ni reescrituras repetidas ===== */
+(function(){
+  const VERSION='2.0.134';
+  window.ELTA_APP_VERSION=VERSION;
+  window.APP_VERSION_V2=VERSION;
+  const MENU=[
+    ['dash','🏠','Torre de Control'],
+    ['transitos','🚚','Tránsitos'],
+    ['entrega','🏁','Entregas'],
+    ['mapa','📍','Seguimiento'],
+    ['clima','🌦️','Clima'],
+    ['unidades','🚛','Unidades / Choferes'],
+    ['alertas','🔔','Alertas'],
+    ['embarques','📦','Embarques'],
+    ['clientes','🏢','Clientes / Destinos'],
+    ['abm','⚙️','Configuración']
+  ];
+  function setVersion(){
+    document.querySelectorAll('span,small,p,div,footer').forEach(el=>{
+      if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/.test(el.textContent||'')){
+        el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/g,'Versión '+VERSION);
+      }
+    });
+  }
+  function ensureMenuMarkup(){
+    MENU.forEach(([id,icon,text])=>{
+      const btn=[...document.querySelectorAll('.sideNav button')].find(b=>(b.getAttribute('onclick')||'').includes(id));
+      if(!btn) return;
+      let ic=btn.querySelector(':scope > .menuIcon');
+      let tx=btn.querySelector(':scope > .menuText');
+      if(!ic || !tx){
+        btn.innerHTML='<span class="menuIcon" aria-hidden="true"></span><span class="menuText"></span>';
+        ic=btn.querySelector('.menuIcon');
+        tx=btn.querySelector('.menuText');
+      }
+      ic.textContent=icon;
+      tx.textContent=text;
+      btn.title=text;
+      btn.querySelectorAll('.sideAlertBadge,.badgeCount,.alertBadge,.topAlertCount').forEach(x=>x.remove());
+    });
+    setVersion();
+  }
+  window.normalizeSideMenuStable=ensureMenuMarkup;
+  window.toggleSidebar=function(){
+    document.body.classList.toggle('sidebarCollapsed');
+    ensureMenuMarkup();
+  };
+  const oldTab=window.tab;
+  if(typeof oldTab==='function'){
+    window.tab=function(){
+      const r=oldTab.apply(this,arguments);
+      ensureMenuMarkup();
+      return r;
+    };
+  }
+  document.addEventListener('DOMContentLoaded',ensureMenuMarkup);
+  window.addEventListener('load',ensureMenuMarkup);
+  setTimeout(ensureMenuMarkup,100);
+})();
 
-/* ===== V2.0.134 - ENTREGAS ESTABLE: sin duplicados, sin reescrituras de menu ===== */
+/* ===== V2.0.134 - Entrega por flota, compacta y con aduanas por pais destino ===== */
+(function(){
+  const VERSION='2.0.134';
+  window.ELTA_APP_VERSION=VERSION;
+  window.APP_VERSION_V2=VERSION;
+
+  const esc=(v)=>String(v??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+  const low=(v)=>String(v??'').trim().toLowerCase();
+  const txt=(v,def='-')=>{const s=String(v??'').trim(); return s||def;};
+  const arr=(name)=>Array.isArray(window[name])?window[name]:(typeof globalThis[name]!=='undefined'&&Array.isArray(globalThis[name])?globalThis[name]:[]);
+  const docId=(o)=>txt(o?._docId||o?.id||o?.numero||o?.embarque,'');
+  const clean=(v)=>txt(v,'').replace(/_/g,' ').trim();
+  const fmt=(v)=>{try{if(!v)return '-'; if(v?.toDate)v=v.toDate(); const d=new Date(v); if(isNaN(d))return String(v); return d.toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}catch(e){return String(v||'-');}};
+
+  function setVersion(){
+    document.querySelectorAll('span,small,p,div,footer').forEach(el=>{
+      if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/.test(el.textContent||'')){
+        el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/g,'Versión '+VERSION);
+      }
+    });
+  }
+  function countryOf(v){
+    const s=low(v);
+    if(s.includes('brasil')||s.includes('brazil')||s.includes('sao paulo')||s.includes('curitiba'))return 'brasil';
+    if(s.includes('paraguay')||s.includes('py')||s.includes('falcon')||s.includes('falcón')||s.includes('asuncion')||s.includes('asunción'))return 'paraguay';
+    if(s.includes('uruguay')||s.includes('uy')||s.includes('montevideo')||s.includes('sevel'))return 'uruguay';
+    if(s.includes('chile')||s.includes('cl')||s.includes('stli')||s.includes('los andes')||s.includes('libertadores'))return 'chile';
+    if(s.includes('arg')||s.includes('ar')||s.includes('zarate')||s.includes('zárate')||s.includes('fca')||s.includes('cordoba')||s.includes('córdoba'))return 'argentina';
+    return '';
+  }
+  function flagFor(v){
+    const c=countryOf(v);
+    if(c==='argentina')return '🇦🇷';
+    if(c==='paraguay')return '🇵🇾';
+    if(c==='uruguay')return '🇺🇾';
+    if(c==='chile')return '🇨🇱';
+    if(c==='brasil')return '🇧🇷';
+    return '🌐';
+  }
+  function countryCode(v){
+    const c=countryOf(v);
+    return c==='argentina'?'AR':c==='paraguay'?'PY':c==='uruguay'?'UY':c==='chile'?'CL':c==='brasil'?'BR':'--';
+  }
+  function statusFor(t,e){
+    const s=low(t?.estado||t?.status||e?.estado||e?.status||'');
+    if(s.includes('final')||s.includes('cerr')||t?.closed||t?.cierre)return {txt:'FINALIZADO',cls:'done'};
+    if(s.includes('aduana'))return {txt:'EN ADUANA',cls:'customs'};
+    if(s.includes('program'))return {txt:'PROGRAMADO',cls:'planned'};
+    return {txt:'EN TRÁNSITO',cls:'open'};
+  }
+  function trEmb(t){return txt(t?.embarque||t?.emb||t?.embarqueId||t?.numeroEmbarque,'');}
+  function trFleet(t){return txt(t?.flota||t?.fleet||t?.usuario||t?.user||t?.driver?.flota,'');}
+  function route(t){if(typeof ruta==='function'){try{return ruta(t)||{};}catch(e){}} return t?.ruta||t?.route||{};}
+  function lastTime(t){return t?.updatedAt||t?.lastUpdate||t?.lastReport||t?.ultimoReporte||t?.fechaActualizacion||t?.start?.time||t?.start||'';}
+  function embValue(e){return txt(e?.numero||e?.embarque||e?.idEmbarque||e?.codigo||docId(e),'');}
+  function embCliente(e){return txt(e?.cliente||e?.client||'');}
+  function embOrigen(e){return txt(e?.origen||e?.origin||'');}
+  function embDestino(e){return txt(e?.destino||e?.destination||'');}
+  function embFecha(e){return e?.fecha||e?.fechaHora||e?.createdAt||e?.start||'';}
+  function elapsed(v){
+    try{if(!v)return '-'; if(v?.toDate)v=v.toDate(); const d=new Date(v); if(isNaN(d))return '-'; const ms=Date.now()-d.getTime(); if(ms<0)return '-'; const h=Math.floor(ms/3600000), days=Math.floor(h/24), hrs=h%24, min=Math.floor((ms%3600000)/60000); return (days?days+' d ':'')+hrs+' h '+min+' m';}catch(e){return '-';}
+  }
+
+  function ensureMenu(){
+    const nav=document.querySelector('.sideNav'); if(!nav)return;
+    let btn=nav.querySelector('button[data-menu-id="entrega"]')||[...nav.querySelectorAll('button')].find(b=>(b.getAttribute('onclick')||'').includes('entrega'));
+    if(!btn){
+      btn=document.createElement('button'); btn.type='button'; btn.setAttribute('onclick',"tab('entrega')"); btn.setAttribute('data-menu-id','entrega');
+      btn.innerHTML='<span class="menuIcon">🏁</span><span class="menuText">Entregas</span>';
+      const trans=[...nav.querySelectorAll('button')].find(b=>(b.getAttribute('onclick')||'').includes('transitos'));
+      const next=trans?trans.nextSibling:null;
+      if(trans&&next)nav.insertBefore(btn,next); else if(trans)nav.appendChild(btn); else nav.appendChild(btn);
+    }else{
+      btn.setAttribute('onclick',"tab('entrega')"); btn.setAttribute('data-menu-id','entrega');
+      const mi=btn.querySelector('.menuIcon')||document.createElement('span'); mi.className='menuIcon'; mi.textContent='🚛';
+      const mt=btn.querySelector('.menuText')||document.createElement('span'); mt.className='menuText'; mt.textContent='Entregas';
+      if(!btn.querySelector('.menuIcon')||!btn.querySelector('.menuText')){btn.innerHTML='';btn.append(mi,mt);}    
+    }
+  }
+
+  function ensurePanel(){
+    if(document.getElementById('entrega'))return;
+    const sec=document.createElement('section'); sec.id='entrega'; sec.className='panel entregaPanel';
+    sec.innerHTML=`
+      <div class="sectionTitle entregaHeader"><div><h2>Entregas</h2><p>Seguimiento de flotas en tránsito</p></div><button type="button" class="entregaRefreshBtn" onclick="window.renderEntrega && window.renderEntrega(true)">Actualizar</button></div>
+      <div class="entregaToolbar glassPanel">
+        <label>Cliente<select id="entregaFiltroCliente"><option value="">Todos</option></select></label>
+        <label>Embarque<select id="entregaFiltroEmbarque"><option value="">Todos</option></select></label>
+        <label>Destino<select id="entregaFiltroDestino"><option value="">Todos</option></select></label>
+        <label>Flota<select id="entregaFiltroFlota"><option value="">Todos</option></select></label>
+        <label>Estado<select id="entregaFiltroEstado"><option value="">Todos</option><option>EN TRÁNSITO</option><option>EN ADUANA</option><option>PROGRAMADO</option><option>FINALIZADO</option></select></label>
+      </div>
+      <div id="entregaCards" class="entregaCards"></div>`;
+    const emb=document.getElementById('embarques');
+    if(emb&&emb.parentNode)emb.parentNode.insertBefore(sec,emb.nextSibling); else document.querySelector('.dashboardShell')?.appendChild(sec);
+  }
+
+  async function readAduana(){
+    if(Array.isArray(window.aduana)&&window.aduana.length)return window.aduana;
+    try{if(typeof read==='function'){window.aduana=await read('aduana');return window.aduana;}}catch(e){}
+    try{if(typeof db!=='undefined'&&db&&db.collection){const s=await db.collection('aduana').get();window.aduana=s.docs.map(d=>({id:d.id,_docId:d.id,...d.data()}));return window.aduana;}}catch(e){}
+    return [];
+  }
+  async function ensureData(force=false){
+    try{if(force||!arr('trs').length||!arr('embarques').length){if(typeof refresh==='function') await refresh();}}catch(e){}
+    await readAduana();
+  }
+
+  function buildRows(){
+    const embs=arr('embarques'), trs=arr('trs');
+    const embMap=new Map();
+    embs.forEach(e=>{const n=embValue(e); if(n)embMap.set(String(n),e);});
+    const groups=new Map();
+    trs.forEach(t=>{
+      const fl=trFleet(t); if(!fl)return;
+      const n=trEmb(t); const e=embMap.get(String(n))||{}; const rt=route(t)||{};
+      const key=String(fl);
+      if(!groups.has(key))groups.set(key,{flota:key,items:[]});
+      groups.get(key).items.push({t,e,rt,numero:n});
+    });
+    // Fallback: embarques con flota pero sin tránsito.
+    embs.forEach(e=>{
+      const fl=txt(e.flota||e.flotas,''); if(!fl)return;
+      String(fl).split(',').map(x=>x.trim()).filter(Boolean).forEach(f=>{
+        if(!groups.has(f))groups.set(f,{flota:f,items:[]});
+        if(!groups.get(f).items.length)groups.get(f).items.push({t:{},e,rt:{},numero:embValue(e)});
+      });
+    });
+    return [...groups.values()].map(g=>{
+      g.items.sort((a,b)=>String(lastTime(b.t)||embFecha(b.e)||b.numero).localeCompare(String(lastTime(a.t)||embFecha(a.e)||a.numero),'es',{numeric:true}));
+      const it=g.items[0]||{}, t=it.t||{}, e=it.e||{}, rt=it.rt||{};
+      const embNums=[...new Set(g.items.map(x=>x.numero).filter(Boolean))];
+      return {
+        flota:g.flota,
+        numero:txt(it.numero||embValue(e),''),
+        embarques:embNums,
+        cliente:txt(embCliente(e)||rt.cliente||t.cliente,''),
+        origen:txt(embOrigen(e)||rt.origen||t.origen,'Centro Logístico Zárate'),
+        destino:txt(embDestino(e)||rt.destino||t.destino,''),
+        fecha:embFecha(e)||t.fecha||t.start?.time||t.start||'',
+        mic:txt(e.mic||t.mic||t.nroMic||'-'),
+        crt:txt(e.crt||t.crt||t.nroCrt||'-'),
+        transit:t, emb:e, count:embNums.length||g.items.length||1,
+        estado:statusFor(t,e).txt
+      };
+    }).sort((a,b)=>String(a.flota).localeCompare(String(b.flota),'es',{numeric:true}));
+  }
+
+  function aduanaFor(row){
+    const destCountry=countryOf(row.destino);
+    let ads=(window.aduana||[]).filter(a=>a&&a.activo!==false);
+    const match=ads.filter(a=>{
+      const p=countryOf(a.pais||a.destino||'');
+      return destCountry && p===destCountry;
+    });
+    if(match.length)ads=match;
+    ads=ads.sort((a,b)=>(Number(a.orden)||99)-(Number(b.orden)||99));
+    return ads.map(a=>clean(a.nombre||a.name||a.id||a._docId||a.destino)).filter(Boolean);
+  }
+  function stageList(row){
+    let middle=aduanaFor(row);
+    if(!middle.length){
+      const d=countryOf(row.destino);
+      if(d==='paraguay')middle=['Depósito Fiscal Paraguay','Fray Bentos','Gualeguaychú','Puerto José Falcón'];
+      else if(d==='chile')middle=['Uspallata','Los Andes'];
+      else if(d==='uruguay')middle=['Fray Bentos'];
+      else middle=['Control operativo'];
+    }
+    return [txt(row.origen,'Origen'),...middle,txt(row.destino,'Lugar de entrega')].slice(0,7);
+  }
+  function progressIndex(row,stages){
+    const s=low(row.transit?.estado||row.emb?.estado||'');
+    if(s.includes('final')||s.includes('cerr'))return stages.length-1;
+    if(s.includes('aduana'))return Math.min(2,stages.length-1);
+    if(row.transit&&Object.keys(row.transit).length)return Math.min(1,stages.length-1);
+    return 0;
+  }
+  function carCarrier(cls=''){ return `<img class="entregaCarrierImg ${cls}" src="assets/camion-automobilero.png" alt="Camión automobilero">`; }
+  function card(row){
+    const stages=stageList(row), st=statusFor(row.transit,row.emb), pi=progressIndex(row,stages);
+    const fromFlag=flagFor(row.origen), toFlag=flagFor(row.destino), fc=countryCode(row.origen), tc=countryCode(row.destino);
+    const updated=fmt(lastTime(row.transit)||row.fecha), elapsedText=elapsed(row.fecha||lastTime(row.transit));
+    const pct=Math.max(0,Math.min(100,(pi/(Math.max(1,stages.length-1)))*100));
+    return `<article class="entregaCard">
+      <div class="entregaTop">
+        <div class="entregaFleet"><span class="entregaFleetIcon">🚛</span><div><h3>Flota ${esc(row.flota)}</h3><span class="entregaStatus ${st.cls}">${esc(st.txt)}</span><small>Emb. ${esc(row.embarques.join(', ')||row.numero||'-')}</small></div></div>
+        <div class="entregaMeta"><span>Última act.</span><b>${esc(updated)}</b></div>
+        <div class="entregaMeta"><span>Tiempo transcurrido</span><b>${esc(elapsedText)}</b></div>
+        <div class="entregaMeta"><span>Próximo hito</span><b>${esc(stages[Math.min(pi+1,stages.length-1)]||'-')}</b></div>
+        <div class="entregaMeta"><span>Estado</span><b class="state ${st.cls}">${esc(st.txt)}</b></div>
+        <div class="entregaFlags"><strong>${esc(fc)} › ${esc(tc)}</strong><div><span>${fromFlag}</span><i>›</i><span>${toFlag}</span></div></div>
+      </div>
+      <div class="entregaTimeline">
+        <div class="entregaLine"><i style="width:${pct}%"></i></div>
+        ${stages.map((s,i)=>`<div class="entregaStep ${i<=pi?'done':''} ${i===pi?'current':''}" style="left:${(i/(stages.length-1))*100}%"><b>${esc(s)}</b><em>${esc(i===0?fmt(row.fecha):(i===pi?updated:'-'))}</em></div>`).join('')}
+        <div class="entregaVehicle" style="left:${pct}%">${carCarrier(st.cls)}</div>
+      </div>
+      <div class="entregaBottom"><span><b>Actualizado:</b> ${esc(updated)}</span><span><b>Tiempo transcurrido:</b> ${esc(elapsedText)}</span><span><b>Próximo hito:</b> ${esc(stages[Math.min(pi+1,stages.length-1)]||'-')}</span><span><b>Estado:</b> ${esc(st.txt)}</span></div>
+    </article>`;
+  }
+  function fillFilters(rows){
+    const defs=[['entregaFiltroCliente','cliente','Todos'],['entregaFiltroEmbarque','embarques','Todos'],['entregaFiltroDestino','destino','Todos'],['entregaFiltroFlota','flota','Todos']];
+    defs.forEach(([id,key,all])=>{
+      const sel=document.getElementById(id); if(!sel)return; const cur=sel.value;
+      let vals=[];
+      if(key==='embarques') vals=[...new Set(rows.flatMap(r=>r.embarques||[]).filter(Boolean))]; else vals=[...new Set(rows.map(r=>txt(r[key],'')).filter(Boolean))];
+      vals=vals.sort((a,b)=>String(a).localeCompare(String(b),'es',{numeric:true}));
+      sel.innerHTML=`<option value="">${all}</option>`+vals.map(v=>`<option value="${esc(v)}">${key==='embarques'?'Emb. ':''}${esc(v)}</option>`).join('');
+      sel.value=vals.includes(cur)?cur:''; sel.onchange=()=>window.renderEntrega(false);
+    });
+    const es=document.getElementById('entregaFiltroEstado'); if(es)es.onchange=()=>window.renderEntrega(false);
+  }
+  window.renderEntrega=async function(force=false){
+    ensureMenu(); ensurePanel(); injectCss(); setVersion();
+    await ensureData(force);
+    let rows=buildRows(); fillFilters(rows);
+    const fc=low(document.getElementById('entregaFiltroCliente')?.value), fe=low(document.getElementById('entregaFiltroEmbarque')?.value), fd=low(document.getElementById('entregaFiltroDestino')?.value), ff=low(document.getElementById('entregaFiltroFlota')?.value), fs=low(document.getElementById('entregaFiltroEstado')?.value);
+    rows=rows.filter(r=>(!fc||low(r.cliente)===fc)&&(!fe||(r.embarques||[]).some(e=>low(e)===fe))&&(!fd||low(r.destino)===fd)&&(!ff||low(r.flota)===ff)&&(!fs||low(r.estado)===fs));
+    const box=document.getElementById('entregaCards'); if(!box)return;
+    box.innerHTML=rows.length?rows.map(card).join(''):'<div class="glassPanel entregaEmpty">No hay flotas para el filtro seleccionado.</div>';
+  };
+
+  function injectCss(){
+    document.getElementById('entrega-v2096-css')?.remove();
+    if(document.getElementById('entrega-v2097-css'))return;
+    const css=document.createElement('style'); css.id='entrega-v2097-css';
+    css.textContent=`
+      #entrega .entregaHeader{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}.entregaRefreshBtn{height:42px;border-radius:12px;border:1px solid rgba(76,175,67,.72);background:#1d6d2f;color:#d8ffd0;font-weight:900;padding:0 22px}.entregaToolbar{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;padding:12px 14px;margin-bottom:14px}.entregaToolbar label{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center;font-weight:800;color:#dce6f1}.entregaToolbar select{height:40px;border-radius:10px;border:1px solid rgba(148,163,184,.30);background:#102033;color:#fff;padding:0 12px;font-weight:800}.entregaCards{display:flex;flex-direction:column;gap:12px}.entregaCard{border:1px solid rgba(148,163,184,.24);background:linear-gradient(135deg,rgba(13,30,45,.97),rgba(8,20,33,.94));border-radius:15px;padding:14px 16px;box-shadow:0 14px 28px rgba(0,0,0,.22)}.entregaCard:nth-child(even){background:linear-gradient(135deg,rgba(18,37,54,.97),rgba(10,23,36,.94))}.entregaTop{display:grid;grid-template-columns:1.25fr repeat(4,1fr) .85fr;gap:12px;align-items:center}.entregaFleet{display:flex;align-items:center;gap:12px}.entregaFleetIcon{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(32,156,48,.25);border:1px solid rgba(82,255,96,.42);font-size:21px}.entregaFleet h3{margin:0;font-size:22px;line-height:1;color:#f8fafc}.entregaFleet small{display:block;margin-top:6px;color:#cbd5e1;font-size:12px}.entregaStatus{display:inline-block;margin-top:5px;padding:4px 9px;border-radius:7px;font-size:11px;font-weight:900}.entregaStatus.open{background:#155d2d;color:#9dff7e}.entregaStatus.done{background:#475569;color:#e5e7eb}.entregaStatus.planned{background:#0b4a8f;color:#93c5fd}.entregaStatus.customs{background:#6b4e12;color:#fde68a}.entregaMeta{border-left:1px solid rgba(148,163,184,.18);padding-left:12px;min-width:0}.entregaMeta span{display:block;font-size:12px;color:#dbeafe;margin-bottom:3px}.entregaMeta b{display:block;color:#f8fafc;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.entregaMeta b.state.open{color:#7cff63}.entregaMeta b.state.planned{color:#60a5fa}.entregaMeta b.state.customs{color:#fbbf24}.entregaFlags{text-align:center}.entregaFlags strong{display:block;color:#f8fafc;font-size:15px;letter-spacing:.05em;margin-bottom:5px}.entregaFlags div{display:flex;gap:8px;align-items:center;justify-content:center;font-size:21px}.entregaFlags i{font-style:normal;color:#e2e8f0}.entregaTimeline{position:relative;height:88px;margin-top:10px;padding:8px 24px 0}.entregaLine{position:absolute;left:26px;right:26px;top:36px;height:2px;background:rgba(226,232,240,.75);border-radius:10px;overflow:hidden}.entregaLine i{display:block;height:100%;background:linear-gradient(90deg,#22c55e,#84cc16,#f97316);border-radius:10px}.entregaStep{position:absolute;top:20px;transform:translateX(-50%);text-align:center;min-width:108px}.entregaStep b{display:block;margin-top:12px;color:#f8fafc;font-size:10px;text-transform:uppercase;line-height:1.15;white-space:normal}.entregaStep em{display:block;margin-top:5px;color:#cbd5e1;font-size:10px;font-style:normal}.entregaStep::after{content:'';position:absolute;left:50%;top:8px;width:12px;height:12px;border-radius:50%;transform:translateX(-50%);border:2px solid #e2e8f0;background:#0b1b2b}.entregaStep.done::after{border-color:#22c55e;background:#22c55e}.entregaStep.current::after{border-color:#fb923c;background:#fb923c;box-shadow:0 0 0 5px rgba(249,115,22,.16)}.entregaVehicle{position:absolute;top:14px;transform:translateX(-50%);filter:drop-shadow(0 8px 10px rgba(0,0,0,.45));z-index:2}.entregaCarrier{display:inline-flex;gap:0;font-size:25px;line-height:1;align-items:center;color:#22c55e}.entregaCarrier.customs{filter:hue-rotate(45deg)}.entregaCarrier.planned{filter:hue-rotate(165deg)}.entregaBottom{display:grid;grid-template-columns:1.1fr 1.1fr 1.1fr .8fr;gap:10px;margin-top:6px;padding:9px 12px;border-radius:11px;background:rgba(255,255,255,.035);border:1px solid rgba(148,163,184,.12);color:#dbeafe;font-size:13px}.entregaBottom span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.entregaBottom b{color:#9dff7e}.entregaEmpty{padding:22px;color:#cbd5e1;font-weight:800}@media(max-width:1250px){.entregaToolbar{grid-template-columns:1fr 1fr}.entregaTop{grid-template-columns:1fr 1fr}.entregaFlags{text-align:left}.entregaFlags div{justify-content:flex-start}.entregaBottom{grid-template-columns:1fr}.entregaTimeline{overflow-x:auto}}
+    `;
+    document.head.appendChild(css);
+  }
+
+  function boot(){ensureMenu();ensurePanel();injectCss();setVersion();}
+  const oldTab=window.tab;
+  if(typeof oldTab==='function'){
+    window.tab=function(id){boot(); const r=oldTab.apply(this,arguments); if(id==='entrega')setTimeout(()=>window.renderEntrega(false),30); return r;};
+  }
+  const oldRefresh=window.refresh;
+  if(typeof oldRefresh==='function'){
+    window.refresh=async function(){const r=await oldRefresh.apply(this,arguments); if(document.getElementById('entrega')?.classList.contains('active')) window.renderEntrega(false); return r;};
+  }
+  document.addEventListener('DOMContentLoaded',boot);
+  window.addEventListener('load',()=>{boot(); if(document.getElementById('entrega')?.classList.contains('active')) window.renderEntrega(false);});
+  setTimeout(boot,150);
+})();
+
+/* ===== V2.0.134 - Entrega: flota, banderas por pais, aduanas por destino, compacto ===== */
 (function(){
   const VERSION='2.0.134';
   window.ELTA_APP_VERSION=VERSION;
@@ -9420,77 +9725,27 @@ if(_refresh_v1250){
   const esc=(v)=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   const S=(v)=>String(v??'').trim();
   const L=(v)=>S(v).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-  const arr=(n)=>Array.isArray(window[n])?window[n]:(typeof globalThis[n]!=='undefined'&&Array.isArray(globalThis[n])?globalThis[n]:[]);
-  const field=(o,keys)=>{for(const k of keys){const v=o?.[k]; if(v!==undefined&&v!==null&&S(v)!=='') return v;} return '';};
+  const arr=(n)=>Array.isArray(window[n])?window[n]:[];
   const idOf=(o)=>S(o?._docId||o?.id||o?.numero||o?.embarque||'');
+  const field=(o,keys)=>{for(const k of keys){const v=o?.[k]; if(v!==undefined&&v!==null&&S(v)!=='')return v;} return '';};
   const fmt=(v)=>{try{if(!v)return '-'; if(v?.toDate)v=v.toDate(); const d=new Date(v); if(isNaN(d))return S(v)||'-'; return d.toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}catch(e){return S(v)||'-';}};
   const shortFmt=(v)=>{try{if(!v)return '-'; if(v?.toDate)v=v.toDate(); const d=new Date(v); if(isNaN(d))return S(v)||'-'; return d.toLocaleString('es-AR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}catch(e){return S(v)||'-';}};
   function setVersion(){
-    document.querySelectorAll('span,small,p,div,footer,title').forEach(el=>{
-      if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/.test(el.textContent||'')){
-        el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/g,'Versión '+VERSION);
-      }
-    });
-    document.title='ELTA ITS - Versión '+VERSION;
-  }
-  function normalizeEntregasMenu(){
-    const nav=document.querySelector('.sideNav'); if(!nav)return;
-    const matches=[...nav.querySelectorAll('button')].filter(b=>{
-      const oc=b.getAttribute('onclick')||'';
-      return b.dataset.menuId==='entrega'||oc.includes("tab('entrega')")||oc.includes('tab(\"entrega\")')||/entregas/i.test(b.textContent||'');
-    });
-    let btn=matches[0];
-    matches.slice(1).forEach(b=>b.remove());
-    if(!btn){
-      btn=document.createElement('button');
-      btn.type='button';
-      btn.dataset.menuId='entrega';
-      btn.setAttribute('onclick',"tab('entrega')");
-      btn.innerHTML='<span class="menuIcon">🚚</span><span class="menuText">Entregas</span>';
-    }
-    btn.dataset.menuId='entrega';
-    btn.setAttribute('onclick',"tab('entrega')");
-    btn.innerHTML='<span class="menuIcon">🚚</span><span class="menuText">Entregas</span>';
-    btn.title='Entregas';
-    const emb=[...nav.querySelectorAll('button')].find(b=>(b.getAttribute('onclick')||'').includes("tab('embarques')"));
-    if(emb && emb.nextSibling!==btn) nav.insertBefore(btn, emb.nextSibling);
-    else if(!emb && !btn.parentNode) nav.appendChild(btn);
-  }
-  function ensurePanel(){
-    let sec=document.getElementById('entrega');
-    if(!sec){
-      sec=document.createElement('section'); sec.id='entrega'; sec.className='panel entregaPanel';
-      const emb=document.getElementById('embarques');
-      const parent=(emb&&emb.parentNode)||document.querySelector('.dashboardShell')||document.body;
-      parent.insertBefore(sec, emb?emb.nextSibling:null);
-    }
-    if(!sec.dataset.entregaStable){
-      sec.dataset.entregaStable='1';
-      sec.innerHTML=`<div class="sectionTitle entregaHeader"><div><h2>Entregas</h2><p>Seguimiento de flotas en tránsito</p></div><button type="button" class="entregaRefreshBtn" onclick="window.renderEntrega&&window.renderEntrega(true)">Actualizar</button></div>
-        <div class="entregaToolbar glassPanel">
-          <select id="entregaFiltroEmbarque"><option value="">Embarque</option></select>
-          <select id="entregaFiltroFlota"><option value="">Todas las flotas</option></select>
-          <select id="entregaFiltroCliente"><option value="">Todos los clientes</option></select>
-          <select id="entregaFiltroEstado"><option value="">Todos</option><option value="en transito">En tránsito</option><option value="cerrado">Cerrado</option></select>
-        </div>
-        <div id="entregaCards" class="entregaCards"></div>`;
-    }
-    return sec;
+    document.querySelectorAll('span,small,p,div,footer').forEach(el=>{if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/.test(el.textContent||'')){el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/g,'Versión '+VERSION);}});
   }
   function countryOf(v){
     const s=L(v);
-    if(/(chile|stli|los andes|libertadores|santiago)/.test(s))return 'chile';
-    if(/(paraguay|asuncion|puerto jose falcon|jose falcon|falcon|clorinda|garden)/.test(s))return 'paraguay';
-    if(/(uruguay|montevideo|fray bentos|uy)/.test(s))return 'uruguay';
-    if(/(brasil|brazil|sao paulo|curitiba|br)/.test(s))return 'brasil';
-    if(/(argentina|arg|zarate|zarate|cordoba|cordoba|clz|clc|centro logistico|fca|ar)/.test(s))return 'argentina';
+    if(/\b(chile|stli|santiago|pudahuel|los andes|libertadores|cristoredentor|cristo redentor)\b/.test(s))return 'chile';
+    if(/\b(paraguay|paraguai|asuncion|puerto jose falcon|jose falcon|falcon|clorinda|py)\b/.test(s))return 'paraguay';
+    if(/\b(uruguay|montevideo|fray bentos|gualeguaychu|sevel|uy)\b/.test(s))return 'uruguay';
+    if(/\b(argentina|arg|ar|zarate|zarate|cordoba|cordoba|fca|planta fca|centro logistico|clz|clc|tz)\b/.test(s))return 'argentina';
     return '';
   }
-  function codeFor(v){const c=countryOf(v);return c==='argentina'?'AR':c==='chile'?'CL':c==='paraguay'?'PY':c==='uruguay'?'UY':c==='brasil'?'BR':'--';}
-  function flagClass(v){const c=codeFor(v).toLowerCase();return 'flag-'+(c==='--'?'xx':c);}
+  function flagFor(v){const c=countryOf(v);return c==='argentina'?'🇦🇷':c==='chile'?'🇨🇱':c==='paraguay'?'🇵🇾':c==='uruguay'?'🇺🇾':'🌐';}
+  function codeFor(v){const c=countryOf(v);return c==='argentina'?'AR':c==='chile'?'CL':c==='paraguay'?'PY':c==='uruguay'?'UY':'--';}
   function statusObj(t,e){
     const s=L([field(t,['estado','status']),field(e,['estado','status'])].join(' '));
-    if(s.includes('final')||s.includes('cerr')||t?.closed||t?.cierre)return {txt:'FINALIZADO',cls:'done'};
+    if(s.includes('final')||s.includes('cerr')||t?.closed||t?.cierre)return {txt:'CERRADO',cls:'done'};
     if(s.includes('aduana'))return {txt:'EN ADUANA',cls:'customs'};
     if(s.includes('program'))return {txt:'PROGRAMADO',cls:'planned'};
     return {txt:'EN TRÁNSITO',cls:'open'};
@@ -9502,80 +9757,1559 @@ if(_refresh_v1250){
   function lastTime(t){return field(t,['updatedAt','lastUpdate','lastReport','ultimoReporte','fechaActualizacion'])||t?.start?.time||t?.start||'';}
   function embDate(e){return field(e,['fecha','fechaHora','createdAt','start']);}
   function elapsed(v){try{if(!v)return '-'; if(v?.toDate)v=v.toDate(); const d=new Date(v); if(isNaN(d))return '-'; const ms=Date.now()-d.getTime(); if(ms<0)return '-'; const h=Math.floor(ms/3600000), dd=Math.floor(h/24), hh=h%24; return (dd?dd+' d ':'')+hh+' h '+Math.floor((ms%3600000)/60000)+' m';}catch(e){return '-';}}
-  function embMap(){const m=new Map(); arr('embarques').forEach(e=>{const n=embNo(e); if(n)m.set(String(n),e);}); return m;}
+  async function readAduana(){
+    if(Array.isArray(window.aduana)&&window.aduana.length)return window.aduana;
+    try{if(typeof window.read==='function'){window.aduana=await window.read('aduana');return window.aduana;}}catch(e){}
+    try{if(window.db&&window.db.collection){const snap=await window.db.collection('aduana').get();window.aduana=snap.docs.map(d=>({id:d.id,_docId:d.id,...d.data()}));return window.aduana;}}catch(e){}
+    return [];
+  }
+  async function ensureData(force){try{if(force&&typeof window.refresh==='function')await window.refresh();}catch(e){} await readAduana();}
+  function ensureEntrega(){
+    const nav=document.querySelector('.sideNav');
+    if(nav&&!nav.querySelector('button[data-menu-id="entrega"]')){
+      const btn=document.createElement('button'); btn.type='button'; btn.dataset.menuId='entrega'; btn.setAttribute('onclick',"tab('entrega')"); btn.innerHTML='<span class="menuIcon">🏁</span><span class="menuText">Entregas</span>';
+      const trans=[...nav.querySelectorAll('button')].find(b=>(b.getAttribute('onclick')||'').includes('transitos'));
+      trans&&trans.parentNode?trans.parentNode.insertBefore(btn,trans.nextSibling):nav.appendChild(btn);
+    }
+    let sec=document.getElementById('entrega');
+    if(!sec){
+      sec=document.createElement('section'); sec.id='entrega'; sec.className='panel entregaPanel';
+      const emb=document.getElementById('embarques'); (emb&&emb.parentNode?emb.parentNode:document.querySelector('.dashboardShell')||document.body).insertBefore(sec,emb?emb.nextSibling:null);
+    }
+    sec.innerHTML=`<div class="sectionTitle entregaHeader"><div><h2>Entregas</h2><p>Seguimiento de flotas en tránsito</p></div><button type="button" class="entregaRefreshBtn" onclick="window.renderEntrega&&window.renderEntrega(true)">Actualizar</button></div>
+      <div class="entregaToolbar glassPanel">
+        <label>Cliente<select id="entregaFiltroCliente"><option value="">Todos</option></select></label>
+        <label>Embarque<select id="entregaFiltroEmbarque"><option value="">Todos</option></select></label>
+        <label>Destino<select id="entregaFiltroDestino"><option value="">Todos</option></select></label>
+        <label>Flota<select id="entregaFiltroFlota"><option value="">Todos</option></select></label>
+        <label>Estado<select id="entregaFiltroEstado"><option value="">Todos</option><option value="en transito">En tránsito</option><option value="cerrado">Cerrado</option></select></label>
+      </div><div id="entregaCards" class="entregaCards"></div>`;
+  }
+  function embMap(){const m=new Map();arr('embarques').forEach(e=>{const n=embNo(e); if(n)m.set(String(n),e);}); return m;}
   function buildRows(){
     const em=embMap(), groups=new Map();
     arr('trs').forEach(t=>{const fl=trFleet(t); if(!fl)return; const n=trEmb(t), e=em.get(String(n))||{}, rt=route(t)||{}; if(!groups.has(fl))groups.set(fl,{flota:fl,items:[]}); groups.get(fl).items.push({t,e,rt,n});});
     arr('embarques').forEach(e=>{const fl=S(field(e,['flota','flotas'])); if(!fl)return; fl.split(',').map(x=>x.trim()).filter(Boolean).forEach(f=>{if(!groups.has(f))groups.set(f,{flota:f,items:[]}); if(!groups.get(f).items.length)groups.get(f).items.push({t:{},e,rt:{},n:embNo(e)});});});
-    return [...groups.values()].map(g=>{g.items.sort((a,b)=>String(lastTime(b.t)||embDate(b.e)||b.n).localeCompare(String(lastTime(a.t)||embDate(a.e)||a.n),'es',{numeric:true})); const it=g.items[0]||{}, t=it.t||{}, e=it.e||{}, rt=it.rt||{}; const nums=[...new Set(g.items.map(x=>x.n).filter(Boolean))]; return {flota:g.flota, embarques:nums, numero:S(it.n||embNo(e)), cliente:S(field(e,['cliente','client'])||rt.cliente||t.cliente), origen:S(field(e,['origen','origin'])||rt.origen||t.origen||'Centro Logístico Zárate'), destino:S(field(e,['destino','destination'])||rt.destino||t.destino||''), fecha:embDate(e)||field(t,['fecha'])||t.start?.time||t.start||'', t,e,estado:statusObj(t,e).txt};}).sort((a,b)=>String(a.flota).localeCompare(String(b.flota),'es',{numeric:true}));
+    return [...groups.values()].map(g=>{g.items.sort((a,b)=>String(lastTime(b.t)||embDate(b.e)||b.n).localeCompare(String(lastTime(a.t)||embDate(a.e)||a.n),'es',{numeric:true})); const it=g.items[0]||{}, t=it.t||{}, e=it.e||{}, rt=it.rt||{}; const nums=[...new Set(g.items.map(x=>x.n).filter(Boolean))]; return {flota:g.flota, embarques:nums, numero:S(it.n||embNo(e)), cliente:S(field(e,['cliente','client'])||rt.cliente||t.cliente), origen:S(field(e,['origen','origin'])||rt.origen||t.origen||'Centro Logístico Zárate'), destino:S(field(e,['destino','destination'])||rt.destino||t.destino||''), fecha:embDate(e)||field(t,['fecha'])||t.start?.time||t.start||'', mic:S(field(e,['mic','MIC'])||field(t,['mic','nroMic'])||'-'), crt:S(field(e,['crt','CRT'])||field(t,['crt','nroCrt'])||'-'), t,e,estado:statusObj(t,e).txt};}).sort((a,b)=>String(a.flota).localeCompare(String(b.flota),'es',{numeric:true}));
+  }
+  function aduanaFor(row){
+    const dc=countryOf(row.destino); let ads=(window.aduana||[]).filter(a=>a&&a.activo!==false);
+    const matching=ads.filter(a=>{const p=countryOf([a.pais,a.destino,a.country].join(' ')); return dc&&p===dc;}); if(matching.length)ads=matching;
+    return ads.sort((a,b)=>(Number(a.orden)||999)-(Number(b.orden)||999)).map(a=>S(a.nombre||a.name||a.id||a._docId||a.destino)).filter(Boolean);
   }
   function stages(row){
-    const d=countryOf(row.destino); let mid=[];
-    if(d==='chile')mid=['Uspallata','Los Andes'];
-    else if(d==='paraguay')mid=['Clorinda','Puerto José Falcón','Depósito Fiscal Paraguay'];
-    else if(d==='uruguay')mid=['Gualeguaychú','Fray Bentos'];
-    else if(d==='brasil')mid=['Paso de los Libres','Uruguaiana'];
+    let mid=aduanaFor(row); if(!mid.length){const d=countryOf(row.destino); if(d==='chile')mid=['Uspallata','Los Andes']; else if(d==='paraguay')mid=['Clorinda','Puerto José Falcón','Depósito Fiscal Paraguay']; else if(d==='uruguay')mid=['Gualeguaychú','Fray Bentos'];}
     return [S(row.origen)||'Origen',...mid,S(row.destino)||'Lugar de entrega'].filter(Boolean).slice(0,8);
   }
   function progress(row,st){const s=L([field(row.t,['estado','status']),field(row.e,['estado','status'])].join(' ')); if(s.includes('final')||s.includes('cerr'))return st.length-1; if(s.includes('aduana'))return Math.min(2,st.length-1); if(row.t&&Object.keys(row.t).length)return Math.min(1,st.length-1); return 0;}
-  function card(row,idx){
+  function vehicle(cls){ return `<img class="entregaCarrierImg ${cls}" src="assets/camion-automobilero.png" alt="Camión automobilero">`; }
+  function card(row){
     const st=statusObj(row.t,row.e), sts=stages(row), pi=progress(row,sts), pct=Math.max(0,Math.min(100,(pi/(Math.max(1,sts.length-1)))*100)); const upd=fmt(lastTime(row.t)||row.fecha), el=elapsed(row.fecha||lastTime(row.t)); const next=sts[Math.min(pi+1,sts.length-1)]||'-';
-    return `<article class="entregaCard ${idx%2?'alt':''}">
+    return `<article class="entregaCard">
       <div class="entregaTop">
-        <div class="entregaFleet"><span class="entregaFleetIcon"></span><div><h3>Flota ${esc(row.flota)}</h3><span class="entregaStatus ${st.cls}">${esc(st.txt)}</span><small>Emb. ${esc(row.embarques.join(', ')||row.numero||'-')}</small></div></div>
-        <div class="entregaMeta"><span>📅 Última act.</span><b>${esc(upd)}</b></div>
-        <div class="entregaMeta"><span>⏱ Tiempo transcurrido</span><b>${esc(el)}</b></div>
-        <div class="entregaMeta"><span>🚩 Próximo hito</span><b>${esc(next)}</b></div>
+        <div class="entregaFleet"><span class="entregaFleetIcon">🚚</span><div><h3>Flota ${esc(row.flota)}</h3><span class="entregaStatus ${st.cls}">${esc(st.txt)}</span><small>Emb. ${esc(row.embarques.join(', ')||row.numero||'-')}</small></div></div>
+        <div class="entregaMeta"><span>Última act.</span><b>${esc(upd)}</b></div>
+        <div class="entregaMeta"><span>Tiempo transcurrido</span><b>${esc(el)}</b></div>
+        <div class="entregaMeta"><span>Próximo hito</span><b>${esc(next)}</b></div>
         <div class="entregaMeta"><span>Estado</span><b class="state ${st.cls}">${esc(st.txt)}</b></div>
-        <div class="entregaFlags"><span class="flagRound ${flagClass(row.origen)}"></span><i>›</i><span class="flagRound ${flagClass(row.destino)}"></span></div>
+        <div class="entregaFlags"><strong>${esc(codeFor(row.origen))} › ${esc(codeFor(row.destino))}</strong><div><span>${flagFor(row.origen)}</span><i>›</i><span>${flagFor(row.destino)}</span></div></div>
       </div>
       <div class="entregaTimeline">
         <div class="entregaLine"><i style="width:${pct}%"></i></div>
-        ${sts.map((s,i)=>`<div class="entregaStep ${i<=pi?'done':''} ${i===pi?'current':''}" style="left:${(i/(Math.max(1,sts.length-1)))*100}%"><b>${esc(s)}</b><em>${esc(i===0?shortFmt(row.fecha):(i===pi?shortFmt(lastTime(row.t)||row.fecha):'-'))}</em></div>`).join('')}
-        <div class="entregaVehicle" style="left:${pct}%"><img src="assets/camion-automobilero.png" alt="Camión"></div>
+        ${sts.map((s,i)=>`<div class="entregaStep ${i<=pi?'done':''} ${i===pi?'current':''} ${i===0?'first':''} ${i===sts.length-1?'last':''}" style="left:${(i/(Math.max(1,sts.length-1)))*100}%"><b>${esc(s)}</b><em>${esc(i===0?shortFmt(row.fecha):(i===pi?shortFmt(lastTime(row.t)||row.fecha):'-'))}</em></div>`).join('')}
+        <div class="entregaVehicle" style="left:${pct}%">${vehicle(st.cls)}</div>
       </div>
       <div class="entregaBottom"><span><b>Actualizado:</b> ${esc(upd)}</span><span><b>Tiempo transcurrido:</b> ${esc(el)}</span><span><b>Próximo hito:</b> ${esc(next)}</span><span><b>Estado:</b> ${esc(st.txt)}</span></div>
     </article>`;
   }
   function fillFilters(rows){
-    const defs=[['entregaFiltroEmbarque','embarques','Embarque'],['entregaFiltroFlota','flota','Todas las flotas'],['entregaFiltroCliente','cliente','Todos los clientes']];
-    defs.forEach(([id,key,all])=>{const sel=document.getElementById(id); if(!sel)return; const cur=sel.value; const vals=(key==='embarques'?[...new Set(rows.flatMap(r=>r.embarques||[]).filter(Boolean))]:[...new Set(rows.map(r=>S(r[key])).filter(Boolean))]).sort((a,b)=>String(a).localeCompare(String(b),'es',{numeric:true})); sel.innerHTML=`<option value="">${all}</option>`+vals.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join(''); if(vals.includes(cur))sel.value=cur; sel.onchange=()=>window.renderEntrega(false);});
+    const defs=[['entregaFiltroCliente','cliente'],['entregaFiltroEmbarque','embarques'],['entregaFiltroDestino','destino'],['entregaFiltroFlota','flota']];
+    defs.forEach(([id,key])=>{const sel=document.getElementById(id); if(!sel)return; const cur=sel.value; let vals=key==='embarques'?[...new Set(rows.flatMap(r=>r.embarques||[]).filter(Boolean))]:[...new Set(rows.map(r=>S(r[key])).filter(Boolean))]; vals.sort((a,b)=>String(a).localeCompare(String(b),'es',{numeric:true})); sel.innerHTML='<option value="">Todos</option>'+vals.map(v=>`<option value="${esc(v)}">${key==='embarques'?'Emb. ':''}${esc(v)}</option>`).join(''); sel.value=vals.includes(cur)?cur:''; sel.onchange=()=>window.renderEntrega(false);});
     const es=document.getElementById('entregaFiltroEstado'); if(es){const cur=es.value; es.innerHTML='<option value="">Todos</option><option value="en transito">En tránsito</option><option value="cerrado">Cerrado</option>'; es.value=cur||''; es.onchange=()=>window.renderEntrega(false);}
   }
-  async function ensureData(force){try{if(force&&typeof window.refresh==='function')await window.refresh();}catch(e){console.warn(e);}}
-  window.renderEntrega=async function(force=false){
-    ensurePanel(); await ensureData(force); let rows=buildRows(); fillFilters(rows);
-    const fc=L(document.getElementById('entregaFiltroCliente')?.value), fe=L(document.getElementById('entregaFiltroEmbarque')?.value), ff=L(document.getElementById('entregaFiltroFlota')?.value), fs=L(document.getElementById('entregaFiltroEstado')?.value);
-    rows=rows.filter(r=>(!fc||L(r.cliente)===fc)&&(!fe||(r.embarques||[]).some(e=>L(e)===fe))&&(!ff||L(r.flota)===ff)&&(!fs||L(r.estado)===fs));
-    const box=document.getElementById('entregaCards'); if(box) box.innerHTML=rows.length?rows.map(card).join(''):'<div class="glassPanel entregaEmpty">No hay flotas para el filtro seleccionado.</div>';
-    setVersion(); normalizeEntregasMenu();
-  };
   function injectCss(){
-    if(document.getElementById('entrega-stable-134-css'))return; const css=document.createElement('style'); css.id='entrega-stable-134-css'; css.textContent=`
-      #entrega .entregaHeader{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}.entregaRefreshBtn{height:38px;border-radius:10px;border:1px solid rgba(76,175,67,.72);background:#1d6d2f;color:#d8ffd0;font-weight:900;padding:0 18px}.entregaToolbar{display:grid;grid-template-columns:1.15fr 1.15fr 1.35fr .9fr;gap:12px;padding:12px 14px;margin-bottom:14px}.entregaToolbar select{height:42px;border-radius:11px;border:1px solid rgba(148,163,184,.32);background:#223246;color:#f8fafc;padding:0 16px;font-weight:900;font-size:15px}.entregaCards{display:flex;flex-direction:column;gap:12px}.entregaCard{border:1px solid rgba(148,163,184,.24);background:linear-gradient(135deg,rgba(8,24,40,.98),rgba(6,18,31,.96));border-radius:16px;padding:12px 14px;box-shadow:0 14px 28px rgba(0,0,0,.22);overflow:hidden}.entregaCard.alt{background:linear-gradient(135deg,rgba(18,38,56,.98),rgba(12,28,44,.96))}.entregaTop{display:grid;grid-template-columns:1.25fr repeat(4,1fr) 128px;gap:10px;align-items:center;padding-bottom:10px;border-bottom:1px solid rgba(148,163,184,.14)}.entregaFleet{display:flex;align-items:center;gap:10px}.entregaFleetIcon{width:44px;height:44px;border-radius:50%;display:block;background:rgba(32,156,48,.18) url('assets/camion-automobilero.png') center/32px auto no-repeat;border:2px solid rgba(82,255,96,.55)}.entregaFleet h3{margin:0 0 4px;font-size:22px;line-height:1;color:#f8fafc}.entregaFleet small{display:block;margin-top:5px;color:#cbd5e1;font-size:12px}.entregaStatus{display:inline-block;padding:4px 9px;border-radius:7px;font-size:11px;font-weight:900;background:#155d2d;color:#9dff7e}.entregaMeta{border-left:1px solid rgba(148,163,184,.18);padding-left:10px;min-width:0;text-align:center}.entregaMeta span{display:block;font-size:10.5px;color:#dbeafe;margin-bottom:4px}.entregaMeta b{display:block;color:#f8fafc;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.entregaMeta b.state.open{color:#7cff63}.entregaFlags{height:58px;display:flex;align-items:center;justify-content:center;gap:14px;border:1px solid rgba(148,163,184,.26);border-radius:13px;background:rgba(255,255,255,.035)}.entregaFlags i{font-style:normal;color:#7cff63;font-weight:900;font-size:26px}.flagRound{position:relative;width:34px;height:34px;border-radius:50%;display:inline-block;overflow:hidden;border:1px solid rgba(255,255,255,.9);box-shadow:0 2px 8px rgba(0,0,0,.36)}.flag-ar{background:linear-gradient(#75bdf8 0 33%,#fff 33% 66%,#75bdf8 66% 100%)}.flag-ar:after{content:'';position:absolute;left:50%;top:50%;width:6px;height:6px;border-radius:50%;background:#f4b000;transform:translate(-50%,-50%)}.flag-cl{background:linear-gradient(90deg,#1559b7 0 38%,transparent 38%),linear-gradient(#fff 0 50%,#d92332 50% 100%)}.flag-cl:after{content:'★';position:absolute;left:5px;top:1px;color:#fff;font-size:8px}.flag-py{background:linear-gradient(#d92332 0 33%,#fff 33% 66%,#2c55a2 66% 100%)}.flag-py:after{content:'';position:absolute;left:50%;top:50%;width:5px;height:5px;border-radius:50%;background:#d9b24c;transform:translate(-50%,-50%)}.flag-uy{background:repeating-linear-gradient(to bottom,#fff 0 4px,#4aa3df 4px 8px)}.flag-uy:after{content:'';position:absolute;left:5px;top:5px;width:6px;height:6px;border-radius:50%;background:#f4b000}.flag-br{background:#179b48}.flag-br:before{content:'';position:absolute;left:50%;top:50%;width:18px;height:18px;background:#ffd84b;transform:translate(-50%,-50%) rotate(45deg)}.flag-br:after{content:'';position:absolute;left:50%;top:50%;width:10px;height:10px;border-radius:50%;background:#21468b;transform:translate(-50%,-50%)}.flag-xx{background:#cbd5e1}.entregaTimeline{position:relative;height:118px;margin-top:10px;padding:0 46px;background:rgba(255,255,255,.015);border-radius:14px}.entregaLine{position:absolute;left:46px;right:46px;top:52px;height:3px;background:rgba(226,232,240,.78);border-radius:10px;overflow:hidden}.entregaLine i{display:block;height:100%;background:linear-gradient(90deg,#22c55e,#84cc16,#f59e0b);border-radius:10px}.entregaStep{position:absolute;top:20px;transform:translateX(-50%);text-align:center;min-width:120px}.entregaStep b{display:block;margin:0 0 26px;color:#f8fafc;font-size:11px;text-transform:uppercase;line-height:1.12;text-shadow:0 1px 3px rgba(0,0,0,.55)}.entregaStep em{display:block;color:#cbd5e1;font-size:10.5px;font-style:normal}.entregaStep::after{content:'';position:absolute;left:50%;top:26px;width:18px;height:18px;border-radius:50%;transform:translateX(-50%);border:4px solid #64748b;background:#f8fafc;box-shadow:0 0 0 3px rgba(15,23,42,.9)}.entregaStep.done::after{border-color:#3bd84c}.entregaStep.current::after{border-color:#f0a500}.entregaVehicle{position:absolute;top:82px;transform:translateX(-50%);width:38px;height:24px;z-index:3;pointer-events:none}.entregaVehicle img{width:38px;max-width:38px;height:auto;display:block;filter:drop-shadow(0 3px 4px rgba(0,0,0,.45))}.entregaTimeline:after{content:'';position:absolute;left:46px;right:46px;top:95px;border-top:2px dashed rgba(148,163,184,.55)}.entregaBottom{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px;padding:8px 12px;border-radius:11px;background:rgba(255,255,255,.035);border:1px solid rgba(148,163,184,.12);color:#dbeafe;font-size:12px}.entregaBottom span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.entregaBottom b{color:#9dff7e}.entregaEmpty{padding:22px;color:#cbd5e1;font-weight:800}@media(max-width:1250px){.entregaToolbar{grid-template-columns:1fr 1fr}.entregaTop{grid-template-columns:1fr 1fr}.entregaBottom{grid-template-columns:1fr}}
+    document.querySelectorAll('style[id^="entrega-v"]').forEach(x=>x.remove());
+    if(document.getElementById('entrega-v2098-css'))return; const css=document.createElement('style'); css.id='entrega-v2098-css'; css.textContent=`
+      #entrega .entregaHeader{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}.entregaRefreshBtn{height:38px;border-radius:10px;border:1px solid rgba(76,175,67,.72);background:#1d6d2f;color:#d8ffd0;font-weight:900;padding:0 18px}.entregaToolbar{display:grid;grid-template-columns:repeat(5,minmax(150px,1fr));gap:10px;padding:10px 12px;margin-bottom:12px}.entregaToolbar label{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:center;font-size:13px;font-weight:800;color:#dce6f1}.entregaToolbar select{height:34px;border-radius:9px;border:1px solid rgba(148,163,184,.30);background:#102033;color:#fff;padding:0 10px;font-weight:800;font-size:13px}.entregaCards{display:flex;flex-direction:column;gap:10px}.entregaCard{overflow:hidden;border:1px solid rgba(148,163,184,.24);background:linear-gradient(135deg,rgba(13,30,45,.97),rgba(8,20,33,.94));border-radius:14px;padding:12px 14px;box-shadow:0 12px 24px rgba(0,0,0,.22)}.entregaCard:nth-child(even){background:linear-gradient(135deg,rgba(18,37,54,.97),rgba(10,23,36,.94))}.entregaTop{display:grid;grid-template-columns:1.35fr repeat(4,1fr) .72fr;gap:10px;align-items:center}.entregaFleet{display:flex;align-items:center;gap:10px;min-width:0}.entregaFleetIcon{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:rgba(32,156,48,.25);border:1px solid rgba(82,255,96,.42);font-size:20px}.entregaFleet h3{margin:0;font-size:21px;line-height:1;color:#f8fafc}.entregaFleet small{display:block;margin-top:5px;color:#cbd5e1;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.entregaStatus{display:inline-block;margin-top:5px;padding:4px 8px;border-radius:7px;font-size:11px;font-weight:900}.entregaStatus.open{background:#155d2d;color:#9dff7e}.entregaStatus.done{background:#475569;color:#e5e7eb}.entregaStatus.planned{background:#0b4a8f;color:#93c5fd}.entregaStatus.customs{background:#6b4e12;color:#fde68a}.entregaMeta{border-left:1px solid rgba(148,163,184,.18);padding-left:10px;min-width:0}.entregaMeta span{display:block;font-size:11px;color:#dbeafe;margin-bottom:3px}.entregaMeta b{display:block;color:#f8fafc;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.entregaMeta b.state.open{color:#7cff63}.entregaMeta b.state.done{color:#cbd5e1}.entregaMeta b.state.planned{color:#60a5fa}.entregaMeta b.state.customs{color:#fbbf24}.entregaFlags{text-align:center}.entregaFlags strong{display:block;color:#f8fafc;font-size:14px;letter-spacing:.05em;margin-bottom:4px}.entregaFlags div{display:flex;gap:7px;align-items:center;justify-content:center;font-size:19px}.entregaFlags i{font-style:normal;color:#e2e8f0}.entregaTimeline{position:relative;height:78px;margin-top:9px;padding:8px 34px 0}.entregaLine{position:absolute;left:34px;right:34px;top:31px;height:2px;background:rgba(226,232,240,.78);border-radius:10px;overflow:hidden}.entregaLine i{display:block;height:100%;background:linear-gradient(90deg,#22c55e,#84cc16,#f97316);border-radius:10px}.entregaStep{position:absolute;top:17px;transform:translateX(-50%);text-align:center;width:112px}.entregaStep.first{transform:none;text-align:left}.entregaStep.last{transform:translateX(-100%);text-align:right}.entregaStep b{display:block;margin-top:12px;color:#f8fafc;font-size:9.5px;text-transform:uppercase;line-height:1.15;white-space:normal;overflow:hidden;text-overflow:ellipsis}.entregaStep em{display:block;margin-top:4px;color:#cbd5e1;font-size:9.5px;font-style:normal}.entregaStep::after{content:'';position:absolute;left:50%;top:8px;width:11px;height:11px;border-radius:50%;transform:translateX(-50%);border:2px solid #e2e8f0;background:#0b1b2b}.entregaStep.first::after{left:0;transform:none}.entregaStep.last::after{left:auto;right:0;transform:none}.entregaStep.done::after{border-color:#22c55e;background:#22c55e}.entregaStep.current::after{border-color:#fb923c;background:#fb923c;box-shadow:0 0 0 5px rgba(249,115,22,.16)}.entregaVehicle{position:absolute;top:11px;transform:translateX(-50%);filter:drop-shadow(0 8px 10px rgba(0,0,0,.45));z-index:2}.entregaCarrier{display:inline-flex;gap:0;font-size:24px;line-height:1;align-items:center}.entregaCarrier.customs{filter:hue-rotate(45deg)}.entregaCarrier.planned{filter:hue-rotate(165deg)}.entregaBottom{display:grid;grid-template-columns:1.1fr 1.1fr 1.1fr .8fr;gap:8px;margin-top:5px;padding:8px 11px;border-radius:10px;background:rgba(255,255,255,.035);border:1px solid rgba(148,163,184,.12);color:#dbeafe;font-size:12.5px}.entregaBottom span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.entregaBottom b{color:#9dff7e}.entregaEmpty{padding:20px;color:#cbd5e1;font-weight:800}@media(max-width:1250px){.entregaToolbar{grid-template-columns:1fr 1fr}.entregaTop{grid-template-columns:1fr 1fr}.entregaBottom{grid-template-columns:1fr}.entregaTimeline{overflow:hidden}}
     `; document.head.appendChild(css);
   }
-  function boot(){normalizeEntregasMenu(); ensurePanel(); injectCss(); setVersion();}
-  const oldTab=window.tab;
-  if(typeof oldTab==='function' && !window.__entregaStableTab134){
-    window.__entregaStableTab134=true;
-    window.tab=function(id){
-      if(id==='entrega'){
-        boot();
-        document.querySelectorAll('.sideNav button').forEach(b=>b.classList.remove('active'));
-        document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-        const btn=document.querySelector('.sideNav button[data-menu-id="entrega"]')||[...document.querySelectorAll('.sideNav button')].find(b=>(b.getAttribute('onclick')||'').includes('entrega'));
-        if(btn)btn.classList.add('active');
-        const sec=document.getElementById('entrega'); if(sec)sec.classList.add('active');
-        window.renderEntrega(false);
-        return;
+  window.renderEntrega=async function(force=false){ensureEntrega();injectCss();setVersion();await ensureData(force);let rows=buildRows();fillFilters(rows);const fc=L(document.getElementById('entregaFiltroCliente')?.value),fe=L(document.getElementById('entregaFiltroEmbarque')?.value),fd=L(document.getElementById('entregaFiltroDestino')?.value),ff=L(document.getElementById('entregaFiltroFlota')?.value),fs=L(document.getElementById('entregaFiltroEstado')?.value);rows=rows.filter(r=>(!fc||L(r.cliente)===fc)&&(!fe||(r.embarques||[]).some(e=>L(e)===fe))&&(!fd||L(r.destino)===fd)&&(!ff||L(r.flota)===ff)&&(!fs||(fs==='cerrado'?statusObj(r.t,r.e).cls==='done':statusObj(r.t,r.e).cls!=='done')));const box=document.getElementById('entregaCards');if(box)box.innerHTML=rows.length?rows.map(card).join(''):'<div class="glassPanel entregaEmpty">No hay flotas para el filtro seleccionado.</div>';};
+  const oldTab=window.tab; if(typeof oldTab==='function'&&!oldTab.__entrega98){const f=function(id){ensureEntrega();injectCss();const r=oldTab.apply(this,arguments); if(id==='entrega')setTimeout(()=>window.renderEntrega(false),30); return r;}; f.__entrega98=true; window.tab=f;}
+  const oldRefresh=window.refresh; if(typeof oldRefresh==='function'&&!oldRefresh.__entrega98){const f=async function(){const r=await oldRefresh.apply(this,arguments); if(document.getElementById('entrega')?.classList.contains('active'))window.renderEntrega(false); return r;}; f.__entrega98=true; window.refresh=f;}
+  document.addEventListener('DOMContentLoaded',()=>{ensureEntrega();injectCss();setVersion();if(document.getElementById('entrega')?.classList.contains('active'))window.renderEntrega(false);});
+  window.addEventListener('load',()=>{ensureEntrega();injectCss();setVersion();if(document.getElementById('entrega')?.classList.contains('active'))window.renderEntrega(false);});
+})();
+
+
+/* ===== V2.0.134 - ajuste final SOLO Entregas: menú estable, timeline sin superposición ===== */
+(function(){
+  const VERSION='2.0.134';
+  window.ELTA_APP_VERSION=VERSION; window.APP_VERSION_V2=VERSION;
+  function setV(){
+    document.querySelectorAll('span,small,p,div,footer').forEach(el=>{
+      if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/.test(el.textContent||'')){
+        el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/g,'Versión '+VERSION);
       }
-      const r=oldTab.apply(this,arguments);
-      normalizeEntregasMenu(); setVersion();
-      return r;
-    };
+    });
   }
-  document.addEventListener('DOMContentLoaded',boot);
-  window.addEventListener('load',boot);
-  setTimeout(boot,150);
+  function ensureEntregasMenu(){
+    const nav=document.querySelector('.sideNav'); if(!nav) return;
+    let btn=[...nav.querySelectorAll('button')].find(b=>(b.getAttribute('onclick')||'').includes("tab('entrega')") || b.dataset.menuId==='entrega');
+    if(!btn){
+      btn=document.createElement('button'); btn.type='button'; btn.dataset.menuId='entrega'; btn.setAttribute('onclick',"tab('entrega')");
+      btn.innerHTML='<span class="menuIcon">🏁</span><span class="menuText">Entregas</span>';
+    }
+    btn.dataset.menuId='entrega'; btn.setAttribute('onclick',"tab('entrega')");
+    btn.innerHTML='<span class="menuIcon">🏁</span><span class="menuText">Entregas</span>';
+    const trans=[...nav.querySelectorAll('button')].find(b=>(b.getAttribute('onclick')||'').includes("tab('transitos')"));
+    const emb=[...nav.querySelectorAll('button')].find(b=>(b.getAttribute('onclick')||'').includes("tab('embarques')"));
+    // Entregas va después de Tránsito. Embarques se mantiene sin cambios.
+    if(trans && trans.nextSibling!==btn) nav.insertBefore(btn, trans.nextSibling);
+    if(emb){
+      const txt=emb.querySelector('.menuText'); if(txt) txt.textContent='Embarques';
+      emb.setAttribute('onclick',"tab('embarques')");
+    }
+  }
+  function injectFinalCss(){
+    if(document.getElementById('entregas-final-css')) return;
+    const st=document.createElement('style'); st.id='entregas-final-css';
+    st.textContent=`
+      #entrega .entregaFlags{text-align:center!important;min-width:120px!important}
+      #entrega .entregaFlags strong{display:flex!important;align-items:center!important;justify-content:center!important;gap:10px!important;font-size:15px!important}
+      #entrega .entregaFlags div{display:flex!important;align-items:center!important;justify-content:center!important;gap:10px!important;font-size:28px!important;line-height:1!important}
+      #entrega .entregaTimeline{position:relative!important;height:170px!important;margin-top:18px!important;padding:72px 36px 0!important;overflow:visible!important}
+      #entrega .entregaLine{position:absolute!important;left:36px!important;right:36px!important;top:104px!important;height:4px!important;background:rgba(226,232,240,.8)!important;border-radius:12px!important;overflow:visible!important}
+      #entrega .entregaLine i{display:block!important;height:100%!important;background:linear-gradient(90deg,#22c55e,#84cc16,#f59e0b)!important;border-radius:12px!important}
+      #entrega .entregaStep{position:absolute!important;top:0!important;transform:translateX(-50%)!important;text-align:center!important;width:150px!important;min-width:0!important;z-index:3!important}
+      #entrega .entregaStep.first{transform:none!important;text-align:left!important}
+      #entrega .entregaStep.last{transform:translateX(-100%)!important;text-align:right!important}
+      #entrega .entregaStep::after{content:'';display:block;width:12px;height:12px;border-radius:50%;background:#e5e7eb;border:3px solid rgba(15,23,42,.9);box-shadow:0 0 0 2px rgba(226,232,240,.75);margin:12px auto 0}
+      #entrega .entregaStep.done::after{background:#74ff5f;box-shadow:0 0 0 2px rgba(34,197,94,.8)}
+      #entrega .entregaStep.current::after{background:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,.45)}
+      #entrega .entregaStep b{display:block!important;margin:0!important;color:#f8fafc!important;font-size:13px!important;line-height:1.12!important;text-transform:uppercase!important;text-shadow:0 1px 3px rgba(0,0,0,.55)!important;white-space:normal!important}
+      #entrega .entregaStep em{display:block!important;margin-top:6px!important;color:#cbd5e1!important;font-size:12px!important;font-style:normal!important;line-height:1.15!important}
+      #entrega .entregaVehicle{position:absolute!important;top:56px!important;transform:translateX(-50%)!important;z-index:5!important;width:190px!important;height:86px!important;display:flex!important;align-items:center!important;justify-content:center!important;pointer-events:none!important}
+      #entrega .entregaCarrierImg{width:190px!important;height:auto!important;display:block!important;filter:drop-shadow(0 8px 10px rgba(0,0,0,.45))!important}
+      #entrega .entregaFleetIcon img{max-width:42px!important}
+      @media(max-width:1250px){#entrega .entregaTimeline{height:180px!important;overflow:visible!important}}
+    `;
+    document.head.appendChild(st);
+  }
+  function boot(){ensureEntregasMenu(); injectFinalCss(); setV();}
+  document.addEventListener('DOMContentLoaded',boot); window.addEventListener('load',boot); setTimeout(boot,200); setTimeout(boot,900);
+  const oldTab=window.tab; if(typeof oldTab==='function'&&!oldTab.__v2108){
+    const f=function(id){boot(); const r=oldTab.apply(this,arguments); boot(); if(id==='entrega'&&typeof window.renderEntrega==='function') setTimeout(()=>window.renderEntrega(false),50); return r;}; f.__v2108=true; window.tab=f;
+  }
+})();
+
+
+/* ===== V2.0.134 - FIX FINAL VERSION Y MENU ESTABLE ===== */
+(function(){
+  const VERSION='2.0.134';
+  const MENU=[['dash','🏠','Torre de Control'],['transitos','🚚','Tránsitos'],['mapa','📍','Seguimiento'],['clima','🌦️','Clima'],['alertas','🔔','Alertas'],['embarques','📦','Embarques'],['entrega','🏁','Entregas'],['unidades','🚛','Unidades / Choferes'],['clientes','🏢','Clientes / Destinos'],['abm','⚙️','Configuración']];
+  window.ELTA_APP_VERSION=VERSION; window.APP_VERSION_V2=VERSION;
+  function setVersionFinal(){
+    document.querySelectorAll('span,small,p,div').forEach(el=>{
+      if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/.test(el.textContent||'')) el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/g,'Versión '+VERSION);
+    });
+    document.title='ELTA ITS - Versión '+VERSION;
+  }
+  function setMenuFinal(){
+    const nav=document.querySelector('.sideNav');
+    if(!nav){ setVersionFinal(); return; }
+    const activeId=(nav.querySelector('button.active')?.getAttribute('onclick')||'').match(/tab\('([^']+)'\)/)?.[1] || 'dash';
+    nav.innerHTML=MENU.map(([id,icon,text])=>`<button onclick="tab('${id}')"${id===activeId?' class="active"':''}${id==='entrega'?' data-menu-id="entrega"':''}><span class="menuIcon">${icon}</span><span class="menuText">${text}</span></button>`).join('');
+    setVersionFinal();
+  }
+  const oldTab=window.tab;
+  if(typeof oldTab==='function') window.tab=function(id){ const r=oldTab.apply(this,arguments); setTimeout(setMenuFinal,0); setTimeout(setVersionFinal,0); return r; };
+  document.addEventListener('DOMContentLoaded',()=>{ setMenuFinal(); setVersionFinal(); setTimeout(setMenuFinal,300); setTimeout(setVersionFinal,800); });
+  window.addEventListener('load',()=>{ setMenuFinal(); setVersionFinal(); setTimeout(setMenuFinal,500); setTimeout(setVersionFinal,1500); });
+  setInterval(setVersionFinal,2000);
+  window.setMenuFinalV209=setMenuFinal;
+})();
+
+
+/* ===== V2.0.134 - SOLO ENTREGAS: icono único y tarjeta según boceto ===== */
+(function(){
+  const VERSION='2.0.134';
+  function applyVersion(){
+    document.querySelectorAll('.version, #version, [data-version], footer, .footer').forEach(el=>{
+      if(el && /Versi[oó]n\s+\d+\.\d+\.\d+/i.test(el.textContent||'')){
+        el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/gi,'Versión '+VERSION);
+      }
+    });
+    document.querySelectorAll('body *').forEach(el=>{
+      if(el.childNodes.length===1 && el.childNodes[0].nodeType===3 && /Versi[oó]n\s+\d+\.\d+\.\d+/i.test(el.textContent||'')){
+        el.textContent=el.textContent.replace(/Versi[oó]n\s+\d+\.\d+\.\d+/gi,'Versión '+VERSION);
+      }
+    });
+  }
+  function fixMenuIcon(){
+    document.querySelectorAll('button[data-menu-id="entrega"], button[onclick*="tab(\'entrega\')"], button[onclick*="tab(&quot;entrega&quot;)"]').forEach(btn=>{
+      const txt=(btn.textContent||'').toLowerCase();
+      if(txt.includes('entregas')){
+        const ic=btn.querySelector('.menuIcon');
+        if(ic) ic.textContent='🏁';
+      }
+    });
+  }
+  function inject(){
+    if(document.getElementById('entregas-v20110-card-css')) return;
+    const st=document.createElement('style');
+    st.id='entregas-v20110-card-css';
+    st.textContent=`
+      #entrega .entregaCard{border-radius:18px!important;padding:18px 20px!important;background:linear-gradient(145deg,rgba(8,24,40,.98),rgba(4,18,32,.95))!important;border:1px solid rgba(148,163,184,.26)!important;box-shadow:0 18px 42px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.04)!important;overflow:hidden!important}
+      #entrega .entregaTop{display:grid!important;grid-template-columns:1.25fr 1fr 1fr .95fr .85fr 1.08fr!important;gap:16px!important;align-items:center!important;padding:4px 4px 14px!important;border-bottom:1px solid rgba(148,163,184,.10)!important}
+      #entrega .entregaFleetIcon{width:58px!important;height:58px!important;border-radius:50%!important;background:rgba(39,150,58,.16)!important;border:2px solid rgba(85,255,95,.55)!important;font-size:0!important;background-image:url('assets/camion-automobilero.png')!important;background-size:46px auto!important;background-repeat:no-repeat!important;background-position:center!important}
+      #entrega .entregaFleet h3{font-size:25px!important;letter-spacing:.2px!important}.entregaStatus{border-radius:10px!important;padding:7px 12px!important;font-size:13px!important}.entregaFleet small{font-size:14px!important;color:#cbd5e1!important}
+      #entrega .entregaMeta{display:grid!important;gap:7px!important;justify-items:center!important;text-align:center!important;border-left:1px solid rgba(148,163,184,.18)!important;padding-left:14px!important}.entregaMeta span{font-size:12px!important;color:#cbd5e1!important}.entregaMeta b{font-size:16px!important;color:#f8fafc!important}.entregaMeta b.state{font-size:17px!important;color:#76ff66!important}
+      #entrega .entregaFlags{border:1px solid rgba(148,163,184,.22)!important;background:rgba(255,255,255,.035)!important;border-radius:14px!important;padding:10px 12px!important;text-align:center!important;min-width:170px!important}.entregaFlags strong{display:block!important;font-size:12px!important;color:#8cff70!important;text-transform:uppercase!important;letter-spacing:.06em!important;margin-bottom:6px!important}.entregaFlags div{font-size:32px!important;gap:14px!important;line-height:1!important}.entregaFlags i{font-size:30px!important;color:#6bff62!important;font-weight:900!important}
+      #entrega .entregaTimeline{position:relative!important;height:250px!important;margin:18px 0 10px!important;padding:0 54px!important;overflow:visible!important;background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.00))!important;border-radius:16px!important}
+      #entrega .entregaLine{position:absolute!important;left:54px!important;right:54px!important;top:112px!important;height:5px!important;background:rgba(220,230,240,.72)!important;border-radius:20px!important;overflow:hidden!important;z-index:1!important}.entregaLine i{height:100%!important;background:linear-gradient(90deg,#57e45b 0%,#c4d428 42%,#f3ad17 62%,rgba(220,230,240,.72) 100%)!important;border-radius:20px!important}
+      #entrega .entregaStep{position:absolute!important;top:30px!important;transform:translateX(-50%)!important;text-align:center!important;width:170px!important;min-width:0!important;z-index:3!important}.entregaStep.first{transform:translateX(-12%)!important;text-align:left!important}.entregaStep.last{transform:translateX(-88%)!important;text-align:right!important}
+      #entrega .entregaStep b{display:block!important;margin:0 0 10px!important;font-size:15px!important;line-height:1.12!important;color:#f8fafc!important;text-transform:uppercase!important;text-shadow:0 2px 4px rgba(0,0,0,.65)!important;white-space:normal!important}.entregaStep.current b{color:#ffbf27!important}.entregaStep.done b{color:#94ff75!important}
+      #entrega .entregaStep em{display:block!important;position:absolute!important;top:112px!important;left:0!important;right:0!important;margin:0!important;color:#cbd5e1!important;font-size:13px!important;font-style:normal!important;line-height:1.15!important}.entregaStep.first em{text-align:left!important}.entregaStep.last em{text-align:right!important}
+      #entrega .entregaStep::after{content:''!important;position:absolute!important;left:50%!important;top:72px!important;transform:translateX(-50%)!important;width:26px!important;height:26px!important;border-radius:50%!important;background:#f8fafc!important;border:5px solid #64748b!important;box-shadow:0 0 0 4px rgba(15,23,42,.9)!important;margin:0!important;z-index:5!important}.entregaStep.first::after{left:12%!important}.entregaStep.last::after{left:88%!important}.entregaStep.done::after{border-color:#38d84a!important;box-shadow:0 0 0 4px rgba(34,197,94,.24),0 0 18px rgba(34,197,94,.35)!important}.entregaStep.current::after{border-color:#f0a500!important;box-shadow:0 0 0 4px rgba(245,158,11,.26),0 0 18px rgba(245,158,11,.42)!important}
+      #entrega .entregaVehicle{position:absolute!important;top:148px!important;transform:translateX(-50%)!important;width:152px!important;height:auto!important;z-index:4!important;display:block!important;filter:drop-shadow(0 10px 12px rgba(0,0,0,.52))!important}.entregaCarrierImg{width:152px!important;height:auto!important;display:block!important}.entregaTimeline::after{content:'';position:absolute;left:54px;right:54px;top:201px;border-top:3px dashed rgba(148,163,184,.45)}
+      #entrega .entregaBottom{grid-template-columns:repeat(4,1fr)!important;gap:14px!important;margin-top:10px!important;padding:14px 18px!important;border-radius:14px!important;background:rgba(255,255,255,.045)!important;border:1px solid rgba(148,163,184,.16)!important;font-size:14px!important}.entregaBottom b{color:#8cff70!important}
+      @media(max-width:1250px){#entrega .entregaTop{grid-template-columns:1fr 1fr!important}#entrega .entregaTimeline{height:270px!important;overflow:visible!important}#entrega .entregaBottom{grid-template-columns:1fr!important}}
+    `;
+    document.head.appendChild(st);
+  }
+  function patchMenuConstant(){
+    const old=window.tab;
+    if(typeof old==='function' && !old.__v20110Entrega){
+      const f=function(id){inject(); fixMenuIcon(); applyVersion(); const r=old.apply(this,arguments); setTimeout(()=>{inject();fixMenuIcon();applyVersion();},50); return r;};
+      f.__v20110Entrega=true; window.tab=f;
+    }
+  }
+  document.addEventListener('DOMContentLoaded',()=>{inject(); fixMenuIcon(); applyVersion(); patchMenuConstant();});
+  window.addEventListener('load',()=>{inject(); fixMenuIcon(); applyVersion(); patchMenuConstant(); setTimeout(()=>{fixMenuIcon();applyVersion();},400);});
+})();
+
+/* ===== V2.0.134 - SOLO ENTREGAS: tarjeta compacta, camion reducido, banderas icono ===== */
+(function(){
+  const VERSION='2.0.134';
+  function applyVersion(){
+    window.ELTA_APP_VERSION=VERSION; window.APP_VERSION_V2=VERSION;
+    document.querySelectorAll('body *').forEach(el=>{
+      if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/i.test(el.textContent||'')){
+        el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/gi,'Versión '+VERSION);
+      }
+    });
+  }
+  function fixEntregaIcon(){
+    document.querySelectorAll('button[data-menu-id="entrega"], button[onclick*="tab(\'entrega\')"]').forEach(btn=>{
+      const icon=btn.querySelector('.menuIcon');
+      if(icon) icon.textContent='🏁';
+    });
+  }
+  function inject(){
+    document.getElementById('entregas-v20111-compact-css')?.remove();
+    const st=document.createElement('style');
+    st.id='entregas-v20111-compact-css';
+    st.textContent=`
+      #entrega .entregaCard{padding:10px 14px!important;border-radius:14px!important;min-height:0!important;background:linear-gradient(145deg,rgba(8,24,40,.98),rgba(5,17,30,.96))!important}
+      #entrega .entregaTop{grid-template-columns:1.2fr .9fr .9fr .85fr .8fr .82fr!important;gap:10px!important;padding:0 0 8px!important;border-bottom:1px solid rgba(148,163,184,.10)!important}
+      #entrega .entregaFleet{gap:9px!important}.entregaFleet h3{font-size:21px!important}.entregaFleet small{font-size:12px!important;margin-top:4px!important}.entregaStatus{font-size:11px!important;padding:4px 8px!important;border-radius:8px!important}
+      #entrega .entregaFleetIcon{width:48px!important;height:48px!important;background-size:34px auto!important;font-size:0!important;background-image:url('assets/camion-automobilero.png')!important;background-repeat:no-repeat!important;background-position:center!important}
+      #entrega .entregaMeta{padding-left:10px!important;gap:4px!important}.entregaMeta span{font-size:10.5px!important}.entregaMeta b{font-size:13px!important}.entregaMeta b.state{font-size:14px!important}
+      #entrega .entregaFlags{min-width:128px!important;padding:7px 8px!important;border-radius:12px!important}.entregaFlags strong{font-size:10px!important;margin-bottom:6px!important;color:#8cff70!important}.entregaFlags div{font-size:0!important;gap:8px!important}.entregaFlags i{font-size:20px!important;line-height:1!important;color:#70ff63!important}.entregaFlags span{width:30px!important;height:30px!important;border-radius:50%!important;display:inline-grid!important;place-items:center!important;background:rgba(226,232,240,.94)!important;border:1px solid rgba(255,255,255,.75)!important;box-shadow:0 2px 7px rgba(0,0,0,.35)!important;font-size:19px!important;overflow:hidden!important}
+      #entrega .entregaTimeline{height:152px!important;margin:10px 0 4px!important;padding:0 48px!important;border-radius:14px!important;overflow:visible!important}
+      #entrega .entregaLine{left:48px!important;right:48px!important;top:72px!important;height:4px!important;border-radius:14px!important;overflow:visible!important;background:rgba(220,230,240,.74)!important}.entregaLine i{height:4px!important;border-radius:14px!important;background:linear-gradient(90deg,#57e45b 0%,#bed322 42%,#f3ad17 62%,rgba(220,230,240,.74) 100%)!important}
+      #entrega .entregaStep{top:24px!important;width:138px!important;min-width:0!important}.entregaStep b{font-size:12px!important;line-height:1.08!important;margin:0!important}.entregaStep em{top:78px!important;font-size:10.5px!important;line-height:1.1!important}.entregaStep::after{top:40px!important;width:22px!important;height:22px!important;border-width:5px!important;background:#f8fafc!important}
+      #entrega .entregaVehicle{top:100px!important;width:20px!important;transform:translateX(-50%)!important;filter:drop-shadow(0 4px 5px rgba(0,0,0,.55))!important}.entregaCarrierImg{width:20px!important;height:auto!important;display:block!important}.entregaTimeline::after{left:48px!important;right:48px!important;top:118px!important;border-top:2px dashed rgba(148,163,184,.45)!important}
+      #entrega .entregaBottom{grid-template-columns:repeat(4,1fr)!important;gap:8px!important;margin-top:6px!important;padding:8px 11px!important;border-radius:11px!important;font-size:12px!important}.entregaBottom span{font-size:12px!important}.entregaBottom b{font-size:12px!important;color:#8cff70!important}
+      @media(max-width:1250px){#entrega .entregaTop{grid-template-columns:1fr 1fr!important}#entrega .entregaTimeline{height:165px!important}#entrega .entregaBottom{grid-template-columns:1fr!important}}
+    `;
+    document.head.appendChild(st);
+  }
+  function boot(){inject(); fixEntregaIcon(); applyVersion();}
+  const oldTab=window.tab;
+  if(typeof oldTab==='function' && !oldTab.__entregaCompact111){
+    const f=function(id){boot(); const r=oldTab.apply(this,arguments); setTimeout(boot,50); return r;};
+    f.__entregaCompact111=true; window.tab=f;
+  }
+  document.addEventListener('DOMContentLoaded',()=>{boot(); setTimeout(boot,250); setTimeout(boot,900);});
+  window.addEventListener('load',()=>{boot(); setTimeout(boot,500); setTimeout(boot,1500);});
+})();
+
+
+/* ===== V2.0.134 - SOLO ENTREGAS: tarjeta igual al boceto, hitos sobre linea, camion chico, banderas reales ===== */
+(function(){
+  const VERSION='2.0.134';
+  function setVersion112(){
+    window.ELTA_APP_VERSION=VERSION; window.APP_VERSION_V2=VERSION;
+    document.querySelectorAll('body *').forEach(el=>{
+      if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/i.test(el.textContent||'')){
+        el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/gi,'Versión '+VERSION);
+      }
+    });
+  }
+  function codeClass(c){c=(c||'').trim().toUpperCase(); if(c==='AR')return 'ar'; if(c==='CL')return 'cl'; if(c==='PY')return 'py'; if(c==='UY')return 'uy'; return 'xx';}
+  function postEntrega112(){
+    setVersion112();
+    document.querySelectorAll('#entrega .entregaFlags').forEach(box=>{
+      const strong=box.querySelector('strong');
+      let txt=(strong?strong.textContent:box.textContent||'').toUpperCase();
+      let m=txt.match(/(AR|CL|PY|UY)\s*[›>→-]+\s*(AR|CL|PY|UY)/);
+      let a=m?m[1]:'AR', b=m?m[2]:'CL';
+      box.innerHTML=`<div class="entregaFlagTitle"><span>ORIGEN</span><span>DESTINO</span></div><div class="entregaFlagIcons"><span class="flagRound flag-${codeClass(a)}" aria-label="${a}"></span><i>›</i><span class="flagRound flag-${codeClass(b)}" aria-label="${b}"></span></div><div class="entregaFlagCodes"><b>${a}</b><b>${b}</b></div>`;
+    });
+  }
+  function inject112(){
+    document.getElementById('entregas-v20112-final-css')?.remove();
+    const st=document.createElement('style'); st.id='entregas-v20112-final-css';
+    st.textContent=`
+      #entrega .entregaCard{padding:14px 16px!important;border-radius:16px!important;background:linear-gradient(145deg,rgba(7,24,39,.98),rgba(4,17,30,.96))!important;border:1px solid rgba(148,163,184,.24)!important;box-shadow:0 18px 40px rgba(0,0,0,.26)!important;overflow:hidden!important}
+      #entrega .entregaTop{display:grid!important;grid-template-columns:1.25fr .95fr .95fr .85fr .82fr .72fr!important;gap:12px!important;align-items:center!important;padding-bottom:12px!important;border-bottom:1px solid rgba(148,163,184,.14)!important}
+      #entrega .entregaFleet{gap:10px!important}.entregaFleet h3{font-size:22px!important;line-height:1!important}.entregaFleet small{font-size:12px!important;margin-top:5px!important}.entregaStatus{font-size:11px!important;padding:4px 9px!important;border-radius:8px!important}.entregaFleetIcon{width:50px!important;height:50px!important;font-size:0!important;background-image:url('assets/camion-automobilero.png')!important;background-repeat:no-repeat!important;background-position:center!important;background-size:34px auto!important}
+      #entrega .entregaMeta{padding-left:10px!important;border-left:1px solid rgba(148,163,184,.18)!important}.entregaMeta span{font-size:11px!important;color:#dbeafe!important}.entregaMeta b{font-size:13.5px!important}.entregaMeta b.state{font-size:15px!important;color:#7cff63!important}
+      #entrega .entregaFlags{min-width:126px!important;border:1px solid rgba(148,163,184,.24)!important;background:rgba(255,255,255,.035)!important;border-radius:14px!important;padding:8px 10px!important;text-align:center!important}.entregaFlagTitle,.entregaFlagCodes{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;align-items:center!important}.entregaFlagTitle span{font-size:9px!important;font-weight:900!important;color:#8cff70!important}.entregaFlagCodes b{font-size:12px!important;color:#f8fafc!important}.entregaFlagIcons{display:flex!important;align-items:center!important;justify-content:center!important;gap:12px!important;margin:4px 0!important}.entregaFlagIcons i{font-style:normal!important;color:#70ff63!important;font-size:24px!important;font-weight:1000!important;line-height:1!important}.flagRound{position:relative!important;width:31px!important;height:31px!important;border-radius:50%!important;display:inline-block!important;border:1px solid rgba(255,255,255,.85)!important;box-shadow:0 2px 8px rgba(0,0,0,.38)!important;overflow:hidden!important;flex:0 0 31px!important}.flag-ar{background:linear-gradient(to bottom,#76bdf2 0 33%,#fff 33% 66%,#76bdf2 66% 100%)!important}.flag-ar:after{content:'';position:absolute;left:50%;top:50%;width:6px;height:6px;background:#f6b71d;border-radius:50%;transform:translate(-50%,-50%)}.flag-cl{background:linear-gradient(to bottom,#fff 0 50%,#d52b1e 50% 100%)!important}.flag-cl:before{content:'';position:absolute;left:0;top:0;width:45%;height:50%;background:#1d4fa3}.flag-cl:after{content:'★';position:absolute;left:6px;top:1px;color:white;font-size:7px}.flag-py{background:linear-gradient(to bottom,#d52b1e 0 33%,#fff 33% 66%,#234aa0 66% 100%)!important}.flag-uy{background:repeating-linear-gradient(to bottom,#fff 0 4px,#fff 4px 7px,#58a7e6 7px 10px)!important}.flag-xx{background:#cbd5e1!important}
+      #entrega .entregaTimeline{position:relative!important;height:206px!important;margin:14px 0 7px!important;padding:0 56px!important;border-radius:16px!important;overflow:visible!important;background:linear-gradient(180deg,rgba(255,255,255,.018),rgba(255,255,255,.004))!important}
+      #entrega .entregaLine{position:absolute!important;left:56px!important;right:56px!important;top:82px!important;height:4px!important;background:rgba(226,232,240,.76)!important;border-radius:16px!important;overflow:visible!important;z-index:2!important}.entregaLine i{display:block!important;height:4px!important;background:linear-gradient(90deg,#57e45b 0%,#add51f 42%,#f5a812 62%,rgba(226,232,240,.76) 100%)!important;border-radius:16px!important}
+      #entrega .entregaStep{position:absolute!important;top:28px!important;width:150px!important;min-width:0!important;text-align:center!important;transform:translateX(-50%)!important;z-index:4!important}.entregaStep.first{transform:translateX(-15%)!important;text-align:left!important}.entregaStep.last{transform:translateX(-85%)!important;text-align:right!important}.entregaStep b{display:block!important;margin:0!important;font-size:12.5px!important;line-height:1.08!important;text-transform:uppercase!important;color:#f8fafc!important;text-shadow:0 2px 4px rgba(0,0,0,.65)!important}.entregaStep.done b{color:#96ff78!important}.entregaStep.current b{color:#ffbd24!important}.entregaStep em{position:absolute!important;left:0!important;right:0!important;top:106px!important;margin:0!important;color:#cbd5e1!important;font-size:11px!important;font-style:normal!important;line-height:1.1!important}.entregaStep.first em{text-align:left!important}.entregaStep.last em{text-align:right!important}
+      #entrega .entregaStep::after{content:''!important;position:absolute!important;left:50%!important;top:39px!important;width:30px!important;height:30px!important;border-radius:50%!important;background:#f8fafc!important;border:5px solid #64748b!important;box-shadow:0 0 0 4px rgba(15,23,42,.9)!important;transform:translateX(-50%)!important;z-index:6!important}.entregaStep.first::after{left:15%!important}.entregaStep.last::after{left:85%!important}.entregaStep.done::after{border-color:#3bd84c!important;box-shadow:0 0 0 4px rgba(34,197,94,.25),0 0 18px rgba(34,197,94,.35)!important}.entregaStep.current::after{border-color:#f0a500!important;box-shadow:0 0 0 4px rgba(245,158,11,.25),0 0 18px rgba(245,158,11,.42)!important}
+      #entrega .entregaStep::before{content:'✓'!important;position:absolute!important;left:50%!important;top:91px!important;width:25px!important;height:25px!important;border-radius:50%!important;display:grid!important;place-items:center!important;background:rgba(25,45,64,.9)!important;border:2px solid #64748b!important;color:#dbeafe!important;font-size:13px!important;font-weight:900!important;transform:translateX(-50%)!important;z-index:5!important}.entregaStep.current::before{content:'◷'!important;border-color:#f0a500!important;color:#f6c54a!important}.entregaStep.done::before{border-color:#3bd84c!important;color:#9dff7e!important}.entregaStep.last::before{content:'⚑'!important}.entregaStep.first::before{left:15%!important}.entregaStep.last::before{left:85%!important}
+      #entrega .entregaVehicle{position:absolute!important;top:154px!important;transform:translateX(-50%)!important;width:32px!important;height:20px!important;z-index:5!important;display:block!important;overflow:visible!important;filter:drop-shadow(0 4px 5px rgba(0,0,0,.55))!important}.entregaCarrierImg,#entrega .entregaVehicle img,#entrega img.entregaCarrierImg{width:32px!important;max-width:32px!important;height:auto!important;max-height:22px!important;display:block!important;object-fit:contain!important}.entregaTimeline::after{content:''!important;position:absolute!important;left:56px!important;right:56px!important;top:164px!important;border-top:2px dashed rgba(148,163,184,.48)!important;z-index:1!important}
+      #entrega .entregaBottom{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:10px!important;margin-top:6px!important;padding:9px 12px!important;border-radius:12px!important;background:rgba(255,255,255,.04)!important;border:1px solid rgba(148,163,184,.14)!important;font-size:12.5px!important}.entregaBottom span,.entregaBottom b{font-size:12.5px!important}.entregaBottom b{color:#8cff70!important}
+      @media(max-width:1250px){#entrega .entregaTop{grid-template-columns:1fr 1fr!important}#entrega .entregaTimeline{height:220px!important;overflow:visible!important}#entrega .entregaBottom{grid-template-columns:1fr!important}}
+    `;
+    document.head.appendChild(st);
+  }
+  function boot112(){inject112(); postEntrega112();}
+  const old=window.renderEntrega;
+  if(typeof old==='function' && !old.__v20112Final){
+    const f=async function(){const r=await old.apply(this,arguments); setTimeout(postEntrega112,0); setTimeout(postEntrega112,60); return r;};
+    f.__v20112Final=true; window.renderEntrega=f;
+  }
+  const oldTab=window.tab;
+  if(typeof oldTab==='function' && !oldTab.__v20112Final){
+    const ft=function(){inject112(); const r=oldTab.apply(this,arguments); setTimeout(boot112,80); setTimeout(boot112,300); return r;};
+    ft.__v20112Final=true; window.tab=ft;
+  }
+  document.addEventListener('DOMContentLoaded',()=>{boot112(); setTimeout(boot112,250); setTimeout(boot112,1000);});
+  window.addEventListener('load',()=>{boot112(); setTimeout(boot112,400); setTimeout(boot112,1500);});
+})();
+
+
+/* ===== V2.0.134 - SOLO ENTREGAS: tarjeta reconstruida igual boceto, sin tocar Embarques ===== */
+(function(){
+  const VERSION='2.0.134';
+  function setVer(){
+    try{window.APP_VERSION=VERSION;}catch(e){}
+    document.querySelectorAll('body *').forEach(el=>{
+      if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/i.test(el.textContent||'')){
+        el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/gi,'Versión '+VERSION);
+      }
+    });
+  }
+  function codeClass(c){c=(c||'').trim().toUpperCase(); if(c==='AR')return 'ar'; if(c==='CL')return 'cl'; if(c==='PY')return 'py'; if(c==='UY')return 'uy'; return 'xx';}
+  function fixFlags(){
+    document.querySelectorAll('#entrega .entregaFlags').forEach(box=>{
+      const current=(box.textContent||'').toUpperCase();
+      const m=current.match(/(AR|CL|PY|UY)\s*[›>→-]+\s*(AR|CL|PY|UY)/);
+      const a=m?m[1]:'AR', b=m?m[2]:'CL';
+      box.innerHTML='<div class="entregaFlagTitle"><span>ORIGEN</span><span>DESTINO</span></div><div class="entregaFlagIcons"><span class="flagRound flag-'+codeClass(a)+'" aria-label="'+a+'"></span><i>›</i><span class="flagRound flag-'+codeClass(b)+'" aria-label="'+b+'"></span></div><div class="entregaFlagCodes"><b>'+a+'</b><b>'+b+'</b></div>';
+    });
+  }
+  function forceTruckSize(){
+    document.querySelectorAll('#entrega .entregaVehicle').forEach(v=>{
+      v.style.width='36px'; v.style.height='22px'; v.style.top='142px'; v.style.zIndex='8'; v.style.overflow='visible';
+    });
+    document.querySelectorAll('#entrega .entregaVehicle img,#entrega img.entregaCarrierImg').forEach(img=>{
+      img.style.width='36px'; img.style.maxWidth='36px'; img.style.height='auto'; img.style.maxHeight='24px'; img.style.display='block'; img.style.objectFit='contain';
+    });
+  }
+  function inject113(){
+    document.getElementById('entregas-v20113-card-css')?.remove();
+    const st=document.createElement('style'); st.id='entregas-v20113-card-css';
+    st.textContent=`
+      /* tarjeta general */
+      #entrega .entregaCard{padding:13px 16px!important;border-radius:16px!important;background:linear-gradient(145deg,rgba(7,24,39,.985),rgba(4,17,30,.965))!important;border:1px solid rgba(148,163,184,.24)!important;box-shadow:0 16px 36px rgba(0,0,0,.26)!important;overflow:hidden!important}
+      #entrega .entregaTop{display:grid!important;grid-template-columns:1.30fr .95fr .95fr .85fr .82fr 150px!important;gap:10px!important;align-items:center!important;padding-bottom:11px!important;border-bottom:1px solid rgba(148,163,184,.14)!important}
+      #entrega .entregaFleet{gap:10px!important}.entregaFleet h3{font-size:22px!important;line-height:1!important;margin:0!important}.entregaFleet small{font-size:12px!important;margin-top:5px!important}.entregaStatus{font-size:11px!important;padding:4px 9px!important;border-radius:8px!important}.entregaFleetIcon{width:48px!important;height:48px!important;font-size:0!important;background-image:url('assets/camion-automobilero.png')!important;background-repeat:no-repeat!important;background-position:center!important;background-size:34px auto!important}
+      #entrega .entregaMeta{padding-left:10px!important;border-left:1px solid rgba(148,163,184,.18)!important}.entregaMeta span{font-size:11px!important;color:#dbeafe!important}.entregaMeta b{font-size:13.5px!important;color:#f8fafc!important}.entregaMeta b.state{font-size:15px!important;color:#7cff63!important}
+      /* banderas reales */
+      #entrega .entregaFlags{width:138px!important;min-width:138px!important;max-width:138px!important;justify-self:end!important;border:1px solid rgba(148,163,184,.24)!important;background:rgba(255,255,255,.035)!important;border-radius:14px!important;padding:9px 11px!important;text-align:center!important;box-sizing:border-box!important;overflow:hidden!important}.entregaFlagTitle,.entregaFlagCodes{display:grid!important;grid-template-columns:1fr 1fr!important;gap:14px!important;align-items:center!important}.entregaFlagTitle span{font-size:9px!important;line-height:1!important;font-weight:900!important;color:#8cff70!important;white-space:nowrap!important}.entregaFlagCodes b{font-size:12px!important;line-height:1!important;color:#f8fafc!important}.entregaFlagIcons{display:flex!important;align-items:center!important;justify-content:center!important;gap:14px!important;margin:6px 0 7px!important}.entregaFlagIcons i{font-style:normal!important;color:#70ff63!important;font-size:25px!important;font-weight:1000!important;line-height:1!important}.flagRound{position:relative!important;width:32px!important;height:32px!important;border-radius:50%!important;display:inline-block!important;border:1px solid rgba(255,255,255,.9)!important;box-shadow:0 2px 8px rgba(0,0,0,.38)!important;overflow:hidden!important;flex:0 0 32px!important}.flag-ar{background:linear-gradient(to bottom,#75bdf2 0 33%,#fff 33% 66%,#75bdf2 66% 100%)!important}.flag-ar:after{content:''!important;position:absolute!important;left:50%!important;top:50%!important;width:6px!important;height:6px!important;background:#f6b71d!important;border-radius:50%!important;transform:translate(-50%,-50%)!important}.flag-cl{background:linear-gradient(to bottom,#fff 0 50%,#d52b1e 50% 100%)!important}.flag-cl:before{content:''!important;position:absolute!important;left:0!important;top:0!important;width:45%!important;height:50%!important;background:#1d4fa3!important}.flag-cl:after{content:'★'!important;position:absolute!important;left:6px!important;top:1px!important;color:white!important;font-size:7px!important}.flag-py{background:linear-gradient(to bottom,#d52b1e 0 33%,#fff 33% 66%,#234aa0 66% 100%)!important}.flag-uy{background:repeating-linear-gradient(to bottom,#fff 0 4px,#fff 4px 7px,#58a7e6 7px 10px)!important}.flag-xx{background:#cbd5e1!important}
+      /* timeline igual al boceto */
+      #entrega .entregaTimeline{position:relative!important;height:178px!important;margin:12px 0 6px!important;padding:0 50px!important;border-radius:16px!important;overflow:visible!important;background:linear-gradient(180deg,rgba(255,255,255,.018),rgba(255,255,255,.004))!important}
+      #entrega .entregaLine{position:absolute!important;left:50px!important;right:50px!important;top:82px!important;height:4px!important;background:rgba(226,232,240,.76)!important;border-radius:14px!important;overflow:visible!important;z-index:2!important}.entregaLine i{display:block!important;height:4px!important;background:linear-gradient(90deg,#57e45b 0%,#b6d91d 42%,#f5a812 62%,rgba(226,232,240,.76) 100%)!important;border-radius:14px!important}
+      #entrega .entregaStep{position:absolute!important;top:30px!important;width:150px!important;min-width:0!important;text-align:center!important;transform:translateX(-50%)!important;z-index:4!important}.entregaStep.first{transform:translateX(-15%)!important;text-align:left!important}.entregaStep.last{transform:translateX(-85%)!important;text-align:right!important}.entregaStep b{display:block!important;margin:0!important;font-size:12px!important;line-height:1.08!important;text-transform:uppercase!important;color:#f8fafc!important;text-shadow:0 2px 4px rgba(0,0,0,.65)!important}.entregaStep.done b{color:#96ff78!important}.entregaStep.current b{color:#ffbd24!important}.entregaStep em{position:absolute!important;left:0!important;right:0!important;top:102px!important;margin:0!important;color:#cbd5e1!important;font-size:10.8px!important;font-style:normal!important;line-height:1.1!important}.entregaStep.first em{text-align:left!important}.entregaStep.last em{text-align:right!important}
+      /* puntos centrados sobre linea: timeline line top 82, step top 30, marker outer top 34 => centro aprox 84 */
+      #entrega .entregaStep::after{content:''!important;position:absolute!important;left:50%!important;top:34px!important;width:30px!important;height:30px!important;border-radius:50%!important;background:#f8fafc!important;border:5px solid #64748b!important;box-shadow:0 0 0 4px rgba(15,23,42,.9)!important;transform:translateX(-50%)!important;z-index:7!important;box-sizing:border-box!important}.entregaStep.first::after{left:15%!important}.entregaStep.last::after{left:85%!important}.entregaStep.done::after{border-color:#3bd84c!important;box-shadow:0 0 0 4px rgba(34,197,94,.25),0 0 18px rgba(34,197,94,.35)!important}.entregaStep.current::after{border-color:#f0a500!important;box-shadow:0 0 0 4px rgba(245,158,11,.25),0 0 18px rgba(245,158,11,.42)!important}
+      #entrega .entregaStep::before{content:'✓'!important;position:absolute!important;left:50%!important;top:86px!important;width:24px!important;height:24px!important;border-radius:50%!important;display:grid!important;place-items:center!important;background:rgba(25,45,64,.9)!important;border:2px solid #64748b!important;color:#dbeafe!important;font-size:12px!important;font-weight:900!important;transform:translateX(-50%)!important;z-index:5!important}.entregaStep.current::before{content:'◷'!important;border-color:#f0a500!important;color:#f6c54a!important}.entregaStep.done::before{border-color:#3bd84c!important;color:#9dff7e!important}.entregaStep.last::before{content:'⚑'!important}.entregaStep.first::before{left:15%!important}.entregaStep.last::before{left:85%!important}
+      /* camion 90% mas chico, debajo de la linea punteada */
+      #entrega .entregaVehicle{position:absolute!important;top:142px!important;transform:translateX(-50%)!important;width:36px!important;height:22px!important;max-width:36px!important;z-index:8!important;display:block!important;overflow:visible!important;filter:drop-shadow(0 4px 5px rgba(0,0,0,.55))!important}.entregaCarrierImg,#entrega .entregaVehicle img,#entrega img.entregaCarrierImg{width:36px!important;max-width:36px!important;height:auto!important;max-height:24px!important;display:block!important;object-fit:contain!important}.entregaTimeline::after{content:''!important;position:absolute!important;left:50px!important;right:50px!important;top:148px!important;border-top:2px dashed rgba(148,163,184,.48)!important;z-index:1!important}
+      #entrega .entregaBottom{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:10px!important;margin-top:6px!important;padding:9px 12px!important;border-radius:12px!important;background:rgba(255,255,255,.04)!important;border:1px solid rgba(148,163,184,.14)!important;font-size:12px!important}.entregaBottom span,.entregaBottom b{font-size:12px!important}.entregaBottom b{color:#8cff70!important}
+      @media(max-width:1250px){#entrega .entregaTop{grid-template-columns:1fr 1fr!important}#entrega .entregaTimeline{height:190px!important;overflow:visible!important}#entrega .entregaBottom{grid-template-columns:1fr!important}}
+    `;
+    document.head.appendChild(st);
+  }
+  function boot113(){inject113(); setVer(); fixFlags(); forceTruckSize();}
+  const oldRender=window.renderEntrega;
+  if(typeof oldRender==='function' && !oldRender.__v20113Card){
+    const f=async function(){const r=await oldRender.apply(this,arguments); setTimeout(boot113,0); setTimeout(boot113,80); setTimeout(boot113,240); return r;};
+    f.__v20113Card=true; window.renderEntrega=f;
+  }
+  const oldTab=window.tab;
+  if(typeof oldTab==='function' && !oldTab.__v20113Card){
+    const t=function(){inject113(); const r=oldTab.apply(this,arguments); setTimeout(boot113,80); setTimeout(boot113,300); return r;};
+    t.__v20113Card=true; window.tab=t;
+  }
+  document.addEventListener('DOMContentLoaded',()=>{boot113(); setTimeout(boot113,250); setTimeout(boot113,1000);});
+  window.addEventListener('load',()=>{boot113(); setTimeout(boot113,700);});
+})();
+
+
+/* ===== V2.0.134 - CORRECCION FINAL SOLO ENTREGAS: tarjeta igual al boceto, sin tocar Embarques ===== */
+(function(){
+  const VERSION='2.0.134';
+  window.ELTA_APP_VERSION=VERSION;
+  window.APP_VERSION_V2=VERSION;
+  function setVersion114(){
+    document.querySelectorAll('span,small,p,div,footer').forEach(el=>{
+      if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/.test(el.textContent||'')){
+        el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/g,'Versión '+VERSION);
+      }
+    });
+  }
+  function codeClass(code){
+    code=String(code||'').trim().toUpperCase();
+    if(code==='AR')return 'flag-ar';
+    if(code==='CL')return 'flag-cl';
+    if(code==='PY')return 'flag-py';
+    if(code==='UY')return 'flag-uy';
+    return 'flag-xx';
+  }
+  function normalizeFlags(){
+    document.querySelectorAll('#entrega .entregaFlags').forEach(box=>{
+      let txt=(box.textContent||'').toUpperCase();
+      let codes=(txt.match(/\b(AR|CL|PY|UY)\b/g)||[]);
+      let from=codes[0]||'AR';
+      let to=codes[codes.length-1]||'CL';
+      box.innerHTML=`<div class="entregaFlagTitle"><span>ORIGEN</span><span>DESTINO</span></div><div class="entregaFlagIcons"><span class="flagRound ${codeClass(from)}"></span><i>→</i><span class="flagRound ${codeClass(to)}"></span></div><div class="entregaFlagCodes"><b>${from}</b><b>${to}</b></div>`;
+    });
+  }
+  function menuOrder114(){
+    const nav=document.querySelector('.sideNav'); if(!nav)return;
+    let entrega=[...nav.querySelectorAll('button')].find(b=>b.dataset.menuId==='entrega'||(b.getAttribute('onclick')||'').includes("tab('entrega')"));
+    if(entrega){ entrega.dataset.menuId='entrega'; entrega.setAttribute('onclick',"tab('entrega')"); entrega.innerHTML='<span class="menuIcon">🚛</span><span class="menuText">Entregas</span>'; }
+    const emb=[...nav.querySelectorAll('button')].find(b=>(b.getAttribute('onclick')||'').includes("tab('embarques')"));
+    if(emb && entrega && emb.nextSibling!==entrega) emb.parentNode.insertBefore(entrega, emb.nextSibling);
+  }
+  function injectCss114(){
+    document.getElementById('entrega-v20114-final-css')?.remove();
+    const st=document.createElement('style'); st.id='entrega-v20114-final-css';
+    st.textContent=`
+      #entrega .entregaCard{padding:14px 18px!important;border-radius:18px!important;background:linear-gradient(145deg,rgba(7,22,36,.99),rgba(4,15,28,.97))!important;border:1px solid rgba(148,163,184,.26)!important;box-shadow:0 16px 38px rgba(0,0,0,.28)!important;overflow:hidden!important}
+      #entrega .entregaTop{display:grid!important;grid-template-columns:1.20fr 1fr 1fr .88fr .82fr 156px!important;gap:12px!important;align-items:center!important;padding:6px 0 14px!important;border-bottom:1px solid rgba(148,163,184,.16)!important}
+      #entrega .entregaFleet{display:flex!important;gap:12px!important;align-items:center!important}.entregaFleetIcon{width:58px!important;height:58px!important;border-radius:50%!important;border:2px solid #46c63b!important;background:rgba(40,120,45,.12) url('assets/camion-automobilero.png') center/40px auto no-repeat!important;font-size:0!important;box-shadow:0 0 0 2px rgba(70,198,59,.10)!important}.entregaFleet h3{font-size:23px!important;line-height:1!important;margin:0 0 5px!important;color:#f8fafc!important}.entregaFleet small{font-size:12px!important;color:#cbd5e1!important;margin-top:5px!important}.entregaStatus{font-size:11px!important;padding:5px 10px!important;border-radius:9px!important;font-weight:900!important;background:#17642c!important;color:#9dff7e!important}
+      #entrega .entregaMeta{display:grid!important;gap:6px!important;justify-items:center!important;text-align:center!important;border-left:1px solid rgba(148,163,184,.19)!important;padding-left:12px!important;min-width:0!important}.entregaMeta span{font-size:11px!important;color:#cbd5e1!important;margin:0!important}.entregaMeta b{font-size:13.8px!important;color:#f8fafc!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}.entregaMeta b.state{font-size:15px!important;color:#74ff63!important}
+      #entrega .entregaFlags{width:156px!important;min-width:156px!important;max-width:156px!important;justify-self:end!important;border:1px solid rgba(148,163,184,.25)!important;background:rgba(255,255,255,.035)!important;border-radius:15px!important;padding:10px 13px!important;text-align:center!important;box-sizing:border-box!important;overflow:hidden!important}.entregaFlagTitle,.entregaFlagCodes{display:grid!important;grid-template-columns:1fr 1fr!important;gap:22px!important;align-items:center!important}.entregaFlagTitle span{font-size:10px!important;line-height:1!important;font-weight:900!important;color:#8cff70!important}.entregaFlagCodes b{font-size:13px!important;line-height:1!important;color:#f8fafc!important}.entregaFlagIcons{display:flex!important;align-items:center!important;justify-content:center!important;gap:20px!important;margin:8px 0!important}.entregaFlagIcons i{font-style:normal!important;color:#70ff63!important;font-size:30px!important;font-weight:900!important;line-height:1!important}.flagRound{position:relative!important;width:36px!important;height:36px!important;border-radius:50%!important;display:inline-block!important;border:1px solid rgba(255,255,255,.90)!important;box-shadow:0 2px 8px rgba(0,0,0,.40)!important;overflow:hidden!important;flex:0 0 36px!important}.flag-ar{background:linear-gradient(to bottom,#75bdf2 0 33%,#fff 33% 66%,#75bdf2 66% 100%)!important}.flag-ar:after{content:''!important;position:absolute!important;left:50%!important;top:50%!important;width:7px!important;height:7px!important;background:#f6b71d!important;border-radius:50%!important;transform:translate(-50%,-50%)!important}.flag-cl{background:linear-gradient(to bottom,#fff 0 50%,#d52b1e 50% 100%)!important}.flag-cl:before{content:''!important;position:absolute!important;left:0!important;top:0!important;width:46%!important;height:50%!important;background:#1d4fa3!important}.flag-cl:after{content:'★'!important;position:absolute!important;left:6px!important;top:1px!important;color:white!important;font-size:8px!important}.flag-py{background:linear-gradient(to bottom,#d52b1e 0 33%,#fff 33% 66%,#234aa0 66% 100%)!important}.flag-uy{background:repeating-linear-gradient(to bottom,#fff 0 4px,#fff 4px 7px,#58a7e6 7px 10px)!important}.flag-xx{background:#cbd5e1!important}
+      #entrega .entregaTimeline{position:relative!important;height:190px!important;margin:14px 0 8px!important;padding:0 48px!important;border-radius:16px!important;overflow:visible!important;background:linear-gradient(180deg,rgba(255,255,255,.018),rgba(255,255,255,.004))!important}
+      #entrega .entregaLine{position:absolute!important;left:48px!important;right:48px!important;top:82px!important;height:4px!important;background:rgba(226,232,240,.76)!important;border-radius:16px!important;overflow:visible!important;z-index:2!important}.entregaLine i{display:block!important;height:4px!important;background:linear-gradient(90deg,#57e45b 0%,#b6d91d 40%,#f5a812 62%,rgba(226,232,240,.76) 100%)!important;border-radius:16px!important}
+      #entrega .entregaStep{position:absolute!important;top:28px!important;width:164px!important;min-width:0!important;text-align:center!important;transform:translateX(-50%)!important;z-index:4!important}.entregaStep.first{transform:translateX(-15%)!important;text-align:left!important}.entregaStep.last{transform:translateX(-85%)!important;text-align:right!important}.entregaStep b{display:block!important;margin:0!important;font-size:12px!important;line-height:1.12!important;text-transform:uppercase!important;color:#f8fafc!important;text-shadow:0 2px 4px rgba(0,0,0,.65)!important}.entregaStep.done b{color:#96ff78!important}.entregaStep.current b{color:#ffbd24!important}.entregaStep em{position:absolute!important;left:0!important;right:0!important;top:104px!important;margin:0!important;color:#cbd5e1!important;font-size:11px!important;font-style:normal!important;line-height:1.1!important}.entregaStep.first em{text-align:left!important}.entregaStep.last em{text-align:right!important}
+      #entrega .entregaStep::after{content:''!important;position:absolute!important;left:50%!important;top:39px!important;width:34px!important;height:34px!important;border-radius:50%!important;background:#f8fafc!important;border:5px solid #64748b!important;box-shadow:0 0 0 4px rgba(15,23,42,.9)!important;transform:translateX(-50%)!important;z-index:7!important;box-sizing:border-box!important}.entregaStep.first::after{left:15%!important}.entregaStep.last::after{left:85%!important}.entregaStep.done::after{border-color:#3bd84c!important;box-shadow:0 0 0 4px rgba(34,197,94,.25),0 0 18px rgba(34,197,94,.35)!important}.entregaStep.current::after{border-color:#f0a500!important;box-shadow:0 0 0 4px rgba(245,158,11,.25),0 0 18px rgba(245,158,11,.42)!important}
+      #entrega .entregaStep::before{content:'✓'!important;position:absolute!important;left:50%!important;top:88px!important;width:26px!important;height:26px!important;border-radius:50%!important;display:grid!important;place-items:center!important;background:rgba(25,45,64,.92)!important;border:2px solid #64748b!important;color:#dbeafe!important;font-size:12px!important;font-weight:900!important;transform:translateX(-50%)!important;z-index:5!important}.entregaStep.current::before{content:'◷'!important;border-color:#f0a500!important;color:#f6c54a!important}.entregaStep.done::before{border-color:#3bd84c!important;color:#9dff7e!important}.entregaStep.last::before{content:'⚑'!important}.entregaStep.first::before{left:15%!important}.entregaStep.last::before{left:85%!important}
+      #entrega .entregaTimeline::after{content:''!important;position:absolute!important;left:48px!important;right:48px!important;top:150px!important;border-top:2px dashed rgba(148,163,184,.52)!important;z-index:1!important}#entrega .entregaVehicle{position:absolute!important;top:139px!important;transform:translateX(-50%)!important;width:38px!important;height:25px!important;max-width:38px!important;z-index:8!important;display:block!important;overflow:visible!important;filter:drop-shadow(0 4px 5px rgba(0,0,0,.55))!important}.entregaCarrierImg,#entrega .entregaVehicle img,#entrega img.entregaCarrierImg{width:38px!important;max-width:38px!important;height:auto!important;max-height:25px!important;display:block!important;object-fit:contain!important;background:transparent!important}
+      #entrega .entregaBottom{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:10px!important;margin-top:7px!important;padding:10px 14px!important;border-radius:12px!important;background:rgba(255,255,255,.04)!important;border:1px solid rgba(148,163,184,.14)!important;color:#dbeafe!important}.entregaBottom span,.entregaBottom b{font-size:12px!important}.entregaBottom b{color:#8cff70!important}
+      @media(max-width:1250px){#entrega .entregaTop{grid-template-columns:1fr 1fr!important}#entrega .entregaTimeline{height:200px!important;overflow:visible!important}#entrega .entregaBottom{grid-template-columns:1fr!important}}
+    `;
+    document.head.appendChild(st);
+  }
+  function boot114(){injectCss114(); menuOrder114(); normalizeFlags(); setVersion114();}
+  const prevRender=window.renderEntrega;
+  if(typeof prevRender==='function' && !prevRender.__v20114Final){
+    const f=async function(){const r=await prevRender.apply(this,arguments); boot114(); setTimeout(boot114,50); setTimeout(boot114,250); return r;};
+    f.__v20114Final=true; window.renderEntrega=f;
+  }
+  const prevTab=window.tab;
+  if(typeof prevTab==='function' && !prevTab.__v20114Final){
+    const t=function(id){boot114(); const r=prevTab.apply(this,arguments); boot114(); if(id==='entrega') setTimeout(()=>{ if(typeof window.renderEntrega==='function') window.renderEntrega(false); boot114(); },80); return r;};
+    t.__v20114Final=true; window.tab=t;
+  }
+  document.addEventListener('DOMContentLoaded',()=>{boot114(); setTimeout(boot114,300); setTimeout(boot114,900);});
+  window.addEventListener('load',()=>{boot114(); setTimeout(boot114,500);});
+})();
+
+/* ===== V2.0.134 - SOLO Entregas: tarjeta compacta final y 2 banderas reales ===== */
+(function(){
+  const VERSION='2.0.134';
+  window.ELTA_APP_VERSION=VERSION; window.APP_VERSION_V2=VERSION;
+  function setVersion115(){
+    document.querySelectorAll('span,small,p,div,footer').forEach(el=>{
+      if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/.test(el.textContent||'')){
+        el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/g,'Versión '+VERSION);
+      }
+    });
+  }
+  function cleanCode(s){
+    s=String(s||'').toUpperCase();
+    if(s.includes('CL')) return 'CL';
+    if(s.includes('PY')) return 'PY';
+    if(s.includes('UY')) return 'UY';
+    if(s.includes('BR')) return 'BR';
+    return 'AR';
+  }
+  function codeClass(c){return {'AR':'ar','CL':'cl','PY':'py','UY':'uy','BR':'br'}[c]||'ar';}
+  function fixFlags(){
+    document.querySelectorAll('#entrega .entregaFlags').forEach(box=>{
+      if(box.dataset.v115==='ok') return;
+      const txt=(box.textContent||'').toUpperCase();
+      let parts=txt.match(/\b(AR|CL|PY|UY|BR)\b/g)||['AR','CL'];
+      const from=cleanCode(parts[0]||'AR'), to=cleanCode(parts[1]||'CL');
+      box.innerHTML=`<div class="flagLabels"><span>ORIGEN</span><span>DESTINO</span></div><div class="flagRoute"><span class="flag flag-${codeClass(from)}"></span><b>›</b><span class="flag flag-${codeClass(to)}"></span></div><div class="flagCodes"><span>${from}</span><span>${to}</span></div>`;
+      box.dataset.v115='ok';
+    });
+  }
+  function fixSteps(){
+    const cards=document.querySelectorAll('#entrega .entregaCard');
+    cards.forEach(card=>{
+      const steps=[...card.querySelectorAll('.entregaStep')];
+      steps.forEach((st,i)=>{
+        st.classList.toggle('first',i===0); st.classList.toggle('last',i===steps.length-1);
+        const b=st.querySelector('b'); if(b){
+          b.textContent=(b.textContent||'').replace(/\s+/g,' ').trim();
+          if(b.textContent.length>28) b.textContent=b.textContent.replace('LOGISTICO','LOG.');
+        }
+      });
+    });
+  }
+  function injectCss115(){
+    document.getElementById('entregas-v115-css')?.remove();
+    const st=document.createElement('style'); st.id='entregas-v115-css';
+    st.textContent=`
+      #entrega .entregaCards{gap:10px!important}
+      #entrega .entregaCard{padding:12px 14px!important;border-radius:16px!important;background:linear-gradient(135deg,rgba(7,24,40,.98),rgba(6,18,31,.96))!important;border:1px solid rgba(148,163,184,.22)!important;box-shadow:0 12px 24px rgba(0,0,0,.22)!important;overflow:hidden!important}
+      #entrega .entregaTop{display:grid!important;grid-template-columns:1.35fr repeat(4,1fr) 1.05fr!important;gap:10px!important;align-items:center!important;padding-bottom:10px!important;border-bottom:1px solid rgba(148,163,184,.14)!important}
+      #entrega .entregaFleet{gap:10px!important}.entregaFleetIcon{width:46px!important;height:46px!important;font-size:0!important;background:rgba(32,156,48,.14)!important;border:2px solid rgba(82,255,96,.55)!important;background-image:url('assets/camion-automobilero.png')!important;background-size:72%!important;background-repeat:no-repeat!important;background-position:center!important}
+      #entrega .entregaFleetIcon img,#entrega .entregaFleetIcon svg{display:none!important}
+      #entrega .entregaFleet h3{font-size:22px!important;line-height:1!important;margin:0 0 4px!important}
+      #entrega .entregaStatus{font-size:11px!important;padding:4px 10px!important;border-radius:8px!important;margin-top:0!important;line-height:1!important}.entregaFleet small{font-size:12px!important;margin-top:6px!important}
+      #entrega .entregaMeta{padding-left:10px!important;border-left:1px solid rgba(148,163,184,.16)!important;min-height:42px!important;display:flex!important;flex-direction:column!important;justify-content:center!important}
+      #entrega .entregaMeta span{font-size:10.5px!important;margin:0 0 4px!important;color:#cbd5e1!important}.entregaMeta b{font-size:13px!important;line-height:1.1!important}.entregaMeta b.state{font-size:14px!important;color:#7cff63!important}
+      #entrega .entregaFlags{height:78px!important;min-width:126px!important;padding:8px 10px!important;border-radius:13px!important;border:1px solid rgba(148,163,184,.24)!important;background:rgba(255,255,255,.035)!important;display:flex!important;flex-direction:column!important;justify-content:center!important;gap:5px!important;text-align:center!important}
+      #entrega .entregaFlags .flagLabels,#entrega .entregaFlags .flagCodes{display:grid!important;grid-template-columns:1fr 1fr!important;gap:24px!important;align-items:center!important;font-weight:900!important;line-height:1!important}
+      #entrega .entregaFlags .flagLabels{font-size:9px!important;color:#7cff63!important}.entregaFlags .flagCodes{font-size:12px!important;color:#f8fafc!important}
+      #entrega .entregaFlags .flagRoute{display:grid!important;grid-template-columns:34px 18px 34px!important;align-items:center!important;justify-content:center!important;gap:10px!important;line-height:1!important}
+      #entrega .entregaFlags .flagRoute b{font-size:25px!important;color:#7cff63!important;font-weight:900!important;line-height:1!important}.entregaFlags strong,.entregaFlags div:not(.flagLabels):not(.flagRoute):not(.flagCodes){display:none!important}
+      #entrega .flag{width:34px!important;height:24px!important;border-radius:50%!important;display:inline-block!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.55),0 2px 8px rgba(0,0,0,.35)!important;overflow:hidden!important;position:relative!important;background:#ddd!important}
+      #entrega .flag-ar{background:linear-gradient(#75bdf8 0 33%,#fff 33% 66%,#75bdf8 66% 100%)!important} #entrega .flag-ar:after{content:'';position:absolute;left:50%;top:50%;width:6px;height:6px;border-radius:50%;background:#f4b000;transform:translate(-50%,-50%)}
+      #entrega .flag-cl{background:linear-gradient(90deg,#1559b7 0 38%,transparent 38%),linear-gradient(#fff 0 50%,#d92332 50% 100%)!important} #entrega .flag-cl:after{content:'★';position:absolute;left:5px;top:1px;color:#fff;font-size:8px}
+      #entrega .flag-py{background:linear-gradient(#d92332 0 33%,#fff 33% 66%,#2c55a2 66% 100%)!important}.flag-py:after{content:'';position:absolute;left:50%;top:50%;width:5px;height:5px;border-radius:50%;background:#d9b24c;transform:translate(-50%,-50%)}
+      #entrega .flag-uy{background:repeating-linear-gradient(to bottom,#fff 0 4px,#4aa3df 4px 8px)!important}.flag-uy:after{content:'';position:absolute;left:5px;top:5px;width:6px;height:6px;border-radius:50%;background:#f4b000}
+      #entrega .flag-br{background:#179b48!important}.flag-br:before{content:'';position:absolute;left:50%;top:50%;width:18px;height:18px;background:#ffd84b;transform:translate(-50%,-50%) rotate(45deg)}.flag-br:after{content:'';position:absolute;left:50%;top:50%;width:10px;height:10px;border-radius:50%;background:#21468b;transform:translate(-50%,-50%)}
+      #entrega .entregaTimeline{height:190px!important;margin-top:10px!important;padding:0 36px!important;position:relative!important;overflow:visible!important;background:rgba(255,255,255,.018)!important;border-radius:14px!important}
+      #entrega .entregaLine{position:absolute!important;left:74px!important;right:74px!important;top:86px!important;height:3px!important;border-radius:8px!important;background:rgba(226,232,240,.78)!important;overflow:hidden!important;z-index:1!important}
+      #entrega .entregaLine i{height:100%!important;display:block!important;background:linear-gradient(90deg,#48e35b,#9bd814,#f4a000)!important;border-radius:8px!important}
+      #entrega .entregaStep{position:absolute!important;top:43px!important;width:150px!important;min-width:0!important;text-align:center!important;transform:translateX(-50%)!important;z-index:3!important}
+      #entrega .entregaStep.first{transform:translateX(-50%)!important;text-align:center!important}.entregaStep.last{transform:translateX(-50%)!important;text-align:center!important}
+      #entrega .entregaStep b{position:absolute!important;left:50%!important;top:-36px!important;transform:translateX(-50%)!important;width:160px!important;display:block!important;margin:0!important;color:#f8fafc!important;font-size:12px!important;line-height:1.14!important;text-transform:uppercase!important;text-shadow:0 1px 3px rgba(0,0,0,.55)!important;white-space:normal!important;overflow:visible!important}
+      #entrega .entregaStep::after{content:''!important;position:absolute!important;left:50%!important;top:35px!important;width:22px!important;height:22px!important;border-radius:50%!important;transform:translate(-50%,-50%)!important;background:#eef2f7!important;border:4px solid rgba(71,85,105,.95)!important;box-shadow:0 0 0 3px rgba(15,23,42,.9)!important;margin:0!important;z-index:5!important}
+      #entrega .entregaStep.done::after{border-color:#3dd34a!important}.entregaStep.current::after{border-color:#f5a400!important;box-shadow:0 0 0 3px rgba(245,164,0,.35)!important}
+      #entrega .entregaStep em{position:absolute!important;left:50%!important;top:82px!important;transform:translateX(-50%)!important;width:150px!important;display:block!important;margin:0!important;color:#cbd5e1!important;font-size:11px!important;line-height:1.05!important;font-style:normal!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+      #entrega .entregaVehicle{position:absolute!important;top:142px!important;transform:translateX(-50%)!important;width:44px!important;height:22px!important;z-index:4!important;display:flex!important;align-items:center!important;justify-content:center!important;pointer-events:none!important;filter:drop-shadow(0 3px 4px rgba(0,0,0,.4))!important}
+      #entrega .entregaCarrierImg{width:44px!important;max-width:44px!important;height:auto!important;display:block!important;filter:none!important;background:transparent!important}
+      #entrega .entregaTimeline:after{content:'';position:absolute;left:74px;right:74px;top:153px;border-top:2px dashed rgba(148,163,184,.55)}
+      #entrega .entregaBottom{margin-top:10px!important;padding:8px 12px!important;border-radius:12px!important;font-size:11.5px!important;grid-template-columns:1.15fr 1.15fr 1.1fr .8fr!important;background:rgba(255,255,255,.035)!important;border:1px solid rgba(148,163,184,.15)!important}.entregaBottom span{white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}.entregaBottom b{color:#8cff6f!important}
+      @media(max-width:1250px){#entrega .entregaTop{grid-template-columns:1fr 1fr!important}#entrega .entregaTimeline{height:200px!important}.entregaBottom{grid-template-columns:1fr!important}}
+    `;
+    document.head.appendChild(st);
+  }
+  function apply115(){setVersion115(); injectCss115(); fixFlags(); fixSteps();}
+  const prev=window.renderEntrega;
+  if(typeof prev==='function' && !prev.__v115){
+    const f=async function(){const r=await prev.apply(this,arguments); setTimeout(apply115,0); setTimeout(apply115,80); return r;};
+    f.__v115=true; window.renderEntrega=f;
+  }
+  const oldTab=window.tab;
+  if(typeof oldTab==='function' && !oldTab.__v115){
+    const f=function(id){const r=oldTab.apply(this,arguments); if(id==='entrega')setTimeout(apply115,80); return r;}; f.__v115=true; window.tab=f;
+  }
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(apply115,250));
+  window.addEventListener('load',()=>{setTimeout(apply115,150);setTimeout(apply115,900);});
+})();
+
+
+/* ===== V2.0.134 - SOLO Entregas: contenedor compacto, hitos sobre linea, sin checks, 2 banderas ===== */
+(function(){
+  const VERSION='2.0.134';
+  window.ELTA_APP_VERSION=VERSION; window.APP_VERSION_V2=VERSION;
+  function setVersion116(){
+    document.querySelectorAll('span,small,p,div,footer').forEach(el=>{
+      if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/.test(el.textContent||'')){
+        el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/g,'Versión '+VERSION);
+      }
+    });
+  }
+  function codeFromText(txt, fallback){
+    txt=String(txt||'').toUpperCase();
+    const codes=txt.match(/\b(AR|CL|PY|UY|BR)\b/g)||[];
+    return codes[0]||fallback||'AR';
+  }
+  function cls(c){return ({AR:'ar',CL:'cl',PY:'py',UY:'uy',BR:'br'}[c]||'ar');}
+  function normalizeFlags116(){
+    document.querySelectorAll('#entrega .entregaFlags').forEach(box=>{
+      const txt=(box.textContent||'').toUpperCase();
+      const codes=txt.match(/\b(AR|CL|PY|UY|BR)\b/g)||['AR','CL'];
+      const from=codes[0]||'AR', to=codes[codes.length-1]||'CL';
+      box.innerHTML=`<span class="flag flag-${cls(from)}" title="${from}"></span><span class="flagArrow">›</span><span class="flag flag-${cls(to)}" title="${to}"></span>`;
+      box.dataset.v116='ok';
+    });
+  }
+  function fixTimeline116(){
+    document.querySelectorAll('#entrega .entregaTimeline').forEach(tl=>{
+      const steps=[...tl.querySelectorAll('.entregaStep')];
+      const n=Math.max(1,steps.length-1);
+      steps.forEach((st,i)=>{
+        const pos=7+(i/n)*86;
+        st.style.left=pos+'%';
+        st.classList.toggle('first',i===0);
+        st.classList.toggle('last',i===steps.length-1);
+        const b=st.querySelector('b');
+        if(b){ b.textContent=(b.textContent||'').replace(/\s+/g,' ').trim().replace('LOGISTICO','LOGÍSTICO'); }
+      });
+      const veh=tl.querySelector('.entregaVehicle');
+      if(veh){
+        const raw=parseFloat((veh.style.left||'0').replace('%',''));
+        const clamped=Math.max(7,Math.min(93,isFinite(raw)?raw:50));
+        veh.style.left=clamped+'%';
+      }
+    });
+  }
+  function injectCss116(){
+    document.getElementById('entregas-v116-css')?.remove();
+    const st=document.createElement('style'); st.id='entregas-v116-css';
+    st.textContent=`
+      #entrega .entregaCards{gap:8px!important}
+      #entrega .entregaCard{padding:10px 12px!important;border-radius:15px!important;overflow:hidden!important;background:linear-gradient(135deg,rgba(7,22,37,.98),rgba(5,17,29,.96))!important;border:1px solid rgba(148,163,184,.20)!important;box-shadow:0 10px 22px rgba(0,0,0,.22)!important}
+      #entrega .entregaTop{display:grid!important;grid-template-columns:1.25fr repeat(4,.95fr) .62fr!important;gap:8px!important;align-items:center!important;padding-bottom:8px!important;border-bottom:1px solid rgba(148,163,184,.13)!important}
+      #entrega .entregaFleet{gap:8px!important;min-width:0!important}.entregaFleetIcon{width:38px!important;height:38px!important;font-size:0!important;background:rgba(32,156,48,.14)!important;border:2px solid rgba(82,255,96,.50)!important;background-image:url('assets/camion-automobilero.png')!important;background-size:72%!important;background-repeat:no-repeat!important;background-position:center!important}
+      #entrega .entregaFleet h3{font-size:20px!important;line-height:1!important;margin:0 0 3px!important}.entregaStatus{font-size:10px!important;line-height:1!important;padding:4px 8px!important;border-radius:8px!important;margin:0!important}.entregaFleet small{font-size:11px!important;margin-top:5px!important}
+      #entrega .entregaMeta{min-height:36px!important;padding-left:8px!important;border-left:1px solid rgba(148,163,184,.14)!important;display:flex!important;flex-direction:column!important;justify-content:center!important;min-width:0!important}.entregaMeta span{font-size:10px!important;margin-bottom:3px!important;color:#cbd5e1!important}.entregaMeta b{font-size:12px!important;line-height:1.05!important}.entregaMeta b.state{font-size:13px!important;color:#7cff63!important}
+      #entrega .entregaFlags{height:54px!important;min-width:86px!important;padding:4px 8px!important;border-radius:12px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:9px!important;background:rgba(255,255,255,.035)!important;border:1px solid rgba(148,163,184,.22)!important;text-align:center!important;overflow:hidden!important}
+      #entrega .entregaFlags *:not(.flag):not(.flagArrow){display:none!important}.entregaFlags .flagArrow{display:inline-block!important;font-size:22px!important;line-height:1!important;color:#7cff63!important;font-weight:900!important;margin:0 1px!important}
+      #entrega .flag{width:30px!important;height:30px!important;border-radius:50%!important;display:inline-block!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.65),0 2px 7px rgba(0,0,0,.35)!important;overflow:hidden!important;position:relative!important;background:#ddd!important;flex:0 0 auto!important}
+      #entrega .flag-ar{background:linear-gradient(#75bdf8 0 33%,#fff 33% 66%,#75bdf8 66% 100%)!important}#entrega .flag-ar:after{content:'';position:absolute;left:50%;top:50%;width:6px;height:6px;border-radius:50%;background:#f4b000;transform:translate(-50%,-50%)}
+      #entrega .flag-cl{background:linear-gradient(90deg,#1559b7 0 40%,transparent 40%),linear-gradient(#fff 0 50%,#d92332 50% 100%)!important}#entrega .flag-cl:after{content:'★';position:absolute;left:5px;top:2px;color:#fff;font-size:8px}
+      #entrega .flag-py{background:linear-gradient(#d92332 0 33%,#fff 33% 66%,#2c55a2 66% 100%)!important}#entrega .flag-py:after{content:'';position:absolute;left:50%;top:50%;width:5px;height:5px;border-radius:50%;background:#d9b24c;transform:translate(-50%,-50%)}
+      #entrega .flag-uy{background:repeating-linear-gradient(to bottom,#fff 0 4px,#4aa3df 4px 8px)!important}#entrega .flag-uy:after{content:'';position:absolute;left:6px;top:6px;width:6px;height:6px;border-radius:50%;background:#f4b000}
+      #entrega .flag-br{background:#179b48!important}#entrega .flag-br:before{content:'';position:absolute;left:50%;top:50%;width:18px;height:18px;background:#ffd84b;transform:translate(-50%,-50%) rotate(45deg)}#entrega .flag-br:after{content:'';position:absolute;left:50%;top:50%;width:10px;height:10px;border-radius:50%;background:#21468b;transform:translate(-50%,-50%)}
+      #entrega .entregaTimeline{height:142px!important;margin-top:8px!important;padding:0 32px!important;position:relative!important;overflow:hidden!important;background:rgba(255,255,255,.012)!important;border-radius:13px!important}
+      #entrega .entregaLine{position:absolute!important;left:7%!important;right:7%!important;top:59px!important;height:3px!important;border-radius:8px!important;background:rgba(226,232,240,.78)!important;overflow:hidden!important;z-index:1!important}
+      #entrega .entregaLine i{display:block!important;height:100%!important;background:linear-gradient(90deg,#48e35b,#a6d70b,#f3a000)!important;border-radius:8px!important}
+      #entrega .entregaStep{position:absolute!important;top:0!important;width:132px!important;min-width:0!important;text-align:center!important;transform:translateX(-50%)!important;z-index:4!important}
+      #entrega .entregaStep.first,#entrega .entregaStep.last{transform:translateX(-50%)!important;text-align:center!important}
+      #entrega .entregaStep b{position:absolute!important;left:50%!important;top:5px!important;transform:translateX(-50%)!important;width:140px!important;display:block!important;margin:0!important;color:#f8fafc!important;font-size:11px!important;line-height:1.10!important;text-transform:uppercase!important;text-shadow:0 1px 3px rgba(0,0,0,.6)!important;white-space:normal!important;overflow:hidden!important;text-overflow:ellipsis!important;max-height:26px!important}
+      #entrega .entregaStep::after{content:''!important;position:absolute!important;left:50%!important;top:59px!important;width:20px!important;height:20px!important;border-radius:50%!important;transform:translate(-50%,-50%)!important;background:#eef2f7!important;border:4px solid rgba(71,85,105,.95)!important;box-shadow:0 0 0 3px rgba(15,23,42,.92)!important;margin:0!important;z-index:6!important}.entregaStep.done::after{border-color:#4ade53!important}.entregaStep.current::after{border-color:#f4a000!important;box-shadow:0 0 0 3px rgba(244,160,0,.30)!important}
+      #entrega .entregaStep::before{content:none!important;display:none!important}
+      #entrega .entregaStep em{position:absolute!important;left:50%!important;top:84px!important;transform:translateX(-50%)!important;width:130px!important;display:block!important;margin:0!important;color:#cbd5e1!important;font-size:10px!important;line-height:1.05!important;font-style:normal!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+      #entrega .entregaTimeline:after{content:''!important;position:absolute!important;left:7%!important;right:7%!important;top:104px!important;border-top:2px dashed rgba(148,163,184,.55)!important;z-index:1!important}
+      #entrega .entregaVehicle{position:absolute!important;top:95px!important;transform:translateX(-50%)!important;width:30px!important;height:16px!important;z-index:5!important;display:flex!important;align-items:center!important;justify-content:center!important;pointer-events:none!important;filter:drop-shadow(0 2px 3px rgba(0,0,0,.45))!important;background:transparent!important}
+      #entrega .entregaCarrierImg{width:30px!important;max-width:30px!important;height:auto!important;display:block!important;background:transparent!important;filter:none!important}
+      #entrega .entregaBottom{margin-top:8px!important;padding:7px 10px!important;border-radius:11px!important;font-size:11px!important;grid-template-columns:1.12fr 1.1fr 1.05fr .75fr!important;background:rgba(255,255,255,.035)!important;border:1px solid rgba(148,163,184,.14)!important}.entregaBottom span{white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}.entregaBottom b{color:#8cff6f!important}
+      @media(max-width:1250px){#entrega .entregaTop{grid-template-columns:1fr 1fr!important}#entrega .entregaBottom{grid-template-columns:1fr!important}}
+    `;
+    document.head.appendChild(st);
+  }
+  function apply116(){injectCss116(); setVersion116(); normalizeFlags116(); fixTimeline116();}
+  const prevRender=window.renderEntrega;
+  if(typeof prevRender==='function' && !prevRender.__v116){
+    const f=async function(){const r=await prevRender.apply(this,arguments); setTimeout(apply116,0); setTimeout(apply116,80); setTimeout(apply116,240); return r;};
+    f.__v116=true; window.renderEntrega=f;
+  }
+  const prevTab=window.tab;
+  if(typeof prevTab==='function' && !prevTab.__v116){
+    const f=function(id){const r=prevTab.apply(this,arguments); if(id==='entrega')setTimeout(apply116,80); return r;};
+    f.__v116=true; window.tab=f;
+  }
+  document.addEventListener('DOMContentLoaded',()=>{setTimeout(apply116,200);setTimeout(apply116,900);});
+  window.addEventListener('load',()=>{setTimeout(apply116,120);setTimeout(apply116,700);});
+})();
+
+/* ===== V2.0.134 - SOLO Entregas: correccion real tarjeta compacta, banderas y timeline ===== */
+(function(){
+  const VERSION='2.0.134';
+  window.ELTA_APP_VERSION=VERSION;
+  window.APP_VERSION_V2=VERSION;
+
+  function setVersion118(){
+    document.querySelectorAll('span,small,p,div,footer').forEach(el=>{
+      if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/.test(el.textContent||'')){
+        el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/g,'Versión '+VERSION);
+      }
+    });
+    document.title=document.title.replace(/Versi[oó]n\s+\d+\.\d+\.\d+/g,'Versión '+VERSION);
+  }
+
+  function flagClassFromBox(box, fallback){
+    const cls = (box.querySelector('.flag-ar,.flagRound.flag-ar') && 'ar') ||
+                (box.querySelector('.flag-cl,.flagRound.flag-cl') && 'cl') ||
+                (box.querySelector('.flag-py,.flagRound.flag-py') && 'py') ||
+                (box.querySelector('.flag-uy,.flagRound.flag-uy') && 'uy') || '';
+    const text=(box.textContent||'').toUpperCase();
+    const title=[...box.querySelectorAll('[title]')].map(x=>(x.getAttribute('title')||'').toUpperCase()).join(' ');
+    const all=text+' '+title+' '+box.innerHTML.toUpperCase();
+    const codes=[];
+    if(/\bAR\b|FLAG-AR|ARGENTINA/.test(all)) codes.push('ar');
+    if(/\bCL\b|FLAG-CL|CHILE/.test(all)) codes.push('cl');
+    if(/\bPY\b|FLAG-PY|PARAGUAY/.test(all)) codes.push('py');
+    if(/\bUY\b|FLAG-UY|URUGUAY/.test(all)) codes.push('uy');
+    return codes[0] || cls || fallback;
+  }
+  function normalizeFlags118(){
+    document.querySelectorAll('#entrega .entregaFlags').forEach(box=>{
+      let html=box.innerHTML.toUpperCase();
+      let from='ar', to='cl';
+      const codes=[];
+      if(/\bAR\b|FLAG-AR|ARGENTINA/.test(html)) codes.push('ar');
+      if(/\bCL\b|FLAG-CL|CHILE/.test(html)) codes.push('cl');
+      if(/\bPY\b|FLAG-PY|PARAGUAY/.test(html)) codes.push('py');
+      if(/\bUY\b|FLAG-UY|URUGUAY/.test(html)) codes.push('uy');
+      if(codes.length){ from=codes[0]; to=codes[codes.length-1] || from; }
+      else{
+        const flags=[...box.querySelectorAll('.flag,.flagRound')].map(el=>{
+          const c=el.className||'';
+          if(c.includes('flag-ar'))return 'ar'; if(c.includes('flag-cl'))return 'cl'; if(c.includes('flag-py'))return 'py'; if(c.includes('flag-uy'))return 'uy'; return '';
+        }).filter(Boolean);
+        if(flags.length){from=flags[0]; to=flags[flags.length-1]||from;}
+      }
+      box.innerHTML=`<span class="eltaFlag eltaFlag-${from}" aria-label="origen"></span><span class="eltaFlagArrow">›</span><span class="eltaFlag eltaFlag-${to}" aria-label="destino"></span>`;
+    });
+  }
+
+  function normalizeTimeline118(){
+    document.querySelectorAll('#entrega .entregaTimeline').forEach(tl=>{
+      const steps=[...tl.querySelectorAll('.entregaStep')];
+      const n=Math.max(1,steps.length-1);
+      steps.forEach((st,i)=>{
+        const pos=5+(i/n)*90;
+        st.style.left=pos+'%';
+        st.classList.toggle('first', i===0);
+        st.classList.toggle('last', i===steps.length-1);
+        const b=st.querySelector('b');
+        if(b){
+          b.textContent=(b.textContent||'').replace(/\s+/g,' ').trim().replace(/LOGISTICO/g,'LOGÍSTICO');
+        }
+        st.querySelectorAll('.check,.tick,.doneIcon,.hitoCheck').forEach(x=>x.remove());
+      });
+      const vehicle=tl.querySelector('.entregaVehicle');
+      if(vehicle){
+        let pct=parseFloat(String(vehicle.style.left||'50').replace('%',''));
+        if(!Number.isFinite(pct)) pct=50;
+        pct=Math.max(8,Math.min(92,pct));
+        vehicle.style.left=pct+'%';
+      }
+    });
+  }
+
+  function injectCss118(){
+    document.getElementById('entregas-v118-css')?.remove();
+    const st=document.createElement('style');
+    st.id='entregas-v118-css';
+    st.textContent=`
+      #entrega .entregaCards{gap:8px!important}
+      #entrega .entregaCard{padding:9px 12px!important;border-radius:14px!important;overflow:hidden!important;background:linear-gradient(135deg,rgba(7,22,37,.98),rgba(5,17,29,.96))!important;border:1px solid rgba(148,163,184,.18)!important;box-shadow:0 9px 20px rgba(0,0,0,.20)!important}
+      #entrega .entregaTop{display:grid!important;grid-template-columns:1.16fr repeat(4,.92fr) 94px!important;gap:8px!important;align-items:center!important;padding:0 0 7px!important;border-bottom:1px solid rgba(148,163,184,.13)!important;min-height:54px!important}
+      #entrega .entregaFleet{display:flex!important;gap:8px!important;align-items:center!important;min-width:0!important}
+      #entrega .entregaFleetIcon{width:36px!important;height:36px!important;min-width:36px!important;border-radius:50%!important;font-size:0!important;background:rgba(32,156,48,.14)!important;border:2px solid rgba(82,255,96,.50)!important;background-image:url('assets/camion-automobilero.png')!important;background-size:72%!important;background-repeat:no-repeat!important;background-position:center!important;box-shadow:none!important}
+      #entrega .entregaFleet h3{font-size:17px!important;line-height:1!important;margin:0 0 3px!important;letter-spacing:.1px!important;color:#f8fafc!important}
+      #entrega .entregaStatus{font-size:9px!important;line-height:1!important;padding:4px 8px!important;border-radius:7px!important;margin:0!important;font-weight:900!important;background:#17642c!important;color:#9dff7e!important;display:inline-block!important}
+      #entrega .entregaFleet small{font-size:10px!important;line-height:1!important;margin-top:4px!important;color:#cbd5e1!important;display:block!important}
+      #entrega .entregaMeta{min-height:34px!important;padding-left:8px!important;border-left:1px solid rgba(148,163,184,.14)!important;display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:center!important;text-align:center!important;min-width:0!important}
+      #entrega .entregaMeta span{font-size:9.5px!important;line-height:1!important;margin:0 0 4px!important;color:#cbd5e1!important}
+      #entrega .entregaMeta b{font-size:11.5px!important;line-height:1.05!important;color:#f8fafc!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;max-width:100%!important}
+      #entrega .entregaMeta b.state{font-size:12.5px!important;color:#7cff63!important}
+      #entrega .entregaFlags{height:42px!important;min-width:82px!important;width:82px!important;max-width:82px!important;padding:3px 6px!important;border-radius:11px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;background:rgba(255,255,255,.035)!important;border:1px solid rgba(148,163,184,.22)!important;overflow:hidden!important;justify-self:end!important;box-sizing:border-box!important}
+      #entrega .entregaFlags *:not(.eltaFlag):not(.eltaFlagArrow){display:none!important}
+      #entrega .eltaFlagArrow{display:inline-block!important;color:#7cff63!important;font-size:20px!important;line-height:1!important;font-weight:900!important;font-style:normal!important;margin:0!important}
+      #entrega .eltaFlag{width:24px!important;height:24px!important;border-radius:50%!important;display:inline-block!important;position:relative!important;overflow:hidden!important;flex:0 0 24px!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.68),0 1px 5px rgba(0,0,0,.35)!important;background:#ddd!important}
+      #entrega .eltaFlag-ar{background:linear-gradient(#75bdf8 0 33%,#fff 33% 66%,#75bdf8 66% 100%)!important}#entrega .eltaFlag-ar:after{content:'';position:absolute;left:50%;top:50%;width:5px;height:5px;border-radius:50%;background:#f4b000;transform:translate(-50%,-50%)}
+      #entrega .eltaFlag-cl{background:linear-gradient(90deg,#1559b7 0 40%,transparent 40%),linear-gradient(#fff 0 50%,#d92332 50% 100%)!important}#entrega .eltaFlag-cl:after{content:'★';position:absolute;left:4px;top:1px;color:#fff;font-size:7px}
+      #entrega .eltaFlag-py{background:linear-gradient(#d92332 0 33%,#fff 33% 66%,#2c55a2 66% 100%)!important}#entrega .eltaFlag-py:after{content:'';position:absolute;left:50%;top:50%;width:4px;height:4px;border-radius:50%;background:#d9b24c;transform:translate(-50%,-50%)}
+      #entrega .eltaFlag-uy{background:repeating-linear-gradient(to bottom,#fff 0 3px,#4aa3df 3px 6px)!important}#entrega .eltaFlag-uy:after{content:'';position:absolute;left:5px;top:5px;width:5px;height:5px;border-radius:50%;background:#f4b000}
+      #entrega .entregaTimeline{height:114px!important;margin-top:6px!important;padding:0 28px!important;position:relative!important;overflow:hidden!important;background:rgba(255,255,255,.010)!important;border-radius:12px!important}
+      #entrega .entregaLine{position:absolute!important;left:5%!important;right:5%!important;top:48px!important;height:3px!important;border-radius:8px!important;background:rgba(226,232,240,.78)!important;overflow:visible!important;z-index:1!important}
+      #entrega .entregaLine i{display:block!important;height:100%!important;background:linear-gradient(90deg,#48e35b,#a6d70b,#f3a000)!important;border-radius:8px!important}
+      #entrega .entregaStep{position:absolute!important;top:0!important;width:132px!important;min-width:0!important;text-align:center!important;transform:translateX(-50%)!important;z-index:4!important}
+      #entrega .entregaStep.first{transform:none!important;text-align:left!important;width:150px!important}
+      #entrega .entregaStep.last{transform:translateX(-100%)!important;text-align:right!important;width:150px!important}
+      #entrega .entregaStep b{position:absolute!important;left:50%!important;top:6px!important;transform:translateX(-50%)!important;width:132px!important;display:block!important;margin:0!important;color:#f8fafc!important;font-size:10px!important;line-height:1.08!important;text-transform:uppercase!important;text-shadow:0 1px 3px rgba(0,0,0,.6)!important;white-space:normal!important;overflow:hidden!important;text-overflow:ellipsis!important;max-height:23px!important}
+      #entrega .entregaStep.first b{left:0!important;transform:none!important;text-align:left!important;width:150px!important}
+      #entrega .entregaStep.last b{left:auto!important;right:0!important;transform:none!important;text-align:right!important;width:150px!important}
+      #entrega .entregaStep::after{content:''!important;position:absolute!important;left:50%!important;top:48px!important;width:19px!important;height:19px!important;border-radius:50%!important;transform:translate(-50%,-50%)!important;background:#eef2f7!important;border:4px solid rgba(71,85,105,.95)!important;box-shadow:0 0 0 3px rgba(15,23,42,.92)!important;margin:0!important;z-index:6!important;box-sizing:border-box!important}
+      #entrega .entregaStep.first::after{left:0!important;transform:translate(0,-50%)!important}
+      #entrega .entregaStep.last::after{left:auto!important;right:0!important;transform:translate(0,-50%)!important}
+      #entrega .entregaStep.done::after{border-color:#4ade53!important}.entregaStep.current::after{border-color:#f4a000!important;box-shadow:0 0 0 3px rgba(244,160,0,.30)!important}
+      #entrega .entregaStep::before{content:none!important;display:none!important}
+      #entrega .entregaStep em{position:absolute!important;left:50%!important;top:67px!important;transform:translateX(-50%)!important;width:124px!important;display:block!important;margin:0!important;color:#cbd5e1!important;font-size:9.5px!important;line-height:1.05!important;font-style:normal!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+      #entrega .entregaStep.first em{left:0!important;transform:none!important;text-align:left!important;width:130px!important}
+      #entrega .entregaStep.last em{left:auto!important;right:0!important;transform:none!important;text-align:right!important;width:130px!important}
+      #entrega .entregaTimeline:after{content:''!important;position:absolute!important;left:5%!important;right:5%!important;top:91px!important;border-top:2px dashed rgba(148,163,184,.50)!important;z-index:1!important}
+      #entrega .entregaVehicle{position:absolute!important;top:84px!important;transform:translateX(-50%)!important;width:24px!important;height:14px!important;z-index:5!important;display:flex!important;align-items:center!important;justify-content:center!important;pointer-events:none!important;filter:drop-shadow(0 2px 3px rgba(0,0,0,.45))!important;background:transparent!important;overflow:visible!important}
+      #entrega .entregaCarrierImg{width:24px!important;max-width:24px!important;height:auto!important;display:block!important;background:transparent!important;filter:none!important}
+      #entrega .entregaBottom{margin-top:6px!important;padding:6px 9px!important;border-radius:10px!important;font-size:10.5px!important;grid-template-columns:1.08fr 1.05fr 1fr .72fr!important;background:rgba(255,255,255,.035)!important;border:1px solid rgba(148,163,184,.14)!important}
+      #entrega .entregaBottom span{white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}.entregaBottom b{color:#8cff6f!important}
+      @media(max-width:1250px){#entrega .entregaTop{grid-template-columns:1fr 1fr!important}#entrega .entregaBottom{grid-template-columns:1fr!important}}
+    `;
+    document.head.appendChild(st);
+  }
+
+  function apply118(){
+    injectCss118();
+    setVersion118();
+    normalizeFlags118();
+    normalizeTimeline118();
+  }
+  const oldRender=window.renderEntrega;
+  if(typeof oldRender==='function' && !oldRender.__v118){
+    const f=async function(){const r=await oldRender.apply(this,arguments); setTimeout(apply118,0); setTimeout(apply118,80); setTimeout(apply118,250); return r;};
+    f.__v118=true; window.renderEntrega=f;
+  }
+  const oldTab=window.tab;
+  if(typeof oldTab==='function' && !oldTab.__v118){
+    const f=function(id){const r=oldTab.apply(this,arguments); if(id==='entrega') {setTimeout(apply118,50); setTimeout(apply118,250);} return r;};
+    f.__v118=true; window.tab=f;
+  }
+  document.addEventListener('DOMContentLoaded',()=>{setTimeout(apply118,200);setTimeout(apply118,900);});
+  window.addEventListener('load',()=>{setTimeout(apply118,120);setTimeout(apply118,700);setTimeout(apply118,1600);});
+})();
+
+/* ===== V2.0.134 - FIX FINAL SOLO ENTREGAS: banderas reales + iconos cabecera, sin tocar menu ni Embarques ===== */
+(function(){
+  const VERSION='2.0.134';
+  function clean(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();}
+  function countryCodeFromText(s){
+    const t=clean(s);
+    if(/\bbr\b/.test(t)||t.includes('brasil')||t.includes('brazil')||t.includes('sao paulo')||t.includes('curitiba')||t.includes('parana')) return 'BR';
+    if(/\bpy\b/.test(t)||t.includes('paraguay')||t.includes('asuncion')||t.includes('falcon')) return 'PY';
+    if(/\buy\b/.test(t)||t.includes('uruguay')||t.includes('montevideo')||t.includes('nordex')) return 'UY';
+    if(/\bcl\b/.test(t)||t.includes('chile')||t.includes('stli')||t.includes('los andes')||t.includes('libertadores')||t.includes('toyota chile')) return 'CL';
+    if(/\bar\b/.test(t)||t.includes('argentina')||t.includes('zarate')||t.includes('clz')||t.includes('buenos aires')||t.includes('cordoba')||t.includes('palomar')) return 'AR';
+    return '';
+  }
+  function flagClass(code){return 'flag-'+String(code||'').toLowerCase();}
+  function setVersion(){
+    try{window.APP_VERSION=VERSION;window.ELTA_APP_VERSION=VERSION;window.APP_VERSION_V2=VERSION;}catch(e){}
+    document.querySelectorAll('span,small,p,div,footer').forEach(el=>{
+      if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/i.test(el.textContent||'')){
+        el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/gi,'Versión '+VERSION);
+      }
+    });
+  }
+  function resolveCodes(card, box){
+    const labels=[...card.querySelectorAll('.entregaStep b')].map(x=>x.textContent||'');
+    const boxText=box?box.textContent||'':'';
+    const found=(boxText.match(/\b(AR|CL|PY|UY|BR)\b/g)||[]);
+    let from=countryCodeFromText(labels[0]) || found[0] || 'AR';
+    let to=countryCodeFromText(labels[labels.length-1]) || found[found.length-1] || '';
+    if(!to || to===from){
+      const all=(labels.join(' ')+' '+boxText);
+      to=countryCodeFromText(all.replace(labels[0]||'', '')) || found[found.length-1] || 'CL';
+    }
+    return {from,to};
+  }
+  function fixFlags(){
+    document.querySelectorAll('#entrega .entregaCard').forEach(card=>{
+      const box=card.querySelector('.entregaFlags'); if(!box)return;
+      const c=resolveCodes(card,box);
+      box.innerHTML='<div class="flagOnly" aria-label="Origen '+c.from+' destino '+c.to+'"><span class="flagMini '+flagClass(c.from)+'"></span><i>→</i><span class="flagMini '+flagClass(c.to)+'"></span></div>';
+    });
+  }
+  function injectCss(){
+    document.getElementById('entrega-v20119-final-css')?.remove();
+    const st=document.createElement('style'); st.id='entrega-v20119-final-css';
+    st.textContent=`
+      /* Ajustes finales SOLO Entregas: no modifica menu ni Embarques */
+      #entrega .entregaTop .entregaMeta span{display:flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;white-space:nowrap!important}
+      #entrega .entregaTop .entregaMeta:nth-child(2) span:before{content:'📅';font-size:15px!important;color:#7cff63!important;line-height:1!important;filter:saturate(1.25)}
+      #entrega .entregaTop .entregaMeta:nth-child(3) span:before{content:'⏱';font-size:15px!important;color:#7cff63!important;line-height:1!important;filter:saturate(1.25)}
+      #entrega .entregaTop .entregaMeta:nth-child(4) span:before{content:'⚑';font-size:16px!important;color:#7cff63!important;line-height:1!important}
+      #entrega .entregaFlags{width:126px!important;min-width:126px!important;max-width:126px!important;height:54px!important;min-height:54px!important;padding:6px 10px!important;border-radius:14px!important;border:1px solid rgba(148,163,184,.24)!important;background:rgba(255,255,255,.035)!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important;box-sizing:border-box!important;justify-self:end!important}
+      #entrega .entregaFlags strong,#entrega .entregaFlags .entregaFlagTitle,#entrega .entregaFlags .entregaFlagCodes,#entrega .entregaFlags .flagLabels,#entrega .entregaFlags .flagCodes{display:none!important}
+      #entrega .entregaFlags .flagOnly{display:flex!important;align-items:center!important;justify-content:center!important;gap:12px!important;width:100%!important;height:100%!important;line-height:1!important}
+      #entrega .entregaFlags .flagOnly i{font-style:normal!important;color:#7cff63!important;font-size:26px!important;font-weight:1000!important;line-height:1!important;margin:0!important}
+      #entrega .flagMini{position:relative!important;width:34px!important;height:34px!important;border-radius:50%!important;display:inline-block!important;flex:0 0 34px!important;overflow:hidden!important;border:1px solid rgba(255,255,255,.88)!important;box-shadow:0 2px 8px rgba(0,0,0,.38)!important;background:#cbd5e1!important}
+      #entrega .flag-ar{background:linear-gradient(to bottom,#74bdf2 0 33%,#fff 33% 66%,#74bdf2 66% 100%)!important}#entrega .flag-ar:after{content:''!important;position:absolute!important;left:50%!important;top:50%!important;width:7px!important;height:7px!important;border-radius:50%!important;background:#f4b000!important;transform:translate(-50%,-50%)!important}
+      #entrega .flag-cl{background:linear-gradient(to bottom,#fff 0 50%,#d92332 50% 100%)!important}#entrega .flag-cl:before{content:''!important;position:absolute!important;left:0!important;top:0!important;width:46%!important;height:50%!important;background:#1559b7!important}#entrega .flag-cl:after{content:'★'!important;position:absolute!important;left:6px!important;top:1px!important;color:#fff!important;font-size:8px!important;line-height:1!important}
+      #entrega .flag-py{background:linear-gradient(to bottom,#d92332 0 33%,#fff 33% 66%,#2452a3 66% 100%)!important}#entrega .flag-py:after{content:''!important;position:absolute!important;left:50%!important;top:50%!important;width:6px!important;height:6px!important;border-radius:50%!important;background:#d9b24c!important;transform:translate(-50%,-50%)!important}
+      #entrega .flag-uy{background:repeating-linear-gradient(to bottom,#fff 0 4px,#fff 4px 7px,#4aa3df 7px 10px)!important}#entrega .flag-uy:after{content:''!important;position:absolute!important;left:7px!important;top:7px!important;width:7px!important;height:7px!important;border-radius:50%!important;background:#f4b000!important}
+      #entrega .flag-br{background:#179b48!important}#entrega .flag-br:before{content:''!important;position:absolute!important;left:50%!important;top:50%!important;width:22px!important;height:22px!important;background:#ffd84b!important;transform:translate(-50%,-50%) rotate(45deg)!important}#entrega .flag-br:after{content:''!important;position:absolute!important;left:50%!important;top:50%!important;width:11px!important;height:11px!important;border-radius:50%!important;background:#21468b!important;transform:translate(-50%,-50%)!important}
+    `;
+    document.head.appendChild(st);
+  }
+  function apply(){setVersion();injectCss();fixFlags();}
+  const prevRender=window.renderEntrega;
+  if(typeof prevRender==='function' && !prevRender.__v20119){
+    const f=async function(){const r=await prevRender.apply(this,arguments);setTimeout(apply,0);setTimeout(apply,100);return r;};
+    f.__v20119=true; window.renderEntrega=f;
+  }
+  const prevTab=window.tab;
+  if(typeof prevTab==='function' && !prevTab.__v20119){
+    const f=function(){const r=prevTab.apply(this,arguments);setTimeout(apply,80);return r;};
+    f.__v20119=true; window.tab=f;
+  }
+  document.addEventListener('DOMContentLoaded',()=>{apply();setTimeout(apply,300);setTimeout(apply,1000);});
+  window.addEventListener('load',()=>{apply();setTimeout(apply,600);});
+})();
+
+/* ===== V2.0.134 - FIX FINAL SOLO ENTREGAS: version unica + banderas reales visibles ===== */
+(function(){
+  const VERSION='2.0.134';
+  function norm(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();}
+  function countryFromText(s){
+    const t=norm(s);
+    if(/\bbr\b/.test(t)||t.includes('brasil')||t.includes('brazil')||t.includes('sao paulo')||t.includes('curitiba')) return 'BR';
+    if(/\bpy\b/.test(t)||t.includes('paraguay')||t.includes('asuncion')) return 'PY';
+    if(/\buy\b/.test(t)||t.includes('uruguay')||t.includes('montevideo')||t.includes('nordex')) return 'UY';
+    if(/\bcl\b/.test(t)||t.includes('chile')||t.includes('stli')||t.includes('los andes')||t.includes('libertadores')||t.includes('toyota chile')) return 'CL';
+    if(/\bar\b/.test(t)||t.includes('argentina')||t.includes('zarate')||t.includes('zárate')||t.includes('clz')||t.includes('buenos aires')||t.includes('palomar')) return 'AR';
+    return '';
+  }
+  function setVersion120(){
+    try{window.APP_VERSION=VERSION;window.ELTA_APP_VERSION=VERSION;window.APP_VERSION_V2=VERSION;}catch(e){}
+    document.querySelectorAll('span,small,p,div,footer').forEach(el=>{
+      if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/i.test(el.textContent||'')){
+        el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/gi,'Versión '+VERSION);
+      }
+    });
+  }
+  function codesFor(card){
+    const stepTexts=[...card.querySelectorAll('.entregaStep b')].map(x=>x.textContent||'');
+    const allText=(card.textContent||'')+' '+stepTexts.join(' ');
+    let from=countryFromText(stepTexts[0]) || 'AR';
+    let to=countryFromText(stepTexts[stepTexts.length-1]) || '';
+    if(!to || to===from){
+      const t=norm(allText);
+      if(t.includes('chile')||t.includes('stli')||t.includes('toyota chile')||t.includes('los andes')) to='CL';
+      else if(t.includes('uruguay')||t.includes('nordex')||t.includes('montevideo')) to='UY';
+      else if(t.includes('paraguay')||t.includes('asuncion')) to='PY';
+      else if(t.includes('brasil')||t.includes('brazil')) to='BR';
+      else to='CL';
+    }
+    return {from,to};
+  }
+  function renderFlags120(){
+    document.querySelectorAll('#entrega .entregaCard').forEach(card=>{
+      const box=card.querySelector('.entregaFlags'); if(!box) return;
+      const c=codesFor(card);
+      box.innerHTML='<span class="eltaFlag flagMini flag-'+c.from.toLowerCase()+' eltaFlag-'+c.from.toLowerCase()+'" title="'+c.from+'"></span><span class="eltaFlagArrow flagArrow" aria-hidden="true">›</span><span class="eltaFlag flagMini flag-'+c.to.toLowerCase()+' eltaFlag-'+c.to.toLowerCase()+'" title="'+c.to+'"></span>';
+    });
+  }
+  function injectCss120(){
+    document.getElementById('entrega-v20120-final-css')?.remove();
+    const st=document.createElement('style'); st.id='entrega-v20120-final-css';
+    st.textContent=`
+      #entrega .entregaFlags{width:106px!important;min-width:106px!important;max-width:106px!important;height:44px!important;min-height:44px!important;padding:4px 8px!important;border-radius:13px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:10px!important;background:rgba(255,255,255,.035)!important;border:1px solid rgba(148,163,184,.24)!important;overflow:hidden!important;justify-self:end!important;box-sizing:border-box!important}
+      #entrega .entregaFlags *:not(.eltaFlag):not(.eltaFlagArrow):not(.flagArrow){display:none!important}
+      #entrega .entregaFlags .eltaFlagArrow,#entrega .entregaFlags .flagArrow{display:inline-block!important;color:#7cff63!important;font-size:23px!important;line-height:1!important;font-weight:1000!important;font-style:normal!important;margin:0!important;visibility:visible!important;opacity:1!important}
+      #entrega .entregaFlags .eltaFlag,#entrega .entregaFlags .flagMini{display:inline-block!important;position:relative!important;width:30px!important;height:30px!important;border-radius:50%!important;flex:0 0 30px!important;overflow:hidden!important;border:1px solid rgba(255,255,255,.88)!important;box-shadow:0 2px 8px rgba(0,0,0,.38)!important;background:#cbd5e1!important;visibility:visible!important;opacity:1!important}
+      #entrega .entregaFlags .flag-ar,#entrega .entregaFlags .eltaFlag-ar{background:linear-gradient(to bottom,#74bdf2 0 33%,#fff 33% 66%,#74bdf2 66% 100%)!important}
+      #entrega .entregaFlags .flag-ar:after,#entrega .entregaFlags .eltaFlag-ar:after{content:''!important;position:absolute!important;left:50%!important;top:50%!important;width:6px!important;height:6px!important;border-radius:50%!important;background:#f4b000!important;transform:translate(-50%,-50%)!important}
+      #entrega .entregaFlags .flag-cl,#entrega .entregaFlags .eltaFlag-cl{background:linear-gradient(to bottom,#fff 0 50%,#d92332 50% 100%)!important}
+      #entrega .entregaFlags .flag-cl:before,#entrega .entregaFlags .eltaFlag-cl:before{content:''!important;position:absolute!important;left:0!important;top:0!important;width:46%!important;height:50%!important;background:#1559b7!important}
+      #entrega .entregaFlags .flag-cl:after,#entrega .entregaFlags .eltaFlag-cl:after{content:'★'!important;position:absolute!important;left:5px!important;top:1px!important;color:#fff!important;font-size:8px!important;line-height:1!important}
+      #entrega .entregaFlags .flag-py,#entrega .entregaFlags .eltaFlag-py{background:linear-gradient(to bottom,#d92332 0 33%,#fff 33% 66%,#2452a3 66% 100%)!important}
+      #entrega .entregaFlags .flag-py:after,#entrega .entregaFlags .eltaFlag-py:after{content:''!important;position:absolute!important;left:50%!important;top:50%!important;width:5px!important;height:5px!important;border-radius:50%!important;background:#d9b24c!important;transform:translate(-50%,-50%)!important}
+      #entrega .entregaFlags .flag-uy,#entrega .entregaFlags .eltaFlag-uy{background:repeating-linear-gradient(to bottom,#fff 0 3px,#fff 3px 6px,#4aa3df 6px 9px)!important}
+      #entrega .entregaFlags .flag-uy:after,#entrega .entregaFlags .eltaFlag-uy:after{content:''!important;position:absolute!important;left:6px!important;top:6px!important;width:6px!important;height:6px!important;border-radius:50%!important;background:#f4b000!important}
+      #entrega .entregaFlags .flag-br,#entrega .entregaFlags .eltaFlag-br{background:#179b48!important}
+      #entrega .entregaFlags .flag-br:before,#entrega .entregaFlags .eltaFlag-br:before{content:''!important;position:absolute!important;left:50%!important;top:50%!important;width:20px!important;height:20px!important;background:#ffd84b!important;transform:translate(-50%,-50%) rotate(45deg)!important}
+      #entrega .entregaFlags .flag-br:after,#entrega .entregaFlags .eltaFlag-br:after{content:''!important;position:absolute!important;left:50%!important;top:50%!important;width:10px!important;height:10px!important;border-radius:50%!important;background:#21468b!important;transform:translate(-50%,-50%)!important}
+    `;
+    document.head.appendChild(st);
+  }
+  function apply120(){setVersion120();injectCss120();renderFlags120();}
+  const oldRender=window.renderEntrega;
+  if(typeof oldRender==='function' && !oldRender.__v20120){
+    const f=async function(){const r=await oldRender.apply(this,arguments);setTimeout(apply120,0);setTimeout(apply120,120);setTimeout(apply120,600);setTimeout(apply120,1800);return r;};
+    f.__v20120=true; window.renderEntrega=f;
+  }
+  const oldTab=window.tab;
+  if(typeof oldTab==='function' && !oldTab.__v20120){
+    const f=function(){const r=oldTab.apply(this,arguments);setTimeout(apply120,80);setTimeout(apply120,700);setTimeout(apply120,1900);return r;};
+    f.__v20120=true; window.tab=f;
+  }
+  document.addEventListener('DOMContentLoaded',()=>{apply120();setTimeout(apply120,300);setTimeout(apply120,1200);setTimeout(apply120,2200);});
+  window.addEventListener('load',()=>{apply120();setTimeout(apply120,700);setTimeout(apply120,2000);});
+})();
+
+
+/* ===== V2.0.134 - FIX DEFINITIVO SOLO ENTREGAS: banderas reales dinamicas + version estable ===== */
+(function(){
+  const VERSION='2.0.134';
+  const FLAG_EMOJI={AR:'🇦🇷',CL:'🇨🇱',UY:'🇺🇾',PY:'🇵🇾',BR:'🇧🇷'};
+  function norm(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();}
+  function countryFromText(s){
+    const t=norm(s);
+    if(/\bbr\b/.test(t)||t.includes('brasil')||t.includes('brazil')||t.includes('sao paulo')||t.includes('curitiba')) return 'BR';
+    if(/\bpy\b/.test(t)||t.includes('paraguay')||t.includes('asuncion')) return 'PY';
+    if(/\buy\b/.test(t)||t.includes('uruguay')||t.includes('montevideo')||t.includes('nordex')) return 'UY';
+    if(/\bcl\b/.test(t)||t.includes('chile')||t.includes('stli')||t.includes('los andes')||t.includes('libertadores')||t.includes('toyota chile')) return 'CL';
+    if(/\bar\b/.test(t)||t.includes('argentina')||t.includes('zarate')||t.includes('zárate')||t.includes('clz')||t.includes('buenos aires')||t.includes('palomar')||t.includes('pacheco')) return 'AR';
+    return '';
+  }
+  function setVersion121(){
+    try{window.APP_VERSION=VERSION;window.ELTA_APP_VERSION=VERSION;window.APP_VERSION_V2=VERSION;}catch(e){}
+    document.querySelectorAll('span,small,p,div,footer').forEach(el=>{
+      if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/i.test(el.textContent||'')){
+        el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/gi,'Versión '+VERSION);
+      }
+    });
+  }
+  function inferCountries(card){
+    const steps=[...card.querySelectorAll('.entregaStep b')].map(x=>(x.textContent||'').trim()).filter(Boolean);
+    const all=(card.textContent||'')+' '+steps.join(' ');
+    let from=countryFromText(steps[0]||'') || 'AR';
+    let to=countryFromText(steps[steps.length-1]||'') || '';
+    if(!to || to===from){
+      const t=norm(all);
+      if(t.includes('toyota chile')||t.includes('stli')||t.includes('chile')||t.includes('los andes')) to='CL';
+      else if(t.includes('uruguay')||t.includes('nordex')||t.includes('montevideo')) to='UY';
+      else if(t.includes('paraguay')||t.includes('asuncion')) to='PY';
+      else if(t.includes('brasil')||t.includes('brazil')||t.includes('sao paulo')||t.includes('curitiba')) to='BR';
+      else to='CL';
+    }
+    return {from,to};
+  }
+  function renderCountryFlags121(){
+    document.querySelectorAll('#entrega .entregaCard').forEach(card=>{
+      const box=card.querySelector('.entregaFlags');
+      if(!box) return;
+      const c=inferCountries(card);
+      box.innerHTML = '<span class="eltaFlag countryFlagEmoji" title="'+c.from+'">'+(FLAG_EMOJI[c.from]||FLAG_EMOJI.AR)+'</span><span class="eltaFlagArrow countryFlagArrow" aria-hidden="true">›</span><span class="eltaFlag countryFlagEmoji" title="'+c.to+'">'+(FLAG_EMOJI[c.to]||FLAG_EMOJI.CL)+'</span>';
+      box.setAttribute('aria-label','Origen '+c.from+' destino '+c.to);
+      box.dataset.flagsV121='ok';
+    });
+  }
+  function injectCss121(){
+    document.getElementById('entregas-v121-flags-css')?.remove();
+    const st=document.createElement('style'); st.id='entregas-v121-flags-css';
+    st.textContent=`
+      #entrega .entregaFlags{width:116px!important;min-width:116px!important;max-width:116px!important;height:44px!important;min-height:44px!important;padding:4px 9px!important;border-radius:13px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:10px!important;background:rgba(255,255,255,.035)!important;border:1px solid rgba(148,163,184,.24)!important;overflow:hidden!important;justify-self:end!important;box-sizing:border-box!important}
+      #entrega .entregaFlags *:not(.countryFlagEmoji):not(.countryFlagArrow):not(.eltaFlagArrow){display:none!important}
+      #entrega .entregaFlags .countryFlagEmoji{display:inline-block!important;position:static!important;width:auto!important;height:auto!important;min-width:0!important;flex:0 0 auto!important;border:0!important;border-radius:0!important;overflow:visible!important;background:transparent!important;box-shadow:none!important;font-size:31px!important;line-height:1!important;visibility:visible!important;opacity:1!important;filter:drop-shadow(0 1px 3px rgba(0,0,0,.38))!important}
+      #entrega .entregaFlags .countryFlagEmoji:before,#entrega .entregaFlags .countryFlagEmoji:after{content:none!important;display:none!important}
+      #entrega .entregaFlags .countryFlagArrow,#entrega .entregaFlags .eltaFlagArrow{display:inline-block!important;color:#7cff63!important;font-size:25px!important;line-height:1!important;font-weight:1000!important;font-style:normal!important;margin:0!important;visibility:visible!important;opacity:1!important;background:transparent!important;border:0!important;box-shadow:none!important;position:static!important;width:auto!important;height:auto!important;flex:0 0 auto!important}
+    `;
+    document.head.appendChild(st);
+  }
+  function apply121(){setVersion121();injectCss121();renderCountryFlags121();}
+  const prevRender=window.renderEntrega;
+  if(typeof prevRender==='function' && !prevRender.__v20121){
+    const f=async function(){const r=await prevRender.apply(this,arguments); setTimeout(apply121,0); setTimeout(apply121,120); setTimeout(apply121,650); setTimeout(apply121,1600); return r;};
+    f.__v20121=true; window.renderEntrega=f;
+  }
+  const prevTab=window.tab;
+  if(typeof prevTab==='function' && !prevTab.__v20121){
+    const f=function(){const r=prevTab.apply(this,arguments); setTimeout(apply121,80); setTimeout(apply121,700); setTimeout(apply121,1800); return r;};
+    f.__v20121=true; window.tab=f;
+  }
+  document.addEventListener('DOMContentLoaded',()=>{apply121();setTimeout(apply121,250);setTimeout(apply121,1000);setTimeout(apply121,2200);});
+  window.addEventListener('load',()=>{apply121();setTimeout(apply121,700);setTimeout(apply121,1900);});
+})();
+
+
+/* ===== V2.0.134 - SOLO ENTREGAS: banderas reales y contenedores alternados ===== */
+(function(){
+  const VERSION='2.0.134';
+  function nrm(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();}
+  function country(s){
+    const t=nrm(s);
+    if(/\bbr\b/.test(t)||t.includes('brasil')||t.includes('brazil')||t.includes('sao paulo')||t.includes('são paulo')||t.includes('curitiba')) return 'br';
+    if(/\bpy\b/.test(t)||t.includes('paraguay')||t.includes('asuncion')||t.includes('asunción')||t.includes('puerto jose falcon')||t.includes('puerto josé falcón')||t.includes('garden paraguay')) return 'py';
+    if(/\buy\b/.test(t)||t.includes('uruguay')||t.includes('montevideo')||t.includes('nordex')||t.includes('fray bentos')) return 'uy';
+    if(/\bcl\b/.test(t)||t.includes('chile')||t.includes('stli')||t.includes('los andes')||t.includes('toyota chile')||t.includes('libertadores')) return 'cl';
+    if(/\bar\b/.test(t)||t.includes('argentina')||t.includes('zarate')||t.includes('zárate')||t.includes('clz')||t.includes('clc')||t.includes('cordoba')||t.includes('córdoba')||t.includes('buenos aires')||t.includes('palomar')) return 'ar';
+    return '';
+  }
+  function flagHtml(c){
+    c=(c||'').toLowerCase();
+    if(!['ar','cl','uy','py','br'].includes(c)) c='ar';
+    return '<span class="flagReal flag-'+c+'" aria-label="'+c.toUpperCase()+'"></span>';
+  }
+  function infer(card){
+    const steps=[...card.querySelectorAll('.entregaStep b')].map(x=>(x.textContent||'').trim()).filter(Boolean);
+    const all=(card.textContent||'')+' '+steps.join(' ');
+    let from=country(steps[0])||country((card.querySelector('.entregaFleet small')||{}).textContent)||'ar';
+    let to=country(steps[steps.length-1])||'';
+    if(!to || to===from){
+      const t=nrm(all);
+      if(t.includes('paraguay')||t.includes('puerto jose falcon')||t.includes('puerto josé falcón')||t.includes('garden paraguay')) to='py';
+      else if(t.includes('uruguay')||t.includes('nordex')||t.includes('montevideo')) to='uy';
+      else if(t.includes('brasil')||t.includes('brazil')||t.includes('sao paulo')||t.includes('curitiba')) to='br';
+      else if(t.includes('chile')||t.includes('los andes')||t.includes('toyota chile')||t.includes('stli')) to='cl';
+      else to='cl';
+    }
+    return {from,to};
+  }
+  function setVersion(){
+    try{window.APP_VERSION=VERSION;window.ELTA_APP_VERSION=VERSION;window.APP_VERSION_V2=VERSION;}catch(e){}
+    document.querySelectorAll('span,small,p,div,footer').forEach(el=>{
+      if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/i.test(el.textContent||'')){
+        el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/gi,'Versión '+VERSION);
+      }
+    });
+  }
+  function injectCss(){
+    ['entregas-v121-flags-css','entregas-v120-flags-css','entregas-v122-flags-css'].forEach(id=>document.getElementById(id)?.remove());
+    const st=document.createElement('style'); st.id='entregas-v122-flags-css';
+    st.textContent=`
+      #entrega .entregaCard:nth-child(odd){background:linear-gradient(135deg,rgba(7,22,37,.985),rgba(4,15,27,.965))!important;border-color:rgba(148,163,184,.18)!important}
+      #entrega .entregaCard:nth-child(even){background:linear-gradient(135deg,rgba(16,35,52,.99),rgba(10,25,40,.97))!important;border-color:rgba(148,163,184,.28)!important}
+      #entrega .entregaFlags{width:118px!important;min-width:118px!important;max-width:118px!important;height:54px!important;min-height:54px!important;padding:6px 10px!important;border-radius:14px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:11px!important;background:rgba(255,255,255,.035)!important;border:1px solid rgba(148,163,184,.26)!important;overflow:hidden!important;justify-self:end!important;box-sizing:border-box!important;color:transparent!important;font-size:0!important;line-height:0!important}
+      #entrega .entregaFlags > *{display:none!important}
+      #entrega .entregaFlags > .flagReal,#entrega .entregaFlags > .flagArrowReal{display:inline-block!important;visibility:visible!important;opacity:1!important;position:relative!important;flex:0 0 auto!important;box-sizing:border-box!important}
+      #entrega .flagReal{width:34px!important;height:34px!important;border-radius:50%!important;border:1px solid rgba(255,255,255,.9)!important;overflow:hidden!important;box-shadow:0 2px 8px rgba(0,0,0,.42)!important;background:#fff!important}
+      #entrega .flagArrowReal{color:#7cff63!important;font-size:26px!important;line-height:34px!important;font-weight:1000!important;font-style:normal!important;background:transparent!important;border:0!important;width:auto!important;height:34px!important}
+      #entrega .flag-ar{background:linear-gradient(to bottom,#74bdf2 0 33%,#fff 33% 66%,#74bdf2 66% 100%)!important}
+      #entrega .flag-ar:after{content:''!important;position:absolute!important;left:50%!important;top:50%!important;width:7px!important;height:7px!important;border-radius:50%!important;background:#f4b000!important;transform:translate(-50%,-50%)!important}
+      #entrega .flag-cl{background:linear-gradient(to bottom,#fff 0 50%,#d92332 50% 100%)!important}
+      #entrega .flag-cl:before{content:''!important;position:absolute!important;left:0!important;top:0!important;width:46%!important;height:50%!important;background:#1559b7!important}
+      #entrega .flag-cl:after{content:'★'!important;position:absolute!important;left:5px!important;top:2px!important;color:#fff!important;font-size:8px!important;line-height:1!important}
+      #entrega .flag-py{background:linear-gradient(to bottom,#d92332 0 33%,#fff 33% 66%,#2452a3 66% 100%)!important}
+      #entrega .flag-py:after{content:''!important;position:absolute!important;left:50%!important;top:50%!important;width:6px!important;height:6px!important;border-radius:50%!important;background:#d9b24c!important;transform:translate(-50%,-50%)!important}
+      #entrega .flag-uy{background:repeating-linear-gradient(to bottom,#fff 0 4px,#fff 4px 7px,#4aa3df 7px 10px)!important}
+      #entrega .flag-uy:before{content:''!important;position:absolute!important;left:0!important;top:0!important;width:46%!important;height:46%!important;background:#fff!important}
+      #entrega .flag-uy:after{content:''!important;position:absolute!important;left:7px!important;top:7px!important;width:7px!important;height:7px!important;border-radius:50%!important;background:#f4b000!important}
+      #entrega .flag-br{background:#179b48!important}
+      #entrega .flag-br:before{content:''!important;position:absolute!important;left:50%!important;top:50%!important;width:22px!important;height:22px!important;background:#ffd84b!important;transform:translate(-50%,-50%) rotate(45deg)!important}
+      #entrega .flag-br:after{content:''!important;position:absolute!important;left:50%!important;top:50%!important;width:11px!important;height:11px!important;border-radius:50%!important;background:#21468b!important;transform:translate(-50%,-50%)!important}
+    `;
+    document.head.appendChild(st);
+  }
+  function renderFlags(){
+    document.querySelectorAll('#entrega .entregaCard').forEach(card=>{
+      const box=card.querySelector('.entregaFlags'); if(!box)return;
+      const c=infer(card);
+      box.innerHTML=flagHtml(c.from)+'<i class="flagArrowReal" aria-hidden="true">›</i>'+flagHtml(c.to);
+      box.setAttribute('aria-label','Origen '+c.from.toUpperCase()+' destino '+c.to.toUpperCase());
+    });
+  }
+  function apply(){setVersion();injectCss();renderFlags();}
+  const prevRender=window.renderEntrega;
+  if(typeof prevRender==='function' && !prevRender.__v20122){
+    const f=async function(){const r=await prevRender.apply(this,arguments);setTimeout(apply,0);setTimeout(apply,150);setTimeout(apply,700);setTimeout(apply,1700);return r;};
+    f.__v20122=true; window.renderEntrega=f;
+  }
+  const prevTab=window.tab;
+  if(typeof prevTab==='function' && !prevTab.__v20122){
+    const f=function(){const r=prevTab.apply(this,arguments);setTimeout(apply,80);setTimeout(apply,700);setTimeout(apply,1800);return r;};
+    f.__v20122=true; window.tab=f;
+  }
+  document.addEventListener('DOMContentLoaded',()=>{apply();setTimeout(apply,300);setTimeout(apply,1100);setTimeout(apply,2400);});
+  window.addEventListener('load',()=>{apply();setTimeout(apply,800);setTimeout(apply,2200);});
+})();
+
+
+/* ===== V2.0.134 - FIX FINAL SOLO ENTREGAS: banderas visibles, version estable, contenedor alternado ===== */
+(function(){
+  const VERSION='2.0.134';
+  const normalize = (s)=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  function countryFromText(s){
+    const t=normalize(s);
+    if(t.includes('brasil')||t.includes('brazil')||t.includes('sao paulo')||t.includes('curitiba')||/\bbr\b/.test(t)) return 'br';
+    if(t.includes('paraguay')||t.includes('asuncion')||t.includes('puerto jose falcon')||t.includes('garden paraguay')||/\bpy\b/.test(t)) return 'py';
+    if(t.includes('uruguay')||t.includes('montevideo')||t.includes('nordex')||t.includes('fray bentos')||/\buy\b/.test(t)) return 'uy';
+    if(t.includes('chile')||t.includes('stli')||t.includes('los andes')||t.includes('toyota chile')||t.includes('libertadores')||/\bcl\b/.test(t)) return 'cl';
+    if(t.includes('argentina')||t.includes('zarate')||t.includes('clz')||t.includes('clc')||t.includes('cordoba')||t.includes('buenos aires')||t.includes('palomar')||/\bar\b/.test(t)) return 'ar';
+    return '';
+  }
+  function inferCountries(card){
+    const steps=[...card.querySelectorAll('.entregaStep b')].map(e=>(e.textContent||'').trim()).filter(Boolean);
+    const first=steps[0]||'';
+    const last=steps[steps.length-1]||'';
+    const all=(card.textContent||'')+' '+steps.join(' ');
+    let from=countryFromText(first)||'ar';
+    let to=countryFromText(last);
+    if(!to || to===from){
+      const t=normalize(all);
+      if(t.includes('paraguay')||t.includes('puerto jose falcon')||t.includes('garden paraguay')) to='py';
+      else if(t.includes('uruguay')||t.includes('montevideo')||t.includes('nordex')) to='uy';
+      else if(t.includes('brasil')||t.includes('brazil')||t.includes('sao paulo')||t.includes('curitiba')) to='br';
+      else if(t.includes('chile')||t.includes('toyota chile')||t.includes('los andes')||t.includes('stli')) to='cl';
+      else to='cl';
+    }
+    return {from,to};
+  }
+  function flagHTML(code){
+    code=(code||'').toLowerCase();
+    const cls=['ar','cl','py','uy','br'].includes(code)?code:'ar';
+    return '<span class="finalFlag finalFlag-'+cls+'" aria-label="'+cls.toUpperCase()+'"></span>';
+  }
+  function setVersion(){
+    try{window.APP_VERSION=VERSION; window.ELTA_APP_VERSION=VERSION; window.APP_VERSION_V2=VERSION;}catch(e){}
+    document.querySelectorAll('span,small,p,div,footer').forEach(el=>{
+      if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/i.test(el.textContent||'')){
+        el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/gi,'Versión '+VERSION);
+      }
+    });
+    if(document.title) document.title=document.title.replace(/\d+\.\d+\.\d+/g,VERSION);
+  }
+  function injectCss(){
+    document.getElementById('entregas-v123-final-css')?.remove();
+    const st=document.createElement('style'); st.id='entregas-v123-final-css';
+    st.textContent=`
+      #entrega .entregaCard:nth-child(odd){background:linear-gradient(135deg,rgba(7,22,37,.985),rgba(5,17,29,.96))!important;border-color:rgba(148,163,184,.20)!important}
+      #entrega .entregaCard:nth-child(even){background:linear-gradient(135deg,rgba(22,43,61,.995),rgba(14,31,48,.98))!important;border-color:rgba(148,163,184,.34)!important;box-shadow:0 10px 22px rgba(0,0,0,.18)!important}
+      #entrega .entregaFlags{width:118px!important;min-width:118px!important;max-width:118px!important;height:52px!important;min-height:52px!important;padding:6px 10px!important;border-radius:14px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:12px!important;background:rgba(255,255,255,.045)!important;border:1px solid rgba(148,163,184,.30)!important;overflow:hidden!important;justify-self:end!important;box-sizing:border-box!important;color:transparent!important;font-size:0!important;line-height:0!important;visibility:visible!important;opacity:1!important}
+      #entrega .entregaFlags > *{display:none!important}
+      #entrega .entregaFlags > .finalFlag,#entrega .entregaFlags > .finalArrow{display:inline-block!important;visibility:visible!important;opacity:1!important;position:relative!important;flex:0 0 auto!important;box-sizing:border-box!important}
+      #entrega .finalArrow{color:#7cff63!important;font-size:27px!important;line-height:34px!important;font-weight:1000!important;font-style:normal!important;background:transparent!important;border:0!important;width:auto!important;height:34px!important}
+      #entrega .finalFlag{width:34px!important;height:34px!important;border-radius:50%!important;border:1px solid rgba(255,255,255,.92)!important;overflow:hidden!important;box-shadow:0 2px 8px rgba(0,0,0,.42)!important;background:#fff!important}
+      #entrega .finalFlag-ar{background:linear-gradient(to bottom,#74bdf2 0 33%,#fff 33% 66%,#74bdf2 66% 100%)!important}
+      #entrega .finalFlag-ar:after{content:''!important;position:absolute!important;left:50%!important;top:50%!important;width:7px!important;height:7px!important;border-radius:50%!important;background:#f4b000!important;transform:translate(-50%,-50%)!important}
+      #entrega .finalFlag-cl{background:linear-gradient(to bottom,#fff 0 50%,#d92332 50% 100%)!important}
+      #entrega .finalFlag-cl:before{content:''!important;position:absolute!important;left:0!important;top:0!important;width:46%!important;height:50%!important;background:#1559b7!important}
+      #entrega .finalFlag-cl:after{content:'★'!important;position:absolute!important;left:5px!important;top:2px!important;color:#fff!important;font-size:8px!important;line-height:1!important}
+      #entrega .finalFlag-py{background:linear-gradient(to bottom,#d92332 0 33%,#fff 33% 66%,#2452a3 66% 100%)!important}
+      #entrega .finalFlag-py:after{content:''!important;position:absolute!important;left:50%!important;top:50%!important;width:6px!important;height:6px!important;border-radius:50%!important;background:#d9b24c!important;transform:translate(-50%,-50%)!important}
+      #entrega .finalFlag-uy{background:repeating-linear-gradient(to bottom,#fff 0 4px,#fff 4px 7px,#4aa3df 7px 10px)!important}
+      #entrega .finalFlag-uy:before{content:''!important;position:absolute!important;left:0!important;top:0!important;width:46%!important;height:46%!important;background:#fff!important}
+      #entrega .finalFlag-uy:after{content:''!important;position:absolute!important;left:7px!important;top:7px!important;width:7px!important;height:7px!important;border-radius:50%!important;background:#f4b000!important}
+      #entrega .finalFlag-br{background:#179b48!important}
+      #entrega .finalFlag-br:before{content:''!important;position:absolute!important;left:50%!important;top:50%!important;width:22px!important;height:22px!important;background:#ffd84b!important;transform:translate(-50%,-50%) rotate(45deg)!important}
+      #entrega .finalFlag-br:after{content:''!important;position:absolute!important;left:50%!important;top:50%!important;width:11px!important;height:11px!important;border-radius:50%!important;background:#21468b!important;transform:translate(-50%,-50%)!important}
+    `;
+    document.head.appendChild(st);
+  }
+  function renderFlags(){
+    document.querySelectorAll('#entrega .entregaCard').forEach(card=>{
+      const box=card.querySelector('.entregaFlags'); if(!box)return;
+      const c=inferCountries(card);
+      box.innerHTML=flagHTML(c.from)+'<i class="finalArrow" aria-hidden="true">›</i>'+flagHTML(c.to);
+      box.setAttribute('aria-label','Origen '+c.from.toUpperCase()+' destino '+c.to.toUpperCase());
+    });
+  }
+  function apply(){setVersion(); injectCss(); renderFlags();}
+  const prevRender=window.renderEntrega;
+  if(typeof prevRender==='function' && !prevRender.__v20123){
+    const f=async function(){const r=await prevRender.apply(this,arguments); [0,100,400,1000,2200].forEach(ms=>setTimeout(apply,ms)); return r;};
+    f.__v20123=true; window.renderEntrega=f;
+  }
+  const prevTab=window.tab;
+  if(typeof prevTab==='function' && !prevTab.__v20123){
+    const f=function(){const r=prevTab.apply(this,arguments); [50,250,900,2000].forEach(ms=>setTimeout(apply,ms)); return r;};
+    f.__v20123=true; window.tab=f;
+  }
+  document.addEventListener('DOMContentLoaded',()=>{apply();[300,1000,2400].forEach(ms=>setTimeout(apply,ms));});
+  window.addEventListener('load',()=>{apply();[500,1500,3000].forEach(ms=>setTimeout(apply,ms));});
+})();
+
+
+/* ===== V2.0.134 - FIX REAL SOLO ENTREGAS: banderas origen/destino + segundo contenedor mas claro ===== */
+(function(){
+  const VERSION='2.0.134';
+  const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  function countryFromText(s){
+    const t=norm(s);
+    if(/\bbr\b/.test(t)||t.includes('brasil')||t.includes('brazil')||t.includes('sao paulo')||t.includes('curitiba')) return 'br';
+    if(/\bpy\b/.test(t)||t.includes('paraguay')||t.includes('asuncion')||t.includes('puerto jose falcon')||t.includes('garden paraguay')||t.includes('deposito fiscal paraguay')) return 'py';
+    if(/\buy\b/.test(t)||t.includes('uruguay')||t.includes('montevideo')||t.includes('nordex')||t.includes('fray bentos')) return 'uy';
+    if(/\bcl\b/.test(t)||t.includes('chile')||t.includes('toyota chile')||t.includes('los andes')||t.includes('stli')||t.includes('libertadores')) return 'cl';
+    if(/\bar\b/.test(t)||t.includes('argentina')||t.includes('clz')||t.includes('clc')||t.includes('zarate')||t.includes('centro logistico')||t.includes('cordoba')||t.includes('buenos aires')||t.includes('palomar')) return 'ar';
+    return '';
+  }
+  function infer(card){
+    const names=[...card.querySelectorAll('.entregaStep b')].map(e=>(e.textContent||'').trim()).filter(Boolean);
+    const all=(card.textContent||'')+' '+names.join(' ');
+    let from=countryFromText(names[0]||'')||'ar';
+    let to=countryFromText(names[names.length-1]||'');
+    if(!to || to===from){
+      const t=norm(all);
+      if(t.includes('garden paraguay')||t.includes('puerto jose falcon')||t.includes('deposito fiscal paraguay')||t.includes('paraguay')) to='py';
+      else if(t.includes('toyota chile')||t.includes('los andes')||t.includes('chile')||t.includes('stli')) to='cl';
+      else if(t.includes('uruguay')||t.includes('montevideo')||t.includes('nordex')) to='uy';
+      else if(t.includes('brasil')||t.includes('brazil')||t.includes('sao paulo')||t.includes('curitiba')) to='br';
+      else to='cl';
+    }
+    return {from,to};
+  }
+  function flag(code){
+    code=(code||'ar').toLowerCase();
+    if(!['ar','cl','py','uy','br'].includes(code)) code='ar';
+    return '<span class="eltaFlag eltaFlag-'+code+'" aria-label="'+code.toUpperCase()+'"></span>';
+  }
+  function setVersion(){
+    try{window.APP_VERSION=VERSION;window.ELTA_APP_VERSION=VERSION;window.APP_VERSION_V2=VERSION;}catch(e){}
+    document.querySelectorAll('span,small,p,div,footer').forEach(el=>{
+      if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/i.test(el.textContent||'')){
+        el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/gi,'Versión '+VERSION);
+      }
+    });
+  }
+  function css(){
+    document.getElementById('entregas-v124-real-fix-css')?.remove();
+    const st=document.createElement('style'); st.id='entregas-v124-real-fix-css';
+    st.textContent=`
+      #entrega .entregaCard:nth-child(odd){background:linear-gradient(135deg,rgba(7,22,37,.985),rgba(5,17,29,.96))!important;border-color:rgba(148,163,184,.20)!important}
+      #entrega .entregaCard:nth-child(even){background:linear-gradient(135deg,rgba(30,56,78,.995),rgba(18,39,60,.985))!important;border-color:rgba(148,163,184,.42)!important;box-shadow:0 10px 22px rgba(0,0,0,.16)!important}
+      #entrega .entregaFlags{width:126px!important;min-width:126px!important;height:50px!important;min-height:50px!important;padding:6px 10px!important;border-radius:14px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:12px!important;background:rgba(255,255,255,.045)!important;border:1px solid rgba(148,163,184,.30)!important;box-sizing:border-box!important;overflow:hidden!important;justify-self:end!important;font-size:0!important;line-height:0!important;color:transparent!important;visibility:visible!important;opacity:1!important}
+      #entrega .entregaFlags > *{display:none!important}
+      #entrega .entregaFlags > .eltaFlag,#entrega .entregaFlags > .eltaFlagArrow{display:inline-block!important;visibility:visible!important;opacity:1!important;position:relative!important;flex:0 0 auto!important;box-sizing:border-box!important}
+      #entrega .eltaFlagArrow{color:#7cff63!important;font-size:28px!important;line-height:34px!important;font-weight:1000!important;font-style:normal!important;background:transparent!important;border:0!important;width:auto!important;height:34px!important}
+      #entrega .eltaFlag{width:34px!important;height:34px!important;border-radius:50%!important;border:1px solid rgba(255,255,255,.92)!important;overflow:hidden!important;box-shadow:0 2px 8px rgba(0,0,0,.42)!important;background:#fff!important}
+      #entrega .eltaFlag-ar{background:linear-gradient(to bottom,#75bff2 0 33%,#fff 33% 66%,#75bff2 66% 100%)!important}
+      #entrega .eltaFlag-ar:after{content:''!important;position:absolute!important;left:50%!important;top:50%!important;width:7px!important;height:7px!important;border-radius:50%!important;background:#f4b000!important;transform:translate(-50%,-50%)!important}
+      #entrega .eltaFlag-cl{background:linear-gradient(to bottom,#fff 0 50%,#d92332 50% 100%)!important}
+      #entrega .eltaFlag-cl:before{content:''!important;position:absolute!important;left:0!important;top:0!important;width:46%!important;height:50%!important;background:#1559b7!important}
+      #entrega .eltaFlag-cl:after{content:'★'!important;position:absolute!important;left:5px!important;top:2px!important;color:#fff!important;font-size:8px!important;line-height:1!important}
+      #entrega .eltaFlag-py{background:linear-gradient(to bottom,#d92332 0 33%,#fff 33% 66%,#2452a3 66% 100%)!important}
+      #entrega .eltaFlag-py:after{content:''!important;position:absolute!important;left:50%!important;top:50%!important;width:6px!important;height:6px!important;border-radius:50%!important;background:#d9b24c!important;transform:translate(-50%,-50%)!important}
+      #entrega .eltaFlag-uy{background:repeating-linear-gradient(to bottom,#fff 0 4px,#fff 4px 7px,#4aa3df 7px 10px)!important}
+      #entrega .eltaFlag-uy:before{content:''!important;position:absolute!important;left:0!important;top:0!important;width:46%!important;height:46%!important;background:#fff!important}
+      #entrega .eltaFlag-uy:after{content:''!important;position:absolute!important;left:7px!important;top:7px!important;width:7px!important;height:7px!important;border-radius:50%!important;background:#f4b000!important}
+      #entrega .eltaFlag-br{background:#179b48!important}
+      #entrega .eltaFlag-br:before{content:''!important;position:absolute!important;left:50%!important;top:50%!important;width:22px!important;height:22px!important;background:#ffd84b!important;transform:translate(-50%,-50%) rotate(45deg)!important}
+      #entrega .eltaFlag-br:after{content:''!important;position:absolute!important;left:50%!important;top:50%!important;width:11px!important;height:11px!important;border-radius:50%!important;background:#21468b!important;transform:translate(-50%,-50%)!important}
+    `;
+    document.head.appendChild(st);
+  }
+  function render(){
+    css(); setVersion();
+    document.querySelectorAll('#entrega .entregaCard').forEach(card=>{
+      let box=card.querySelector('.entregaFlags'); if(!box)return;
+      const c=infer(card);
+      box.innerHTML=flag(c.from)+'<i class="eltaFlagArrow" aria-hidden="true">›</i>'+flag(c.to);
+      box.setAttribute('aria-label','Origen '+c.from.toUpperCase()+' destino '+c.to.toUpperCase());
+    });
+  }
+  const oldRender=window.renderEntrega;
+  if(typeof oldRender==='function' && !oldRender.__v20124){
+    const wrapped=async function(){const r=await oldRender.apply(this,arguments); [0,50,150,400,1000,2200].forEach(ms=>setTimeout(render,ms)); return r;};
+    wrapped.__v20124=true; window.renderEntrega=wrapped;
+  }
+  const oldTab=window.tab;
+  if(typeof oldTab==='function' && !oldTab.__v20124){
+    const wrapped=function(){const r=oldTab.apply(this,arguments); [50,200,600,1400].forEach(ms=>setTimeout(render,ms)); return r;};
+    wrapped.__v20124=true; window.tab=wrapped;
+  }
+  function observe(){
+    render();
+    const target=document.getElementById('entregaCards')||document.getElementById('entrega')||document.body;
+    if(target && !target.__flagsObserverV124){
+      const mo=new MutationObserver(()=>render());
+      mo.observe(target,{childList:true,subtree:true});
+      target.__flagsObserverV124=mo;
+    }
+  }
+  document.addEventListener('DOMContentLoaded',()=>{observe();[300,1000,2500].forEach(ms=>setTimeout(observe,ms));});
+  window.addEventListener('load',()=>{observe();[600,1800,3500].forEach(ms=>setTimeout(observe,ms));});
+  setTimeout(observe,100); setTimeout(observe,1000);
+})();
+
+/* ===== V2.0.134 - SOLO ENTREGAS: filtros compactos y estables ===== */
+(function(){
+  const VERSION='2.0.134';
+  function setVersion(){
+    try{window.ELTA_APP_VERSION=VERSION; window.APP_VERSION=VERSION; window.APP_VERSION_V2=VERSION;}catch(e){}
+    document.querySelectorAll('span,small,p,div,footer').forEach(el=>{
+      if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/i.test(el.textContent||'')){
+        el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/gi,'Versión '+VERSION);
+      }
+    });
+  }
+  function css(){
+    document.getElementById('entrega-filtros-compactos-20132')?.remove();
+    const st=document.createElement('style'); st.id='entrega-filtros-compactos-20132';
+    st.textContent=`
+      #entrega .entregaToolbar{
+        display:grid!important;
+        grid-template-columns:1.05fr 1.05fr 1.25fr .82fr!important;
+        gap:10px!important;
+        padding:10px 12px!important;
+        margin:0 0 12px!important;
+        border-radius:16px!important;
+        align-items:center!important;
+        overflow:hidden!important;
+      }
+      #entrega .entregaToolbar label{
+        display:block!important;
+        margin:0!important;
+        padding:0!important;
+        min-width:0!important;
+        font-size:0!important;
+        line-height:0!important;
+        color:transparent!important;
+      }
+      #entrega .entregaToolbar label.entregaDestinoOculto{display:none!important;}
+      #entrega .entregaToolbar select{
+        width:100%!important;
+        height:38px!important;
+        min-height:38px!important;
+        border-radius:11px!important;
+        border:1px solid rgba(148,163,184,.36)!important;
+        background:#223144!important;
+        color:#f8fafc!important;
+        padding:0 34px 0 14px!important;
+        font-size:14px!important;
+        font-weight:800!important;
+        letter-spacing:0!important;
+        outline:none!important;
+        box-shadow:none!important;
+        appearance:auto!important;
+      }
+      #entrega .entregaToolbar select:focus{
+        border-color:rgba(157,255,126,.70)!important;
+        box-shadow:0 0 0 2px rgba(82,255,96,.12)!important;
+      }
+      @media(max-width:1100px){#entrega .entregaToolbar{grid-template-columns:1fr 1fr!important;}}
+    `;
+    document.head.appendChild(st);
+  }
+  function first(sel,text){
+    if(!sel)return;
+    const opt=sel.querySelector('option[value=""]') || sel.options[0];
+    if(opt) opt.textContent=text;
+  }
+  function setOrder(sel,n){
+    const lab=sel?.closest('label') || sel?.parentElement;
+    if(!lab)return;
+    Array.from(lab.childNodes).forEach(x=>{if(x.nodeType===3)x.textContent='';});
+    lab.classList.remove('entregaDestinoOculto');
+    lab.style.order=String(n);
+  }
+  function bind(sel){
+    if(!sel)return;
+    sel.onchange=function(){ if(typeof window.renderEntrega==='function') window.renderEntrega(false); };
+    sel.oninput=function(){ if(typeof window.renderEntrega==='function') window.renderEntrega(false); };
+  }
+  function normalize(){
+    css(); setVersion();
+    const tb=document.querySelector('#entrega .entregaToolbar'); if(!tb)return;
+    const emb=document.getElementById('entregaFiltroEmbarque');
+    const flo=document.getElementById('entregaFiltroFlota');
+    const cli=document.getElementById('entregaFiltroCliente');
+    const est=document.getElementById('entregaFiltroEstado');
+    const des=document.getElementById('entregaFiltroDestino');
+    [emb,flo,cli,est].forEach(bind);
+    setOrder(emb,1); setOrder(flo,2); setOrder(cli,3); setOrder(est,4);
+    if(des){des.value=''; bind(des); const lab=des.closest('label')||des.parentElement; if(lab)lab.classList.add('entregaDestinoOculto');}
+    first(emb,'Embarque'); first(flo,'Todas las flotas'); first(cli,'Todos los clientes'); first(est,'Todos');
+  }
+  function install(){
+    css(); setVersion();
+    if(typeof window.renderEntrega==='function' && !window.renderEntrega.__filtrosCompactos20132){
+      const old=window.renderEntrega;
+      const wrapped=async function(){
+        const r=await old.apply(this,arguments);
+        normalize();
+        return r;
+      };
+      wrapped.__filtrosCompactos20132=true;
+      window.renderEntrega=wrapped;
+    }
+    normalize();
+  }
+  document.addEventListener('DOMContentLoaded',()=>{install(); setTimeout(install,250);});
+  window.addEventListener('load',()=>{install(); setTimeout(install,250);});
+  setTimeout(install,100);
+})();
+
+/* ===== V2.0.134 - FIX SEGURO: Entregas sin doble menú ni refresh ===== */
+(function(){
+  const VERSION='2.0.134';
+  const ENTREGA_ICON='🚛';
+  window.ELTA_APP_VERSION=VERSION;
+  window.APP_VERSION_V2=VERSION;
+  window.APP_VERSION=VERSION;
+
+  function updateVersionText(){
+    try{
+      document.title='ELTA ITS - Versión '+VERSION;
+      document.querySelectorAll('span,small,p,div,footer').forEach(function(el){
+        if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/.test(el.textContent||'')){
+          el.textContent=(el.textContent||'').replace(/Versi[oó]n\s+\d+\.\d+\.\d+/g,'Versión '+VERSION);
+        }
+      });
+    }catch(e){}
+  }
+
+  function menuButtonId(btn){
+    const on=String(btn && btn.getAttribute && btn.getAttribute('onclick') || '');
+    const m=on.match(/tab\(['\"]([^'\"]+)['\"]\)/);
+    return (btn && btn.dataset && btn.dataset.menuId) || (m && m[1]) || '';
+  }
+
+  function buildEntregaButton(active){
+    const btn=document.createElement('button');
+    btn.type='button';
+    btn.dataset.menuId='entrega';
+    btn.title='Entregas';
+    btn.setAttribute('onclick','window.goEntregaStable134 && window.goEntregaStable134(event)');
+    if(active) btn.classList.add('active');
+    btn.innerHTML='<span class="menuIcon">'+ENTREGA_ICON+'</span><span class="menuText">Entregas</span>';
+    return btn;
+  }
+
+  function stabilizeEntregaMenu(){
+    const nav=document.querySelector('.sideNav');
+    if(!nav) { updateVersionText(); return; }
+
+    const currentActive=(nav.querySelector('button.active') && menuButtonId(nav.querySelector('button.active'))) || '';
+    const entregaWasActive=currentActive==='entrega' || !!document.getElementById('entrega')?.classList.contains('active');
+
+    // Quitar todos los Entregas duplicados para evitar alternancia bandera/camion.
+    Array.from(nav.querySelectorAll('button')).forEach(function(btn){
+      const id=menuButtonId(btn);
+      const txt=(btn.textContent||'').trim().toLowerCase();
+      if(id==='entrega' || txt==='entregas') btn.remove();
+    });
+
+    const emb=Array.from(nav.querySelectorAll('button')).find(function(btn){ return menuButtonId(btn)==='embarques'; });
+    const entregaBtn=buildEntregaButton(entregaWasActive);
+    if(emb && emb.parentNode===nav) emb.insertAdjacentElement('afterend', entregaBtn);
+    else nav.appendChild(entregaBtn);
+
+    updateVersionText();
+  }
+
+  window.goEntregaStable134=function(ev){
+    try{ if(ev && ev.preventDefault) ev.preventDefault(); }catch(e){}
+    stabilizeEntregaMenu();
+    document.querySelectorAll('.sideNav button').forEach(function(b){ b.classList.remove('active'); });
+    document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
+    const btn=Array.from(document.querySelectorAll('.sideNav button')).find(function(b){ return menuButtonId(b)==='entrega'; });
+    if(btn) btn.classList.add('active');
+    const sec=document.getElementById('entrega');
+    if(sec) sec.classList.add('active');
+    if(typeof window.renderEntrega==='function'){
+      try{ window.renderEntrega(false); }catch(e){ console.warn('renderEntrega no pudo ejecutarse',e); }
+    }
+    setTimeout(stabilizeEntregaMenu,0);
+    setTimeout(updateVersionText,0);
+    return false;
+  };
+
+  const previousTab=window.tab;
+  window.tab=function(id){
+    if(id==='entrega') return window.goEntregaStable134();
+    const r=(typeof previousTab==='function') ? previousTab.apply(this,arguments) : undefined;
+    setTimeout(stabilizeEntregaMenu,0);
+    setTimeout(updateVersionText,0);
+    return r;
+  };
+
+  let observerBusy=false;
+  function startObserver(){
+    const nav=document.querySelector('.sideNav');
+    if(!nav || nav.__entregaStable134Observer) return;
+    nav.__entregaStable134Observer=true;
+    const obs=new MutationObserver(function(){
+      if(observerBusy) return;
+      observerBusy=true;
+      setTimeout(function(){
+        stabilizeEntregaMenu();
+        observerBusy=false;
+      },0);
+    });
+    obs.observe(nav,{childList:true,subtree:true,characterData:true});
+  }
+
+  function boot(){ stabilizeEntregaMenu(); startObserver(); updateVersionText(); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
+  window.addEventListener('load',function(){ boot(); setTimeout(boot,200); setTimeout(boot,900); });
+  setInterval(updateVersionText,1200);
 })();
