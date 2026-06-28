@@ -4395,7 +4395,7 @@ if(_refresh_v1250){
   }
   function normalizeMenu(){
     const menuMap=[
-      ['dash','🏠','Torre de Control'],['transitos','🚚','Tránsitos'],['entrega','🏁','Entregas'],['mapa','📍','Seguimiento'],['clima','🌦️','Clima'],
+      ['dash','🏠','Torre de Control'],['transitos','🚚','Tránsitos'],['entrega','🚛','Entregas'],['mapa','📍','Seguimiento'],['clima','🌦️','Clima'],
       ['unidades','🚛','Unidades / Choferes'],['alertas','🔔','Alertas'],['clientes','🏢','Clientes / Destinos'],['abm','⚙️','Configuración']
     ];
     menuMap.forEach(([id,icon,text])=>{
@@ -5009,7 +5009,7 @@ if(_refresh_v1250){
     document.title='ITS Intelligent Traffic System';
   }
   function normalizeMenu(){
-    const map=[['dash','🏠','Torre de Control'],['transitos','🚚','Tránsitos'],['mapa','📍','Seguimiento'],['clima','🌦️','Clima'],['alertas','🔔','Alertas'],['embarques','📦','Embarques'],['entrega','🏁','Entregas'],['unidades','🚛','Unidades / Choferes'],['clientes','🏢','Clientes / Destinos'],['abm','⚙️','Configuración']];
+    const map=[['dash','🏠','Torre de Control'],['transitos','🚚','Tránsitos'],['mapa','📍','Seguimiento'],['clima','🌦️','Clima'],['alertas','🔔','Alertas'],['embarques','📦','Embarques'],['entrega','🚛','Entregas'],['unidades','🚛','Unidades / Choferes'],['clientes','🏢','Clientes / Destinos'],['abm','⚙️','Configuración']];
     map.forEach(([id,ic,txt])=>{const b=document.querySelector(`.sideNav button[onclick*="${id}"]`); if(b){b.innerHTML=`<span class="menuIcon">${ic}</span><span class="menuText">${txt}</span>`; b.title=txt;}});
   }
 
@@ -7149,7 +7149,7 @@ if(_refresh_v1250){
     ['clima','🌦️','Clima'],
     ['alertas','🔔','Alertas'],
     ['embarques','📦','Embarques'],
-    ['entrega','🏁','Entregas'],
+    ['entrega','🚛','Entregas'],
     ['unidades','🚛','Unidades / Choferes'],
     ['clientes','🏢','Clientes / Destinos'],
     ['abm','⚙️','Configuración']
@@ -9419,7 +9419,7 @@ if(_refresh_v1250){
   const MENU=[
     ['dash','🏠','Torre de Control'],
     ['transitos','🚚','Tránsitos'],
-    ['entrega','🏁','Entregas'],
+    ['entrega','🚛','Entregas'],
     ['mapa','📍','Seguimiento'],
     ['clima','🌦️','Clima'],
     ['unidades','🚛','Unidades / Choferes'],
@@ -9539,7 +9539,7 @@ if(_refresh_v1250){
     let btn=nav.querySelector('button[data-menu-id="entrega"]')||[...nav.querySelectorAll('button')].find(b=>(b.getAttribute('onclick')||'').includes('entrega'));
     if(!btn){
       btn=document.createElement('button'); btn.type='button'; btn.setAttribute('onclick',"tab('entrega')"); btn.setAttribute('data-menu-id','entrega');
-      btn.innerHTML='<span class="menuIcon">🏁</span><span class="menuText">Entregas</span>';
+      btn.innerHTML='<span class="menuIcon">🚛</span><span class="menuText">Entregas</span>';
       const trans=[...nav.querySelectorAll('button')].find(b=>(b.getAttribute('onclick')||'').includes('transitos'));
       const next=trans?trans.nextSibling:null;
       if(trans&&next)nav.insertBefore(btn,next); else if(trans)nav.appendChild(btn); else nav.appendChild(btn);
@@ -9767,7 +9767,7 @@ if(_refresh_v1250){
   function ensureEntrega(){
     const nav=document.querySelector('.sideNav');
     if(nav&&!nav.querySelector('button[data-menu-id="entrega"]')){
-      const btn=document.createElement('button'); btn.type='button'; btn.dataset.menuId='entrega'; btn.setAttribute('onclick',"tab('entrega')"); btn.innerHTML='<span class="menuIcon">🏁</span><span class="menuText">Entregas</span>';
+      const btn=document.createElement('button'); btn.type='button'; btn.dataset.menuId='entrega'; btn.setAttribute('onclick',"tab('entrega')"); btn.innerHTML='<span class="menuIcon">🚛</span><span class="menuText">Entregas</span>';
       const trans=[...nav.querySelectorAll('button')].find(b=>(b.getAttribute('onclick')||'').includes('transitos'));
       trans&&trans.parentNode?trans.parentNode.insertBefore(btn,trans.nextSibling):nav.appendChild(btn);
     }
@@ -9857,10 +9857,10 @@ if(_refresh_v1250){
     let btn=[...nav.querySelectorAll('button')].find(b=>(b.getAttribute('onclick')||'').includes("tab('entrega')") || b.dataset.menuId==='entrega');
     if(!btn){
       btn=document.createElement('button'); btn.type='button'; btn.dataset.menuId='entrega'; btn.setAttribute('onclick',"tab('entrega')");
-      btn.innerHTML='<span class="menuIcon">🏁</span><span class="menuText">Entregas</span>';
+      btn.innerHTML='<span class="menuIcon">🚛</span><span class="menuText">Entregas</span>';
     }
     btn.dataset.menuId='entrega'; btn.setAttribute('onclick',"tab('entrega')");
-    btn.innerHTML='<span class="menuIcon">🏁</span><span class="menuText">Entregas</span>';
+    btn.innerHTML='<span class="menuIcon">🚛</span><span class="menuText">Entregas</span>';
     const trans=[...nav.querySelectorAll('button')].find(b=>(b.getAttribute('onclick')||'').includes("tab('transitos')"));
     const emb=[...nav.querySelectorAll('button')].find(b=>(b.getAttribute('onclick')||'').includes("tab('embarques')"));
     // Entregas va después de Tránsito. Embarques se mantiene sin cambios.
@@ -9906,7 +9906,7 @@ if(_refresh_v1250){
 /* ===== V2.0.132 - FIX FINAL VERSION Y MENU ESTABLE ===== */
 (function(){
   const VERSION='2.0.132';
-  const MENU=[['dash','🏠','Torre de Control'],['transitos','🚚','Tránsitos'],['mapa','📍','Seguimiento'],['clima','🌦️','Clima'],['alertas','🔔','Alertas'],['embarques','📦','Embarques'],['entrega','🏁','Entregas'],['unidades','🚛','Unidades / Choferes'],['clientes','🏢','Clientes / Destinos'],['abm','⚙️','Configuración']];
+  const MENU=[['dash','🏠','Torre de Control'],['transitos','🚚','Tránsitos'],['mapa','📍','Seguimiento'],['clima','🌦️','Clima'],['alertas','🔔','Alertas'],['embarques','📦','Embarques'],['entrega','🚛','Entregas'],['unidades','🚛','Unidades / Choferes'],['clientes','🏢','Clientes / Destinos'],['abm','⚙️','Configuración']];
   window.ELTA_APP_VERSION=VERSION; window.APP_VERSION_V2=VERSION;
   function setVersionFinal(){
     document.querySelectorAll('span,small,p,div').forEach(el=>{
@@ -9950,7 +9950,7 @@ if(_refresh_v1250){
       const txt=(btn.textContent||'').toLowerCase();
       if(txt.includes('entregas')){
         const ic=btn.querySelector('.menuIcon');
-        if(ic) ic.textContent='🏁';
+        if(ic) ic.textContent='🚛';
       }
     });
   }
@@ -10002,7 +10002,7 @@ if(_refresh_v1250){
   function fixEntregaIcon(){
     document.querySelectorAll('button[data-menu-id="entrega"], button[onclick*="tab(\'entrega\')"]').forEach(btn=>{
       const icon=btn.querySelector('.menuIcon');
-      if(icon) icon.textContent='🏁';
+      if(icon) icon.textContent='🚛';
     });
   }
   function inject(){
