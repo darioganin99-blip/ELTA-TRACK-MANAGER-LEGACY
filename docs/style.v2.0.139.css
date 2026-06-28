@@ -7860,5 +7860,852 @@ button:disabled{opacity:.65;cursor:wait;}
 .cfgPassEyeV273{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);color:#fff;border-radius:8px;padding:4px 8px;cursor:pointer;line-height:1;font-size:14px;}
 .cfgPassEyeV273:hover{background:rgba(122,255,74,.15);border-color:rgba(122,255,74,.45);}
 
+/* ===== V2.0.138 - Menu lateral: iconos solo colapsado + textos compactos ===== */
+body:not(.sidebarCollapsed) .sideNav button{
+  justify-content:flex-start !important;
+  gap:0 !important;
+  min-height:42px !important;
+  padding:9px 14px !important;
+  font-size:15px !important;
+  line-height:1.1 !important;
+}
+body:not(.sidebarCollapsed) .sideNav button .menuIcon,
+body:not(.sidebarCollapsed) .sideNav button > span:first-child{
+  display:none !important;
+  width:0 !important;
+  min-width:0 !important;
+  margin:0 !important;
+}
+body:not(.sidebarCollapsed) .sideNav button .menuText,
+body:not(.sidebarCollapsed) .sideNav button > span:last-child{
+  display:block !important;
+  font-size:15px !important;
+  font-weight:700 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+body.sidebarCollapsed .sideNav button{
+  justify-content:center !important;
+  align-items:center !important;
+  min-height:48px !important;
+  padding:8px 0 !important;
+  gap:0 !important;
+}
+body.sidebarCollapsed .sideNav button .menuIcon,
+body.sidebarCollapsed .sideNav button > span:first-child{
+  display:inline-flex !important;
+  width:100% !important;
+  min-width:0 !important;
+  justify-content:center !important;
+  align-items:center !important;
+  margin:0 !important;
+  font-size:22px !important;
+}
+body.sidebarCollapsed .sideNav button .menuText,
+body.sidebarCollapsed .sideNav button > span:last-child{
+  display:none !important;
+}
+body:not(.sidebarCollapsed) .sideNav{gap:6px !important;}
+
+/* ===== V2.0.138 - Ajuste menu expandido sin iconos + alertas sin efecto ===== */
+body:not(.sidebarCollapsed) .sideNav button{
+  justify-content:flex-start !important;
+  gap:0 !important;
+  min-height:40px !important;
+  padding:7px 14px !important;
+  font-size:13px !important;
+  font-weight:800 !important;
+  line-height:1.05 !important;
+}
+body:not(.sidebarCollapsed) .sideNav button .menuIcon{
+  display:none !important;
+  visibility:hidden !important;
+  opacity:0 !important;
+  width:0 !important;
+  min-width:0 !important;
+  max-width:0 !important;
+  flex:0 0 0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+body:not(.sidebarCollapsed) .sideNav button .menuText{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  width:100% !important;
+  max-width:none !important;
+  font-size:13px !important;
+  font-weight:800 !important;
+  line-height:1.05 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+body:not(.sidebarCollapsed) .sideNav button[onclick*="dash"] .menuText,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="clima"] .menuText,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="unidades"] .menuText,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="clientes"] .menuText{
+  font-size:13px !important;
+  font-weight:800 !important;
+  line-height:1.05 !important;
+  white-space:nowrap !important;
+}
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"],
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"].active,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"]:hover{
+  background:transparent !important;
+  border-left-color:transparent !important;
+  border-color:transparent !important;
+  box-shadow:none !important;
+  filter:none !important;
+  text-shadow:none !important;
+  outline:none !important;
+}
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"] .menuText,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"].active .menuText{
+  color:rgba(255,255,255,.86) !important;
+  text-shadow:none !important;
+  filter:none !important;
+}
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"] .menuIcon,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"].active .menuIcon{
+  animation:none !important;
+  box-shadow:none !important;
+  filter:none !important;
+  text-shadow:none !important;
+}
+body.sidebarCollapsed .sideNav button[onclick*="alertas"],
+body.sidebarCollapsed .sideNav button[onclick*="alertas"].active{
+  box-shadow:none !important;
+}
+
+
+/* ===== V2.0.138 - SOLO MENU LATERAL: textos alineados, iconos solo colapsado, alertas sin efecto en texto ===== */
+body:not(.sidebarCollapsed) .sideNav{
+  align-items:stretch !important;
+}
+body:not(.sidebarCollapsed) .sideNav button{
+  justify-content:flex-start !important;
+  text-align:left !important;
+  padding-left:22px !important;
+  padding-right:14px !important;
+  gap:0 !important;
+  font-size:14px !important;
+  line-height:1.05 !important;
+}
+body:not(.sidebarCollapsed) .sideNav button .menuIcon{
+  display:none !important;
+  visibility:hidden !important;
+  width:0 !important;
+  min-width:0 !important;
+  max-width:0 !important;
+  flex:0 0 0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  opacity:0 !important;
+}
+body:not(.sidebarCollapsed) .sideNav button .menuText,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="clima"] .menuText,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="dash"] .menuText,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="unidades"] .menuText,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="clientes"] .menuText{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  width:auto !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  flex:1 1 auto !important;
+  text-align:left !important;
+  font-size:14px !important;
+  font-weight:800 !important;
+  line-height:1.08 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:clip !important;
+  color:rgba(255,255,255,.88) !important;
+  text-shadow:none !important;
+  filter:none !important;
+  transform:none !important;
+}
+body:not(.sidebarCollapsed) .sideNav button.active .menuText{
+  color:#fff !important;
+  text-shadow:none !important;
+  filter:none !important;
+  box-shadow:none !important;
+}
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"] .menuText,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"].active .menuText{
+  color:#fff !important;
+  text-shadow:none !important;
+  filter:none !important;
+  transform:none !important;
+  animation:none !important;
+}
+/* En modo colapsado se muestran solo iconos */
+body.sidebarCollapsed .sideNav button .menuIcon{
+  display:inline-flex !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  width:32px !important;
+  min-width:32px !important;
+  max-width:32px !important;
+  flex:0 0 32px !important;
+}
+body.sidebarCollapsed .sideNav button .menuText{
+  display:none !important;
+}
+/* Si hay alerta pendiente, el efecto queda reservado al icono/campana en modo colapsado */
+body.sidebarCollapsed .sideNav button[onclick*="alertas"] .menuIcon{
+  filter:drop-shadow(0 0 8px rgba(250,204,21,.75));
+}
+
+/* ===== V2.0.138 - Menu expandido: textos alineados, sin iconos, sin efecto en texto Alertas ===== */
+body:not(.sidebarCollapsed) .sideNav{
+  align-items:stretch !important;
+}
+body:not(.sidebarCollapsed) .sideNav button{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  text-align:left !important;
+  padding-left:24px !important;
+  padding-right:16px !important;
+  gap:0 !important;
+}
+body:not(.sidebarCollapsed) .sideNav button .menuIcon{
+  display:none !important;
+  visibility:hidden !important;
+  opacity:0 !important;
+  width:0 !important;
+  min-width:0 !important;
+  max-width:0 !important;
+  flex:0 0 0 !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+body:not(.sidebarCollapsed) .sideNav button .menuText,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="dash"] .menuText,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="clima"] .menuText,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="unidades"] .menuText,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="clientes"] .menuText{
+  display:block !important;
+  width:100% !important;
+  max-width:none !important;
+  min-width:0 !important;
+  flex:1 1 auto !important;
+  margin:0 !important;
+  padding:0 !important;
+  text-align:left !important;
+  justify-content:flex-start !important;
+  align-items:center !important;
+  font-size:13px !important;
+  line-height:1.05 !important;
+  font-weight:800 !important;
+  color:rgba(255,255,255,.88) !important;
+  text-shadow:none !important;
+  filter:none !important;
+  transform:none !important;
+  animation:none !important;
+  white-space:normal !important;
+  overflow:visible !important;
+  text-overflow:clip !important;
+}
+body:not(.sidebarCollapsed) .sideNav button.active .menuText,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"].active .menuText{
+  color:#ffffff !important;
+  text-shadow:none !important;
+  filter:none !important;
+  transform:none !important;
+  animation:none !important;
+  box-shadow:none !important;
+}
+body:not(.sidebarCollapsed) .sideNav button[onclick*="clima"]{
+  justify-content:flex-start !important;
+  text-align:left !important;
+}
+body:not(.sidebarCollapsed) .sideNav button[onclick*="clima"] .menuText{
+  text-align:left !important;
+  margin-left:0 !important;
+  padding-left:0 !important;
+}
+body.sidebarCollapsed .sideNav button .menuIcon{
+  display:inline-flex !important;
+  visibility:visible !important;
+  opacity:1 !important;
+}
+body.sidebarCollapsed .sideNav button .menuText{
+  display:none !important;
+}
+
+/* ===== V2.0.138 - Correccion real menu lateral ===== */
+/* En menu expandido todos los textos parten de la misma columna */
+body:not(.sidebarCollapsed) .sideNav{
+  align-items:stretch !important;
+}
+body:not(.sidebarCollapsed) .sideNav button{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  text-align:left !important;
+  padding-left:22px !important;
+  padding-right:14px !important;
+  gap:0 !important;
+}
+/* Ocultar iconos SOLO cuando el menu esta expandido */
+body:not(.sidebarCollapsed) .sideNav button .menuIcon,
+body:not(.sidebarCollapsed) .sideNav button > span.menuIcon,
+body:not(.sidebarCollapsed) .sideNav button > span:first-child:not(.menuText){
+  display:none !important;
+  width:0 !important;
+  min-width:0 !important;
+  max-width:0 !important;
+  flex:0 0 0 !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+/* Texto: siempre alineado a la izquierda; incluye el caso Clima */
+body:not(.sidebarCollapsed) .sideNav button .menuText,
+body:not(.sidebarCollapsed) .sideNav button > span:last-child,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="clima"] .menuText,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="clima"] > span:last-child{
+  display:block !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:none !important;
+  flex:1 1 auto !important;
+  margin:0 !important;
+  padding:0 !important;
+  text-align:left !important;
+  justify-content:flex-start !important;
+  align-items:center !important;
+  font-size:13px !important;
+  line-height:1.05 !important;
+  font-weight:800 !important;
+  color:rgba(255,255,255,.88) !important;
+  text-shadow:none !important;
+  filter:none !important;
+  transform:none !important;
+  animation:none !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:clip !important;
+}
+body:not(.sidebarCollapsed) .sideNav button.active .menuText,
+body:not(.sidebarCollapsed) .sideNav button.active > span:last-child{
+  color:#fff !important;
+  text-shadow:none !important;
+  filter:none !important;
+  transform:none !important;
+  animation:none !important;
+}
+/* Alertas: sin efecto en texto. Solo queda borde/contenedor del item; el texto queda normal */
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"] .menuText,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"] > span:last-child,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"].active .menuText,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"].active > span:last-child{
+  color:#fff !important;
+  text-shadow:none !important;
+  filter:none !important;
+  box-shadow:none !important;
+  animation:none !important;
+  transform:none !important;
+}
+/* En colapsado, solo iconos */
+body.sidebarCollapsed .sideNav button .menuIcon,
+body.sidebarCollapsed .sideNav button > span.menuIcon{
+  display:inline-flex !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  width:32px !important;
+  min-width:32px !important;
+  max-width:32px !important;
+  flex:0 0 32px !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+body.sidebarCollapsed .sideNav button .menuText,
+body.sidebarCollapsed .sideNav button > span:last-child:not(.menuIcon){
+  display:none !important;
+}
+
+/* ===== V2.0.138 - primer pintado menu alineado ===== */
+body:not(.sidebarCollapsed) .sidebar{width:230px!important;min-width:230px!important;max-width:230px!important;padding:14px 12px!important;overflow:hidden!important;}
+body:not(.sidebarCollapsed) .dashboardShell{margin-left:230px!important;}
+body:not(.sidebarCollapsed) .sideNav{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:4px!important;margin-top:8px!important;width:100%!important;}
+body:not(.sidebarCollapsed) .sideNav button{box-sizing:border-box!important;width:100%!important;min-height:38px!important;height:38px!important;padding:7px 16px 7px 26px!important;margin:0!important;border-radius:10px!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;text-align:left!important;gap:0!important;overflow:hidden!important;white-space:nowrap!important;font-size:14px!important;font-weight:800!important;line-height:1!important;text-shadow:none!important;filter:none!important;}
+body:not(.sidebarCollapsed) .sideNav button .menuIcon{display:none!important;visibility:hidden!important;opacity:0!important;width:0!important;min-width:0!important;max-width:0!important;flex:0 0 0!important;margin:0!important;padding:0!important;overflow:hidden!important;}
+body:not(.sidebarCollapsed) .sideNav button .menuText{display:block!important;flex:1 1 auto!important;width:100%!important;max-width:none!important;text-align:left!important;white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important;font-size:14px!important;font-weight:800!important;line-height:1!important;text-shadow:none!important;filter:none!important;animation:none!important;transform:none!important;}
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"],body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"].menuAlertPending,body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"].hasPendingAlerts,body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"]:not(.active){background:transparent!important;border:0!important;border-left:0!important;box-shadow:none!important;outline:0!important;filter:none!important;animation:none!important;}
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"] .menuText{color:rgba(255,255,255,.88)!important;text-shadow:none!important;filter:none!important;animation:none!important;transform:none!important;box-shadow:none!important;}
+
+
+/* ===== V2.0.138 - FIX FINAL: menu expandido alineado a izquierda y sin efecto en texto ===== */
+body:not(.sidebarCollapsed) .sideNav{
+  align-items:stretch !important;
+  gap:6px !important;
+}
+body:not(.sidebarCollapsed) .sideNav button{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  width:100% !important;
+  min-height:42px !important;
+  padding:8px 16px 8px 28px !important;
+  gap:0 !important;
+  text-align:left !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  border-radius:10px !important;
+}
+body:not(.sidebarCollapsed) .sideNav button .menuIcon{
+  display:none !important;
+  visibility:hidden !important;
+  width:0 !important;
+  min-width:0 !important;
+  max-width:0 !important;
+  flex:0 0 0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  opacity:0 !important;
+}
+body:not(.sidebarCollapsed) .sideNav button .menuText{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  flex:0 1 auto !important;
+  width:auto !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+  color:#e9f0f5 !important;
+  font-family:Arial,Helvetica,sans-serif !important;
+  font-size:14px !important;
+  font-weight:800 !important;
+  line-height:1.1 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:clip !important;
+  text-align:left !important;
+  text-shadow:none !important;
+  filter:none !important;
+}
+body:not(.sidebarCollapsed) .sideNav button.active{
+  justify-content:flex-start !important;
+  padding-left:28px !important;
+}
+body:not(.sidebarCollapsed) .sideNav button.active .menuText,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"] .menuText,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"].active .menuText{
+  color:#ffffff !important;
+  text-shadow:none !important;
+  filter:none !important;
+  transform:none !important;
+}
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"],
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"].active{
+  box-shadow:none !important;
+  text-shadow:none !important;
+}
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"]::before,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"]::after{
+  display:none !important;
+}
+body.sidebarCollapsed .sideNav button .menuIcon{
+  display:inline-flex !important;
+  visibility:visible !important;
+  opacity:1 !important;
+}
+body.sidebarCollapsed .sideNav button .menuText{
+  display:none !important;
+}
+
+/* ===== V2.0.138 - FIX RAIZ MENU LATERAL =====
+   Problema detectado: el menu acumulaba reglas repetidas y scripts que volvian
+   a centrar los textos. Esta capa final fija una columna izquierda unica para
+   todos los labels, sin depender de justify-content ni text-align heredados. */
+body:not(.sidebarCollapsed) .sidebar{
+  width:230px !important;
+  min-width:230px !important;
+  max-width:230px !important;
+  padding:14px 12px !important;
+  overflow:hidden !important;
+}
+body:not(.sidebarCollapsed) .dashboardShell{
+  margin-left:230px !important;
+}
+body:not(.sidebarCollapsed) .sideNav{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:stretch !important;
+  gap:4px !important;
+  margin-top:8px !important;
+  width:100% !important;
+}
+body:not(.sidebarCollapsed) .sideNav button{
+  position:relative !important;
+  box-sizing:border-box !important;
+  width:100% !important;
+  min-width:100% !important;
+  max-width:100% !important;
+  height:38px !important;
+  min-height:38px !important;
+  margin:0 !important;
+  padding:0 !important;
+  border-radius:10px !important;
+  overflow:hidden !important;
+  display:block !important;
+  text-align:left !important;
+  justify-content:initial !important;
+  align-items:initial !important;
+  gap:0 !important;
+  font-family:Arial,Helvetica,sans-serif !important;
+  font-size:14px !important;
+  font-weight:800 !important;
+  line-height:38px !important;
+  letter-spacing:0 !important;
+  text-shadow:none !important;
+  filter:none !important;
+  transform:none !important;
+  animation:none !important;
+}
+body:not(.sidebarCollapsed) .sideNav button .menuIcon{
+  display:none !important;
+  visibility:hidden !important;
+  opacity:0 !important;
+  width:0 !important;
+  min-width:0 !important;
+  max-width:0 !important;
+  flex:0 0 0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+body:not(.sidebarCollapsed) .sideNav button .menuText{
+  position:absolute !important;
+  left:26px !important;
+  top:0 !important;
+  right:10px !important;
+  height:38px !important;
+  line-height:38px !important;
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  width:auto !important;
+  min-width:0 !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  text-align:left !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:clip !important;
+  color:rgba(255,255,255,.88) !important;
+  font-family:Arial,Helvetica,sans-serif !important;
+  font-size:14px !important;
+  font-weight:800 !important;
+  letter-spacing:0 !important;
+  text-shadow:none !important;
+  filter:none !important;
+  transform:none !important;
+  animation:none !important;
+  box-shadow:none !important;
+}
+body:not(.sidebarCollapsed) .sideNav button.active{
+  background:linear-gradient(90deg,rgba(76,198,63,.72),rgba(76,198,63,.20)) !important;
+  border-left:3px solid #6cff4a !important;
+  color:#fff !important;
+  box-shadow:none !important;
+  outline:0 !important;
+  filter:none !important;
+  text-shadow:none !important;
+}
+body:not(.sidebarCollapsed) .sideNav button.active .menuText{
+  left:26px !important;
+  color:#fff !important;
+  text-align:left !important;
+  text-shadow:none !important;
+  filter:none !important;
+  transform:none !important;
+  animation:none !important;
+}
+/* Alertas: texto normal sin brillo, sin shadow, sin efecto. */
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"],
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"].active,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"].hasPendingAlerts,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"].menuAlertPending{
+  box-shadow:none !important;
+  text-shadow:none !important;
+  filter:none !important;
+  animation:none !important;
+}
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"] .menuText,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"].active .menuText{
+  left:26px !important;
+  color:rgba(255,255,255,.88) !important;
+  text-align:left !important;
+  text-shadow:none !important;
+  filter:none !important;
+  transform:none !important;
+  animation:none !important;
+  box-shadow:none !important;
+}
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"].active .menuText{color:#fff !important;}
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"]::before,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"]::after{display:none !important;}
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"] .sideAlertBadge,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"] .badgeCount,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"] .alertBadge,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"] .topAlertCount{
+  display:none !important;
+  visibility:hidden !important;
+  opacity:0 !important;
+}
+body.sidebarCollapsed .sideNav button{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:52px !important;
+  min-width:52px !important;
+  max-width:52px !important;
+  height:40px !important;
+  min-height:40px !important;
+  padding:7px 0 !important;
+}
+body.sidebarCollapsed .sideNav button .menuIcon{
+  display:inline-flex !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  position:static !important;
+  flex:0 0 28px !important;
+  width:28px !important;
+  min-width:28px !important;
+  max-width:28px !important;
+  height:28px !important;
+  align-items:center !important;
+  justify-content:center !important;
+  font-size:19px !important;
+}
+body.sidebarCollapsed .sideNav button .menuText{
+  display:none !important;
+  visibility:hidden !important;
+  opacity:0 !important;
+}
+
+/* ===== V2.0.138 - FIX RAIZ MENU LATERAL ESTABLE =====
+   Unico criterio final del sidebar: expandido = textos alineados a izquierda sin iconos,
+   colapsado = solo iconos y contenedor contraido. */
+body:not(.sidebarCollapsed) .sidebar{
+  width:230px !important;min-width:230px !important;max-width:230px !important;
+  padding:14px 14px 12px !important;overflow:hidden !important;box-sizing:border-box !important;
+}
+body:not(.sidebarCollapsed) .dashboardShell{margin-left:230px !important;}
+body:not(.sidebarCollapsed) .brandBox{height:88px !important;padding:0 6px 8px !important;display:flex !important;flex-direction:column !important;align-items:center !important;justify-content:center !important;gap:8px !important;overflow:hidden !important;}
+body:not(.sidebarCollapsed) .brandBox img{width:122px !important;max-width:122px !important;height:auto !important;object-fit:contain !important;}
+body:not(.sidebarCollapsed) .brandDivider{display:block !important;width:82% !important;margin:0 auto !important;}
+body:not(.sidebarCollapsed) .sideNav{display:flex !important;flex-direction:column !important;gap:2px !important;margin-top:8px !important;align-items:stretch !important;width:100% !important;}
+body:not(.sidebarCollapsed) .sideNav button{
+  position:relative !important;display:block !important;box-sizing:border-box !important;
+  width:100% !important;min-width:100% !important;max-width:100% !important;
+  height:36px !important;min-height:36px !important;padding:0 !important;margin:0 !important;
+  border-radius:10px !important;overflow:hidden !important;text-align:left !important;
+  justify-content:initial !important;align-items:initial !important;gap:0 !important;
+  font-family:Arial,Helvetica,sans-serif !important;font-size:14px !important;font-weight:800 !important;line-height:36px !important;
+  text-shadow:none !important;filter:none !important;transform:none !important;animation:none !important;
+}
+body:not(.sidebarCollapsed) .sideNav button .menuIcon{display:none !important;visibility:hidden !important;opacity:0 !important;width:0 !important;min-width:0 !important;max-width:0 !important;flex:0 0 0 !important;margin:0 !important;padding:0 !important;}
+body:not(.sidebarCollapsed) .sideNav button .menuText{
+  position:absolute !important;left:32px !important;right:8px !important;top:0 !important;
+  display:block !important;visibility:visible !important;opacity:1 !important;width:auto !important;max-width:none !important;height:36px !important;
+  margin:0 !important;padding:0 !important;text-align:left !important;
+  color:inherit !important;font-family:Arial,Helvetica,sans-serif !important;font-size:14px !important;font-weight:800 !important;line-height:36px !important;
+  white-space:nowrap !important;overflow:hidden !important;text-overflow:clip !important;
+  text-shadow:none !important;filter:none !important;transform:none !important;animation:none !important;box-shadow:none !important;
+}
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"],
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"].active,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"].hasPendingAlerts,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"].menuAlertPending{
+  text-shadow:none !important;filter:none !important;animation:none !important;box-shadow:none !important;
+}
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"] .menuText{
+  text-shadow:none !important;filter:none !important;animation:none !important;box-shadow:none !important;color:inherit !important;
+}
+body:not(.sidebarCollapsed) .sideAlertBadge,
+body:not(.sidebarCollapsed) .badgeCount,
+body:not(.sidebarCollapsed) .alertBadge,
+body:not(.sidebarCollapsed) .topAlertCount{display:none !important;visibility:hidden !important;opacity:0 !important;}
+
+body.sidebarCollapsed .sidebar{
+  width:72px !important;min-width:72px !important;max-width:72px !important;
+  padding:14px 8px !important;overflow:hidden !important;box-sizing:border-box !important;
+}
+body.sidebarCollapsed .dashboardShell{margin-left:72px !important;}
+body.sidebarCollapsed .brandBox{height:66px !important;padding:0 !important;display:flex !important;align-items:center !important;justify-content:center !important;overflow:hidden !important;}
+body.sidebarCollapsed .brandBox img{width:48px !important;max-width:48px !important;height:auto !important;object-fit:contain !important;}
+body.sidebarCollapsed .brandDivider{display:none !important;}
+body.sidebarCollapsed .sideNav{display:flex !important;flex-direction:column !important;gap:6px !important;align-items:center !important;width:100% !important;margin-top:8px !important;}
+body.sidebarCollapsed .sideNav button{
+  width:52px !important;min-width:52px !important;max-width:52px !important;height:40px !important;min-height:40px !important;
+  padding:0 !important;margin:0 !important;display:flex !important;align-items:center !important;justify-content:center !important;gap:0 !important;overflow:hidden !important;text-align:center !important;
+}
+body.sidebarCollapsed .sideNav button .menuText,
+body.sidebarCollapsed .sideNav button span:not(.menuIcon),
+body.sidebarCollapsed .sideNav button b,
+body.sidebarCollapsed .adminBox div,
+body.sidebarCollapsed .logoutBtn{display:none !important;visibility:hidden !important;width:0 !important;max-width:0 !important;min-width:0 !important;opacity:0 !important;overflow:hidden !important;margin:0 !important;padding:0 !important;}
+body.sidebarCollapsed .sideNav button .menuIcon{display:inline-flex !important;visibility:visible !important;opacity:1 !important;align-items:center !important;justify-content:center !important;flex:0 0 30px !important;width:30px !important;min-width:30px !important;max-width:30px !important;height:30px !important;font-size:20px !important;line-height:1 !important;}
+
+
+/* ===== V2.0.138 - MENU LATERAL ESTABLE FINAL ===== */
+html body:not(.sidebarCollapsed) aside.sidebar,
+html body:not(.sidebarCollapsed) .sidebar{
+  width:230px!important;
+  min-width:230px!important;
+  max-width:230px!important;
+  padding:14px 14px 12px!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+}
+html body:not(.sidebarCollapsed) main.dashboardShell,
+html body:not(.sidebarCollapsed) .dashboardShell{margin-left:230px!important;}
+html body:not(.sidebarCollapsed) .sidebar .brandBox{
+  height:78px!important;
+  padding:0 10px 8px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+}
+html body:not(.sidebarCollapsed) .sidebar .brandBox img{width:124px!important;max-width:124px!important;height:auto!important;object-fit:contain!important;}
+html body:not(.sidebarCollapsed) .sidebar .brandDivider{display:block!important;width:84%!important;margin:0 auto!important;}
+html body:not(.sidebarCollapsed) .sidebar .sideNav{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  gap:4px!important;
+  margin-top:8px!important;
+  width:100%!important;
+}
+html body:not(.sidebarCollapsed) .sidebar .sideNav button,
+html body:not(.sidebarCollapsed) .sidebar .sideNav button.active,
+html body:not(.sidebarCollapsed) .sidebar .sideNav button:hover,
+html body:not(.sidebarCollapsed) .sidebar .sideNav button:focus{
+  position:relative!important;
+  box-sizing:border-box!important;
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  height:38px!important;
+  min-height:38px!important;
+  max-height:38px!important;
+  margin:0!important;
+  padding:0 10px 0 28px!important;
+  border-radius:10px!important;
+  text-align:left!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+  font-family:Arial,Helvetica,sans-serif!important;
+  font-size:14px!important;
+  font-weight:800!important;
+  line-height:38px!important;
+  letter-spacing:0!important;
+  text-shadow:none!important;
+  filter:none!important;
+  animation:none!important;
+  transform:none!important;
+  justify-content:initial!important;
+  align-items:initial!important;
+  place-items:initial!important;
+}
+html body:not(.sidebarCollapsed) .sidebar .sideNav button.active{
+  background:linear-gradient(90deg,rgba(76,198,63,.72),rgba(76,198,63,.20))!important;
+  color:#fff!important;
+  border-left:3px solid #6cff4a!important;
+  box-shadow:none!important;
+}
+html body:not(.sidebarCollapsed) .sidebar .sideNav button .menuIcon{display:none!important;visibility:hidden!important;opacity:0!important;width:0!important;min-width:0!important;max-width:0!important;height:0!important;margin:0!important;padding:0!important;overflow:hidden!important;}
+html body:not(.sidebarCollapsed) .sidebar .sideNav button .menuText,
+html body:not(.sidebarCollapsed) .sidebar .sideNav button.active .menuText,
+html body:not(.sidebarCollapsed) .sidebar .sideNav button:hover .menuText,
+html body:not(.sidebarCollapsed) .sidebar .sideNav button:focus .menuText{
+  display:block!important;
+  position:static!important;
+  width:100%!important;
+  max-width:100%!important;
+  height:38px!important;
+  margin:0!important;
+  padding:0!important;
+  text-align:left!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:clip!important;
+  color:inherit!important;
+  font:inherit!important;
+  line-height:38px!important;
+  text-shadow:none!important;
+  filter:none!important;
+  animation:none!important;
+  transform:none!important;
+  box-shadow:none!important;
+}
+html body:not(.sidebarCollapsed) .sidebar .sideNav button[onclick*="alertas"],
+html body:not(.sidebarCollapsed) .sidebar .sideNav button[onclick*="alertas"].active,
+html body:not(.sidebarCollapsed) .sidebar .sideNav button[onclick*="alertas"] .menuText{
+  box-shadow:none!important;
+  text-shadow:none!important;
+  filter:none!important;
+  animation:none!important;
+  transform:none!important;
+}
+html body:not(.sidebarCollapsed) .sidebar .sideNav .sideAlertBadge,
+html body:not(.sidebarCollapsed) .sidebar .sideNav .badgeCount,
+html body:not(.sidebarCollapsed) .sidebar .sideNav .alertBadge,
+html body:not(.sidebarCollapsed) .sidebar .sideNav .topAlertCount{display:none!important;visibility:hidden!important;opacity:0!important;}
+html body.sidebarCollapsed aside.sidebar,
+html body.sidebarCollapsed .sidebar{
+  width:72px!important;
+  min-width:72px!important;
+  max-width:72px!important;
+  padding:14px 8px!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+}
+html body.sidebarCollapsed main.dashboardShell,
+html body.sidebarCollapsed .dashboardShell{margin-left:72px!important;}
+html body.sidebarCollapsed .sidebar .brandBox{height:66px!important;padding:0!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important;}
+html body.sidebarCollapsed .sidebar .brandBox img{width:48px!important;max-width:48px!important;height:auto!important;}
+html body.sidebarCollapsed .sidebar .brandDivider{display:none!important;}
+html body.sidebarCollapsed .sidebar .sideNav{display:flex!important;flex-direction:column!important;align-items:center!important;width:100%!important;gap:6px!important;}
+html body.sidebarCollapsed .sidebar .sideNav button,
+html body.sidebarCollapsed .sidebar .sideNav button.active{
+  width:52px!important;
+  min-width:52px!important;
+  max-width:52px!important;
+  height:40px!important;
+  min-height:40px!important;
+  max-height:40px!important;
+  padding:0!important;
+  margin:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  overflow:hidden!important;
+  border-radius:12px!important;
+}
+html body.sidebarCollapsed .sidebar .sideNav button .menuText,
+html body.sidebarCollapsed .sidebar .adminBox div,
+html body.sidebarCollapsed .sidebar .logoutBtn{display:none!important;visibility:hidden!important;opacity:0!important;width:0!important;min-width:0!important;max-width:0!important;overflow:hidden!important;}
+html body.sidebarCollapsed .sidebar .sideNav button .menuIcon{display:inline-flex!important;visibility:visible!important;opacity:1!important;width:30px!important;min-width:30px!important;max-width:30px!important;height:30px!important;align-items:center!important;justify-content:center!important;font-size:20px!important;line-height:1!important;}
+
 /* v2.0.139 menu Entregas estable */
 .sideNav button[data-menu-id='entrega'] .menuText{white-space:nowrap!important;}
