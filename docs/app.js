@@ -9166,3 +9166,92 @@ if(_refresh_v1250){
   setInterval(setVersionV267,3000);
   setVersionV267();
 })();
+
+
+/* ===== FIX - Menu Entregas unico debajo de Embarques ===== */
+(function(){
+  function qs(s){return document.querySelector(s)}
+  function qsa(s){return Array.from(document.querySelectorAll(s))}
+  function escFix(v){
+    try{ if(typeof esc==='function') return esc(v); }catch(e){}
+    return String(v==null?'':v).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]});
+  }
+  function isOpenFix(t){try{return typeof openT==='function'?openT(t):String(t&&t.estado||'').toLowerCase()!=='cerrado'}catch(e){return true}}
+  function flotaFix(t){try{return typeof flota==='function'?flota(t):(t&& (t.flota||t.fleet||t.unidad))}catch(e){return t&&(t.flota||t.fleet||t.unidad)||''}}
+  function rutaFix(t){try{return typeof ruta==='function'?ruta(t):{}}catch(e){return {}}}
+  function cardFix(t){try{ if(typeof card==='function') return card(t); }catch(e){}
+    var r=rutaFix(t);
+    return '<div class="item '+(isOpenFix(t)?'open':'closed')+'"><div class="top"><span>🚚 Flota '+escFix(flotaFix(t)||'-')+' / 📦 Emb. '+escFix((t&&t.embarque)||'-')+'</span><span class="badge '+(isOpenFix(t)?'':'closed')+'">'+(isOpenFix(t)?'En tránsito':'Finalizado')+'</span></div><div><b>Cliente:</b> '+escFix(r.cliente||'-')+' | <b>Destino:</b> '+escFix(r.destino||'-')+'</div></div>';
+  }
+  function unique(arr){return Array.from(new Set((arr||[]).map(function(v){return String(v||'').trim()}).filter(Boolean))).sort(function(a,b){return a.localeCompare(b,'es')})}
+  function fill(id, values, first){
+    var el=document.getElementById(id); if(!el) return;
+    var cur=el.value;
+    el.innerHTML='<option value="">'+escFix(first)+'</option>'+unique(values).map(function(v){return '<option value="'+escFix(v)+'">'+escFix(v)+'</option>'}).join('');
+    if(Array.from(el.options).some(function(o){return o.value===cur})) el.value=cur;
+  }
+  function ensureEntregasMenu(){
+    var nav=qs('.sideNav'); if(!nav) return;
+    var existing=qsa('.sideNav button').filter(function(b){return (b.getAttribute('onclick')||'').indexOf("entregas")>=0});
+    var btn=existing[0];
+    existing.slice(1).forEach(function(b){b.remove()});
+    if(!btn){
+      btn=document.createElement('button');
+      btn.setAttribute('onclick',"tab('entregas')");
+    }
+    btn.innerHTML='<span class="menuIcon" aria-hidden="true">🚛</span><span class="menuText">Entregas</span>';
+    btn.title='Entregas';
+    var emb=qsa('.sideNav button').find(function(b){return (b.getAttribute('onclick')||'').indexOf('embarques')>=0});
+    if(emb && emb.nextSibling!==btn) emb.insertAdjacentElement('afterend',btn);
+    else if(!btn.parentNode) nav.appendChild(btn);
+  }
+  function ensureEntregasSection(){
+    if(document.getElementById('entregas')) return;
+    var sec=document.createElement('section');
+    sec.id='entregas'; sec.className='panel';
+    sec.innerHTML='<div class="sectionTitle"><h2>Entregas</h2><p>Seguimiento de flotas en tránsito</p></div><div class="glassPanel entregasToolbar"><div class="filters entregasFilters"><input id="entFilterEmb" placeholder="Embarque"><select id="entFilterFlo"><option value="">Todas las flotas</option></select><select id="entFilterCli"><option value="">Todos los clientes</option></select><select id="entFilterEst"><option value="">Todos</option><option value="abierto">Abiertos</option><option value="cerrado">Cerrados</option></select></div></div><div class="glassPanel"><div id="entregasList" class="cardList"></div></div>';
+    var emb=document.getElementById('embarques');
+    if(emb) emb.insertAdjacentElement('afterend',sec);
+    else (qs('.dashboardShell')||document.body).appendChild(sec);
+  }
+  window.renderEntregas=function(){
+    ensureEntregasMenu(); ensureEntregasSection();
+    var data=Array.isArray(window.trs)?window.trs:(typeof trs!=='undefined'&&Array.isArray(trs)?trs:[]);
+    fill('entFilterFlo', data.map(flotaFix), 'Todas las flotas');
+    fill('entFilterCli', data.map(function(t){return rutaFix(t).cliente}), 'Todos los clientes');
+    var emb=(document.getElementById('entFilterEmb')||{}).value||''; emb=emb.toLowerCase();
+    var flo=(document.getElementById('entFilterFlo')||{}).value||'';
+    var cli=(document.getElementById('entFilterCli')||{}).value||'';
+    var est=(document.getElementById('entFilterEst')||{}).value||'';
+    var rows=data.filter(function(t){
+      var abierto=isOpenFix(t);
+      return (!emb||String((t&&t.embarque)||'').toLowerCase().indexOf(emb)>=0) && (!flo||flotaFix(t)===flo) && (!cli||String(rutaFix(t).cliente||'')===cli) && (!est||(est==='abierto'?abierto:!abierto));
+    });
+    var list=document.getElementById('entregasList');
+    if(list) list.innerHTML=rows.map(cardFix).join('') || '<div class="item">Sin resultados.</div>';
+  };
+  function wireEntregasFilters(){
+    ['entFilterEmb','entFilterFlo','entFilterCli','entFilterEst'].forEach(function(id){
+      var el=document.getElementById(id); if(!el||el.dataset.entregasWired==='1') return;
+      el.dataset.entregasWired='1';
+      el.addEventListener(el.tagName==='INPUT'?'input':'change',function(){window.renderEntregas&&window.renderEntregas()});
+    });
+  }
+  var oldTab=window.tab;
+  window.tab=function(id){
+    ensureEntregasMenu(); ensureEntregasSection();
+    var r=typeof oldTab==='function'?oldTab.apply(this,arguments):undefined;
+    if(id==='entregas') setTimeout(function(){wireEntregasFilters(); window.renderEntregas();},0);
+    else setTimeout(ensureEntregasMenu,0);
+    return r;
+  };
+  var oldRefresh=window.refresh;
+  if(typeof oldRefresh==='function'){
+    window.refresh=async function(){
+      var r=await oldRefresh.apply(this,arguments);
+      if(document.getElementById('entregas')&&document.getElementById('entregas').classList.contains('active')) window.renderEntregas();
+      return r;
+    };
+  }
+  ['DOMContentLoaded','load'].forEach(function(ev){window.addEventListener(ev,function(){setTimeout(function(){ensureEntregasMenu(); ensureEntregasSection(); wireEntregasFilters();},0);});});
+})();

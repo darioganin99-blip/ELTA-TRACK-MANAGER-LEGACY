@@ -1,13 +1,6 @@
 <!doctype html>
 <html lang="es">
 <head>
-<script>
-(function(){
-  if ('serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(function(regs){ regs.forEach(function(r){ r.unregister(); }); }); }
-  if (window.caches) { caches.keys().then(function(keys){ keys.forEach(function(k){ caches.delete(k); }); }); }
-})();
-</script>
-
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -15,7 +8,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ITS Intelligent Traffic System</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="style.v2.0.132.css?v=2.0.132.final">
+<link rel="stylesheet" href="style.css?v=2.0.132-entregas">
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -53,7 +46,7 @@
   <footer class="loginFooter">
     <span>🛡 Sistema seguro</span>
     <span>© 2025 ELTA Tracking Solutions</span>
-    <span>Versión 2.0.132</span>
+    <span>Versión 2.0.69</span>
   </footer>
 </section>
 
@@ -72,10 +65,10 @@
       <button onclick="tab('transitos')"><span class="menuIcon">🚚</span><span class="menuText">Tránsitos</span></button>
       <button onclick="tab('mapa')"><span class="menuIcon">📍</span><span class="menuText">Seguimiento</span></button>
       <button onclick="tab('clima')"><span class="menuIcon">🌦️</span><span class="menuText">Clima</span></button>
+      <button onclick="tab('unidades')"><span class="menuIcon">🚛</span><span class="menuText">Unidades / Choferes</span></button>
       <button onclick="tab('alertas')"><span class="menuIcon">🔔</span><span class="menuText">Alertas</span></button>
       <button onclick="tab('embarques')"><span class="menuIcon">📦</span><span class="menuText">Embarques</span></button>
-      <button onclick="tab('entrega')" data-menu-id="entrega"><span class="menuIcon">🚛</span><span class="menuText">Entregas</span></button>
-      <button onclick="tab('unidades')"><span class="menuIcon">🚛</span><span class="menuText">Unidades / Choferes</span></button>
+      <button onclick="tab('entregas')"><span class="menuIcon">🚛</span><span class="menuText">Entregas</span></button>
       <button onclick="tab('clientes')"><span class="menuIcon">🏢</span><span class="menuText">Clientes / Destinos</span></button>
       <button onclick="tab('abm')"><span class="menuIcon">⚙️</span><span class="menuText">Configuración</span></button>
     </nav>
@@ -98,7 +91,7 @@
       <div class="headerTitle">
         <h1 class="systemTitleSmall">ITS Intelligent Traffic System</h1>
         <p>Panel tráfico / coordinación</p>
-        <span>Versión 2.0.132</span>
+        <span>Versión 2.0.69</span>
       </div>
 
       <div class="headerActions">
@@ -315,6 +308,20 @@
       <div id="embarqueDetailPanel" class="glassPanel embarqueDetailPanel" style="display:none"></div>
     </section>
 
+
+    <section id="entregas" class="panel">
+      <div class="sectionTitle"><h2>Entregas</h2><p>Seguimiento de flotas en tránsito</p></div>
+      <div class="glassPanel entregasToolbar">
+        <div class="filters entregasFilters">
+          <input id="entFilterEmb" placeholder="Embarque" oninput="window.renderEntregas && window.renderEntregas()">
+          <select id="entFilterFlo" onchange="window.renderEntregas && window.renderEntregas()"><option value="">Todas las flotas</option></select>
+          <select id="entFilterCli" onchange="window.renderEntregas && window.renderEntregas()"><option value="">Todos los clientes</option></select>
+          <select id="entFilterEst" onchange="window.renderEntregas && window.renderEntregas()"><option value="">Todos</option><option value="abierto">Abiertos</option><option value="cerrado">Cerrados</option></select>
+        </div>
+      </div>
+      <div class="glassPanel"><div id="entregasList" class="cardList"></div></div>
+    </section>
+
     <section id="clientes" class="panel">
       <div class="sectionTitle"><h2>Clientes / Destinos</h2><p>Clientes y destinos registrados</p></div>
       <div class="clientesDestinosGrid">
@@ -372,12 +379,12 @@
     <footer class="appFooter">
       <span>🛡 Sistema seguro</span>
       <span>© 2025 ELTA Tracking Solutions</span>
-      <span>Versión 2.0.132</span>
+      <span>Versión 2.0.69</span>
     </footer>
   </main>
 </section>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="app.v2.0.132.js?v=2.0.132.final"></script>
+<script src="app.js?v=2.0.132-entregas"></script>
 </body>
 </html>

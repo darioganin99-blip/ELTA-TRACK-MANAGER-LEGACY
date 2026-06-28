@@ -21,7 +21,7 @@ body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#071a2c;color:va
 }
 .loginPage.active{display:flex}
 .bgPhoto{
-  position:absolute;inset:0;z-index:0;background-image:url('assets/fondo-camion.png');
+  position:absolute;inset:0;z-index:0;background-image:url('assets/fondo-camion.jpg');
   background-size:cover;background-position:center 48%;background-repeat:no-repeat;
   filter:brightness(.92) contrast(1.02) saturate(1.05);opacity:1;
 }
@@ -49,7 +49,7 @@ body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#071a2c;color:va
 /* APP V1.1 */
 .appPage{min-height:100vh;position:relative;overflow:hidden;background:#071a2c}
 .appBgPhoto{
-  position:fixed;inset:0;z-index:0;background-image:url('assets/fondo-camion.png');
+  position:fixed;inset:0;z-index:0;background-image:url('assets/fondo-camion.jpg');
   background-size:cover;background-position:center 48%;background-repeat:no-repeat;
   filter:brightness(.68) contrast(1.02) saturate(.95);opacity:1;
 }
@@ -7826,3 +7826,10 @@ button:disabled{opacity:.65;cursor:wait;}
 #clima .climaCardMini263{font-size:10.8px!important;line-height:1.15!important;}
 #clima .passOk263{font-size:10.2px!important;padding:3px 8px!important;margin:0 0 7px!important;}
 #clima .weatherCol h3{font-size:16px!important;margin-bottom:9px!important;}
+
+
+/* FIX Entregas: filtros compactos */
+.entregasToolbar{padding:16px!important}
+.entregasFilters{display:grid;grid-template-columns:1.1fr 1.1fr 1.2fr .8fr;gap:14px;align-items:center}
+.entregasFilters input,.entregasFilters select{height:52px;border-radius:13px;background:#223244;border:1px solid rgba(255,255,255,.18);color:#fff;font-weight:800;font-size:18px;padding:0 18px}
+@media(max-width:900px){.entregasFilters{grid-template-columns:1fr}}
