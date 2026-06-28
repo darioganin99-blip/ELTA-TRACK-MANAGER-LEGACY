@@ -9545,7 +9545,7 @@ if(_refresh_v1250){
       if(trans&&next)nav.insertBefore(btn,next); else if(trans)nav.appendChild(btn); else nav.appendChild(btn);
     }else{
       btn.setAttribute('onclick',"tab('entrega')"); btn.setAttribute('data-menu-id','entrega');
-      const mi=btn.querySelector('.menuIcon')||document.createElement('span'); mi.className='menuIcon'; mi.textContent='🏁';
+      const mi=btn.querySelector('.menuIcon')||document.createElement('span'); mi.className='menuIcon'; mi.textContent='🚛';
       const mt=btn.querySelector('.menuText')||document.createElement('span'); mt.className='menuText'; mt.textContent='Entregas';
       if(!btn.querySelector('.menuIcon')||!btn.querySelector('.menuText')){btn.innerHTML='';btn.append(mi,mt);}    
     }
@@ -10195,7 +10195,7 @@ if(_refresh_v1250){
   function menuOrder114(){
     const nav=document.querySelector('.sideNav'); if(!nav)return;
     let entrega=[...nav.querySelectorAll('button')].find(b=>b.dataset.menuId==='entrega'||(b.getAttribute('onclick')||'').includes("tab('entrega')"));
-    if(entrega){ entrega.dataset.menuId='entrega'; entrega.setAttribute('onclick',"tab('entrega')"); entrega.innerHTML='<span class="menuIcon">🏁</span><span class="menuText">Entregas</span>'; }
+    if(entrega){ entrega.dataset.menuId='entrega'; entrega.setAttribute('onclick',"tab('entrega')"); entrega.innerHTML='<span class="menuIcon">🚛</span><span class="menuText">Entregas</span>'; }
     const emb=[...nav.querySelectorAll('button')].find(b=>(b.getAttribute('onclick')||'').includes("tab('embarques')"));
     if(emb && entrega && emb.nextSibling!==entrega) emb.parentNode.insertBefore(entrega, emb.nextSibling);
   }
@@ -11206,28 +11206,4 @@ if(_refresh_v1250){
   document.addEventListener('DOMContentLoaded',()=>{install(); setTimeout(install,250);});
   window.addEventListener('load',()=>{install(); setTimeout(install,250);});
   setTimeout(install,100);
-})();
-
-/* ===== FIX MENU ENTREGAS UNICO SIN REESCRIBIR MENU ===== */
-(function(){
-  function normalizeEntregaMenu(){
-    const nav=document.querySelector('.sideNav');
-    if(!nav)return;
-    const buttons=[...nav.querySelectorAll('button')];
-    const entregaBtns=buttons.filter(b=>((b.getAttribute('onclick')||'').includes("tab('entrega')")||(b.dataset&&b.dataset.menuId==='entrega')||((b.textContent||'').trim().toLowerCase()==='entregas')));
-    if(!entregaBtns.length)return;
-    const keep=entregaBtns[0];
-    keep.setAttribute('onclick',"tab('entrega')");
-    keep.setAttribute('data-menu-id','entrega');
-    let icon=keep.querySelector('.menuIcon');
-    let text=keep.querySelector('.menuText');
-    if(!icon||!text){keep.innerHTML='<span class="menuIcon">🏁</span><span class="menuText">Entregas</span>';icon=keep.querySelector('.menuIcon');text=keep.querySelector('.menuText');}
-    icon.textContent='🏁';
-    text.textContent='Entregas';
-    entregaBtns.slice(1).forEach(b=>b.remove());
-    const emb=buttons.find(b=>(b.getAttribute('onclick')||'').includes("tab('embarques')"));
-    if(emb&&keep.previousElementSibling!==emb) emb.insertAdjacentElement('afterend',keep);
-  }
-  document.addEventListener('DOMContentLoaded',()=>{normalizeEntregaMenu();setTimeout(normalizeEntregaMenu,300);});
-  window.addEventListener('load',()=>{normalizeEntregaMenu();setTimeout(normalizeEntregaMenu,600);});
 })();
