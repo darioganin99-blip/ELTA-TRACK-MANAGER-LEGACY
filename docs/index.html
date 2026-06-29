@@ -19,10 +19,89 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ITS Intelligent Traffic System</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="style.v2.0.140.css?v=2.0.140.final">
+<link rel="stylesheet" href="style.v2.0.141.css?v=2.0.141.final">
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style id="elta-v141-menu-clean">
+/* v2.0.141 - SOLO presentacion del menu expandido.
+   No modifica rutas, render, inicio, tarjetas ni filtros. */
+
+/* Ocultar iconos cuando el menu esta expandido. La regla apunta a emojis/imagenes
+   de botones de menu y NO a toda la app. */
+body:not(.sidebar-collapsed) .sidebar .nav-item .nav-icon,
+body:not(.sidebar-collapsed) .sidebar .menu-item .nav-icon,
+body:not(.sidebar-collapsed) .sidebar .nav-link .nav-icon,
+body:not(.sidebar-collapsed) .sidebar .menu-link .nav-icon,
+body:not(.sidebar-collapsed) .sidebar .nav-item .icon,
+body:not(.sidebar-collapsed) .sidebar .menu-item .icon,
+body:not(.sidebar-collapsed) .sidebar .nav-link .icon,
+body:not(.sidebar-collapsed) .sidebar .menu-link .icon,
+body:not(.sidebar-collapsed) .sideNav button .menuIcon,
+body:not(.sidebar-collapsed) .sideNav .menuIcon,
+body:not(.sidebar-collapsed) .sidebar button .menuIcon,
+body:not(.sidebar-collapsed) .sidebar [data-icon],
+body:not(.sidebarCollapsed) .sidebar .nav-item .nav-icon,
+body:not(.sidebarCollapsed) .sidebar .menu-item .nav-icon,
+body:not(.sidebarCollapsed) .sideNav button .menuIcon,
+body:not(.sidebarCollapsed) .sideNav .menuIcon {
+  display: none !important;
+}
+
+/* Fallback: en esta app muchos iconos son emojis en el primer span del boton. */
+body:not(.sidebar-collapsed) .sidebar button > span:first-child:not(.menuText):not(.nav-label):not(.menu-label),
+body:not(.sidebar-collapsed) .sideNav button > span:first-child:not(.menuText):not(.nav-label):not(.menu-label),
+body:not(.sidebarCollapsed) .sidebar button > span:first-child:not(.menuText):not(.nav-label):not(.menu-label),
+body:not(.sidebarCollapsed) .sideNav button > span:first-child:not(.menuText):not(.nav-label):not(.menu-label) {
+  display: none !important;
+}
+
+/* Mantener textos visibles y alineados en menu expandido. */
+body:not(.sidebar-collapsed) .sidebar button,
+body:not(.sidebar-collapsed) .sideNav button,
+body:not(.sidebarCollapsed) .sidebar button,
+body:not(.sidebarCollapsed) .sideNav button {
+  justify-content: flex-start !important;
+  gap: 0 !important;
+}
+
+body:not(.sidebar-collapsed) .sidebar button .menuText,
+body:not(.sidebar-collapsed) .sideNav button .menuText,
+body:not(.sidebar-collapsed) .sidebar .nav-label,
+body:not(.sidebar-collapsed) .sidebar .menu-label,
+body:not(.sidebarCollapsed) .sidebar button .menuText,
+body:not(.sidebarCollapsed) .sideNav button .menuText,
+body:not(.sidebarCollapsed) .sidebar .nav-label,
+body:not(.sidebarCollapsed) .sidebar .menu-label {
+  display: inline !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Quitar efecto visual de Alertas en menu expandido. */
+body:not(.sidebar-collapsed) .sidebar button[onclick*="alert"],
+body:not(.sidebar-collapsed) .sideNav button[onclick*="alert"],
+body:not(.sidebar-collapsed) .sidebar .active[onclick*="alert"],
+body:not(.sidebarCollapsed) .sidebar button[onclick*="alert"],
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alert"],
+body:not(.sidebarCollapsed) .sidebar .active[onclick*="alert"] {
+  box-shadow: none !important;
+  animation: none !important;
+  filter: none !important;
+}
+
+/* Preservar iconos cuando el menu esta colapsado. */
+body.sidebar-collapsed .sidebar .nav-icon,
+body.sidebar-collapsed .sidebar .icon,
+body.sidebar-collapsed .sideNav .menuIcon,
+body.sidebarCollapsed .sidebar .nav-icon,
+body.sidebarCollapsed .sidebar .icon,
+body.sidebarCollapsed .sideNav .menuIcon {
+  display: inline-flex !important;
+}
+</style>
+
 </head>
 <body>
 
@@ -57,7 +136,7 @@
   <footer class="loginFooter">
     <span>🛡 Sistema seguro</span>
     <span>© 2025 ELTA Tracking Solutions</span>
-    <span>Versión 2.0.140</span>
+    <span>Versión 2.0.141</span>
   </footer>
 </section>
 
@@ -102,7 +181,7 @@
       <div class="headerTitle">
         <h1 class="systemTitleSmall">ITS Intelligent Traffic System</h1>
         <p>Panel tráfico / coordinación</p>
-        <span>Versión 2.0.140</span>
+        <span>Versión 2.0.141</span>
       </div>
 
       <div class="headerActions">
@@ -376,12 +455,30 @@
     <footer class="appFooter">
       <span>🛡 Sistema seguro</span>
       <span>© 2025 ELTA Tracking Solutions</span>
-      <span>Versión 2.0.140</span>
+      <span>Versión 2.0.141</span>
     </footer>
   </main>
 </section>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="app.v2.0.140.js?v=2.0.140.final"></script>
+<script src="app.v2.0.141.js?v=2.0.141.final"></script>
+
+<script id="elta-v141-version-only">
+(function(){
+  function fixVersion(){
+    try{
+      var nodes = document.querySelectorAll('body *');
+      nodes.forEach(function(n){
+        if(n.childNodes && n.childNodes.length === 1 && n.textContent && /Versión\s+2\.0\.\d+/.test(n.textContent)){
+          n.textContent = n.textContent.replace(/Versión\s+2\.0\.\d+/g, 'Versión 2.0.141');
+        }
+      });
+    }catch(e){}
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fixVersion);
+  else fixVersion();
+})();
+</script>
+
 </body>
 </html>
