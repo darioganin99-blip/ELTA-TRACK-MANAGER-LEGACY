@@ -3992,7 +3992,7 @@ tab = function(id){
 };
 
 /* ===== V1.2.50 - Publicacion desde docs: version unica + filtros sin cambiar formato ===== */
-const ELTA_APP_VERSION = "2.0.144";
+const ELTA_APP_VERSION = "2.0.145";
 
 function updateVersionLabels(){
   document.querySelectorAll('span, small, p, div').forEach(el=>{
@@ -4210,9 +4210,9 @@ if(_refresh_v1250){
 
 
 
-/* ===== V2.0.144 - Nombre oficial del sistema ===== */
+/* ===== V2.0.145 - Nombre oficial del sistema ===== */
 (function(){
-  const APP_VERSION_V2 = "2.0.144";
+  const APP_VERSION_V2 = "2.0.145";
 
   function setVersionV2(){
     document.querySelectorAll('span, small, p, div').forEach(el=>{
@@ -4382,9 +4382,9 @@ if(_refresh_v1250){
 })();
 
 
-/* ===== V2.0.144 - Version y menu lateral robustos ===== */
+/* ===== V2.0.145 - Version y menu lateral robustos ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION = VERSION;
   function setVersion(){
     document.querySelectorAll('span, small, p, div').forEach(el=>{
@@ -4416,9 +4416,9 @@ if(_refresh_v1250){
   };
 })();
 
-/* ===== V2.0.144 - Anti-cache y normalizacion final menu/version ===== */
+/* ===== V2.0.145 - Anti-cache y normalizacion final menu/version ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION = VERSION;
   window.APP_VERSION_V2 = VERSION;
   function setVersionFinal(){
@@ -4474,9 +4474,9 @@ if(_refresh_v1250){
   window.ELTA_FORCE_UI_REFRESH=applyFinal;
 })();
 
-/* ===== V2.0.144 - Correcciones GPS, clima, alertas y seguimiento ===== */
+/* ===== V2.0.145 - Correcciones GPS, clima, alertas y seguimiento ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
 
@@ -4654,9 +4654,9 @@ if(_refresh_v1250){
 })();
 
 
-/* ===== V2.0.144 - Ajustes finales clima, KM y alertas ===== */
+/* ===== V2.0.145 - Ajustes finales clima, KM y alertas ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
 
@@ -4776,9 +4776,9 @@ if(_refresh_v1250){
   if(typeof oldRefresh==='function') window.refresh=async function(){const r=await oldRefresh.apply(this,arguments);apply210();return r;};
 })();
 
-/* ===== V2.0.144 - Ajuste final: menu, clima compacto, KM y alertas alineadas ===== */
+/* ===== V2.0.145 - Ajuste final: menu, clima compacto, KM y alertas alineadas ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
 
@@ -4919,9 +4919,9 @@ if(_refresh_v1250){
 })();
 
 
-/* ===== V2.0.144 - Correccion funcional final: menu, clima, KM y alertas compactas ===== */
+/* ===== V2.0.145 - Correccion funcional final: menu, clima, KM y alertas compactas ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
 
@@ -5100,9 +5100,9 @@ if(_refresh_v1250){
   if(typeof oldTab==='function') window.tab=function(id){const r=oldTab.apply(this,arguments);setTimeout(()=>{refreshAll(); if(id==='alertas') window.renderAlerts(); if(id==='clima' && typeof renderWeatherFleets==='function') renderWeatherFleets();},0);return r;};
 })();
 
-/* ===== V2.0.144 - Vista Alertas compacta: boton Verificar visible ===== */
+/* ===== V2.0.145 - Vista Alertas compacta: boton Verificar visible ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
 
@@ -5213,9 +5213,9 @@ if(_refresh_v1250){
 })();
 
 
-/* ===== V2.0.144 - Torre de Control: Últimas alertas formato linea unica ===== */
+/* ===== V2.0.145 - Torre de Control: Últimas alertas formato linea unica ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
   const $=(id)=>document.getElementById(id);
@@ -5254,9 +5254,9 @@ if(_refresh_v1250){
   const oldTab=window.tab; if(typeof oldTab==='function') window.tab=function(id){const r=oldTab.apply(this,arguments);setTimeout(apply,0);return r;};
 })();
 
-/* ===== V2.0.144 - Tránsitos: alertas a la derecha y todas las alertas / Seguimiento vuelve a base 2.0.144 ===== */
+/* ===== V2.0.145 - Tránsitos: alertas a la derecha y todas las alertas / Seguimiento vuelve a base 2.0.145 ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
 
@@ -5343,9 +5343,9 @@ if(_refresh_v1250){
   document.addEventListener('DOMContentLoaded',()=>{updateVersion(); setTimeout(updateVersion,250); setTimeout(updateVersion,1000);});
 })();
 
-/* ===== V2.0.144 - Iconos por tipo de alerta en Tránsitos y Seguimiento ===== */
+/* ===== V2.0.145 - Iconos por tipo de alerta en Tránsitos y Seguimiento ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
 
@@ -5463,9 +5463,9 @@ if(_refresh_v1250){
 })();
 
 
-/* ===== V2.0.144 - SOLO vista Clima: diseño aprobado Flotas -> Pasos -> Destinos ===== */
+/* ===== V2.0.145 - SOLO vista Clima: diseño aprobado Flotas -> Pasos -> Destinos ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
 
@@ -5604,9 +5604,9 @@ if(_refresh_v1250){
   document.addEventListener('DOMContentLoaded',()=>{updateVersion(); if(q('clima')?.classList.contains('active')) window.ensureClimaDataAndRender();});
 })();
 
-/* ===== V2.0.144 - SOLO vista Clima: formato operativo compacto Flotas -> Pasos -> Destinos ===== */
+/* ===== V2.0.145 - SOLO vista Clima: formato operativo compacto Flotas -> Pasos -> Destinos ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
 
@@ -5724,9 +5724,9 @@ if(_refresh_v1250){
 })();
 
 
-/* ===== V2.0.144 - SOLO vista Clima: filtro por embarque y orden Flotas -> Pasos -> Destinos ===== */
+/* ===== V2.0.145 - SOLO vista Clima: filtro por embarque y orden Flotas -> Pasos -> Destinos ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
 
@@ -5899,9 +5899,9 @@ if(_refresh_v1250){
   document.addEventListener('DOMContentLoaded',()=>{updateVersion(); if(q('clima')?.classList.contains('active')) window.ensureClimaDataAndRender();});
 })();
 
-/* ===== V2.0.144 - SOLO vista Clima: filtro embarques activos + layout compacto corregido ===== */
+/* ===== V2.0.145 - SOLO vista Clima: filtro embarques activos + layout compacto corregido ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
 
@@ -6041,9 +6041,9 @@ if(_refresh_v1250){
   const oldRefresh=window.refresh; if(typeof oldRefresh==='function') window.refresh=async function(){const r=await oldRefresh.apply(this,arguments); updateVersion(); if(document.getElementById('clima')?.classList.contains('active')) await window.renderClima(); return r;};
 })();
 
-/* ===== V2.0.144 - SOLO vista Clima: tarjetas compactas + datos operativos + paso real oficial ===== */
+/* ===== V2.0.145 - SOLO vista Clima: tarjetas compactas + datos operativos + paso real oficial ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
 
@@ -6257,9 +6257,9 @@ if(_refresh_v1250){
   const oldRefresh=window.refresh; if(typeof oldRefresh==='function') window.refresh=async function(){const r=await oldRefresh.apply(this,arguments); updateVersion(); if(document.getElementById('clima')?.classList.contains('active')) await window.renderClima(); return r;};
 })();
 
-/* ===== V2.0.144 - SOLO vista Clima: actualizar funcional, tarjetas compactas y Paso oficial ===== */
+/* ===== V2.0.145 - SOLO vista Clima: actualizar funcional, tarjetas compactas y Paso oficial ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
 
@@ -6510,9 +6510,9 @@ if(_refresh_v1250){
   const oldRefresh=window.refresh; if(typeof oldRefresh==='function') window.refresh=async function(){const r=await oldRefresh.apply(this,arguments); updateVersion(); if(document.getElementById('clima')?.classList.contains('active')) await window.renderClima(); return r;};
 })();
 
-/* ===== V2.0.144 - SOLO vista Clima: columnas Flotas | Paso+Destinos, tarjetas compactas ===== */
+/* ===== V2.0.145 - SOLO vista Clima: columnas Flotas | Paso+Destinos, tarjetas compactas ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
 
@@ -6584,9 +6584,9 @@ if(_refresh_v1250){
   const oldRefresh=window.refresh; if(typeof oldRefresh==='function') window.refresh=async function(){const r=await oldRefresh.apply(this,arguments); updateVersion(); if(document.getElementById('clima')?.classList.contains('active')) await window.renderClima(); return r;};
 })();
 
-/* ===== V2.0.144 - SOLO vista Clima: reorganizacion final compacta + paso oficial bajo demanda ===== */
+/* ===== V2.0.145 - SOLO vista Clima: reorganizacion final compacta + paso oficial bajo demanda ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
 
@@ -6727,9 +6727,9 @@ if(_refresh_v1250){
 })();
 
 
-/* ===== V2.0.144 - Clima: layout compacto definitivo y Paso con consulta online ===== */
+/* ===== V2.0.145 - Clima: layout compacto definitivo y Paso con consulta online ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
 
@@ -6798,9 +6798,9 @@ if(_refresh_v1250){
 })();
 
 
-/* ===== V2.0.144 - Vista Alertas: resumen con graficos + tabla compacta funcional ===== */
+/* ===== V2.0.145 - Vista Alertas: resumen con graficos + tabla compacta funcional ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
 
@@ -6948,9 +6948,9 @@ if(_refresh_v1250){
   if(typeof oldTab234==='function') window.tab=function(id){oldTab234.apply(this,arguments); setVersionText(); if(id==='alertas') window.renderAlerts();};
 })();
 
-/* ===== V2.0.144 - Alertas: graficos en una linea, campana completa, contador funcional ===== */
+/* ===== V2.0.145 - Alertas: graficos en una linea, campana completa, contador funcional ===== */
 (function(){
-  const VERSION_ALERTS_2035 = "2.0.144";
+  const VERSION_ALERTS_2035 = "2.0.145";
   const $ = (id)=>document.getElementById(id);
   const esc2 = (v)=>{ try { return typeof esc === 'function' ? esc(v) : String(v ?? '').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); } catch(e){ return String(v ?? ''); } };
   const clean = (v)=>String(v ?? '').trim() || '-';
@@ -7079,7 +7079,7 @@ if(_refresh_v1250){
   if(typeof oldTab35==='function') window.tab=function(id){ oldTab35.apply(this,arguments); setVersion35(); setCounter35(); if(id==='alertas') window.renderAlerts(); };
 })();
 
-/* ===== V2.0.144 - Menu lateral: badge y efecto de campana segun pendientes ===== */
+/* ===== V2.0.145 - Menu lateral: badge y efecto de campana segun pendientes ===== */
 (function(){
   function getPendingCount236(){
     try{
@@ -7137,9 +7137,9 @@ if(_refresh_v1250){
 })();
 
 
-/* ===== V2.0.144 - Normalizacion final del menu lateral ===== */
+/* ===== V2.0.145 - Normalizacion final del menu lateral ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
   const items=[
@@ -7207,7 +7207,7 @@ if(_refresh_v1250){
   };
 })();
 
-/* ===== V2.0.144 - Refuerzo campana menu lateral ===== */
+/* ===== V2.0.145 - Refuerzo campana menu lateral ===== */
 (function(){
   function pendingCount(){
     try{
@@ -7234,9 +7234,9 @@ if(_refresh_v1250){
   setInterval(applyBellClass,1500);
 })();
 
-/* ===== V2.0.144 - contador real y badge compacto de menu ===== */
+/* ===== V2.0.145 - contador real y badge compacto de menu ===== */
 (function(){
-  const APP_VERSION_MENU_2039 = '2.0.144';
+  const APP_VERSION_MENU_2039 = '2.0.145';
   function setVersions2039(){
     document.querySelectorAll('span,small,p,div').forEach(el=>{
       if(el.childElementCount===0 && /Versi[oó]n\s+\d+\.\d+\.\d+/.test(el.textContent||'')){
@@ -7305,10 +7305,10 @@ if(_refresh_v1250){
   setInterval(normalizeMenu2039,1200);
 })();
 
-/* ===== V2.0.144 - Menu base limpio: normalizadores anteriores removidos ===== */
-/* ===== V2.0.144 - Nuevo modulo Embarques ===== */
+/* ===== V2.0.145 - Menu base limpio: normalizadores anteriores removidos ===== */
+/* ===== V2.0.145 - Nuevo modulo Embarques ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
 
@@ -7459,9 +7459,9 @@ if(_refresh_v1250){
   ['DOMContentLoaded','load'].forEach(ev=>window.addEventListener(ev,()=>setTimeout(window.renderEmbarquesV244,300)));
 })();
 
-/* ===== V2.0.144 - Embarques: combos desde colecciones Firestore y estructura real ===== */
+/* ===== V2.0.145 - Embarques: combos desde colecciones Firestore y estructura real ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
 
@@ -7664,9 +7664,9 @@ if(_refresh_v1250){
   ['DOMContentLoaded','load'].forEach(ev=>window.addEventListener(ev,()=>setTimeout(()=>window.renderEmbarquesV244(),600)));
 })();
 
-/* ===== v2.0.144 - PDF profesional con logo original ELTA para Vista Tránsitos ===== */
+/* ===== v2.0.145 - PDF profesional con logo original ELTA para Vista Tránsitos ===== */
 (function(){
-  const APP_VERSION_PDF = '2.0.144';
+  const APP_VERSION_PDF = '2.0.145';
   function sx53(v){return String(v ?? '').trim() || '-';}
   function escAttr53(v){return String(v ?? '').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,' ');}
   function route53(t){try{return typeof ruta==='function' ? (ruta(t)||{}) : {};}catch(e){return {};}}
@@ -7778,13 +7778,13 @@ if(_refresh_v1250){
       <div class="transitRight"><h4 class="alertsTitle">⚠️ Alertas del tránsito</h4>${typeof transitAlertsCompact==='function'?transitAlertsCompact(t):''}</div>
     </div>`;
   };
-  document.querySelectorAll('.loginFooter span, .headerTitle span').forEach(el=>{if(/Versi[oó]n/i.test(el.textContent||''))el.textContent='Versión 2.0.144';});
+  document.querySelectorAll('.loginFooter span, .headerTitle span').forEach(el=>{if(/Versi[oó]n/i.test(el.textContent||''))el.textContent='Versión 2.0.145';});
 })();
 
 
-/* ===== V2.0.144 - Fix botones Actualizar global + version unificada ===== */
+/* ===== V2.0.145 - Fix botones Actualizar global + version unificada ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
   function syncGlobals(){
@@ -7872,9 +7872,9 @@ if(_refresh_v1250){
   setInterval(setVersionLabels,1200);
 })();
 
-/* ===== V2.0.144 - Configuracion redisenada sin JSON y sin pestana Embarques ===== */
+/* ===== V2.0.145 - Configuracion redisenada sin JSON y sin pestana Embarques ===== */
 (function(){
-  const APP_VERSION_CFG = "2.0.144";
+  const APP_VERSION_CFG = "2.0.145";
   function byId(id){return document.getElementById(id)}
   function safe(v){return (typeof esc==='function'?esc(String(v ?? "")):String(v ?? "").replace(/[&<>'"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;"}[m])))}
   function getActiveText(v){return v===false||String(v).toLowerCase()==='false'?'Inactivo':'Activo'}
@@ -8018,9 +8018,9 @@ if(_refresh_v1250){
   ['DOMContentLoaded','load'].forEach(ev=>window.addEventListener(ev,()=>setTimeout(()=>{fixVersion(); if(byId('abm')?.classList.contains('active'))renderABM();},500)));
 })();
 
-/* ===== V2.0.144 - SOLO vista Clima: filtro embarque corrige destino exacto del embarque ===== */
+/* ===== V2.0.145 - SOLO vista Clima: filtro embarque corrige destino exacto del embarque ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
 
@@ -8183,9 +8183,9 @@ if(_refresh_v1250){
   document.addEventListener('DOMContentLoaded',()=>{updateVersion(); if(qid('clima')?.classList.contains('active'))window.ensureClimaDataAndRender();});
 })();
 
-/* ===== V2.0.144 - FIX DEFINITIVO SOLO CLIMA: filtro por embarque trae destino/paso aunque no haya flota ===== */
+/* ===== V2.0.145 - FIX DEFINITIVO SOLO CLIMA: filtro por embarque trae destino/paso aunque no haya flota ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
 
@@ -8350,9 +8350,9 @@ if(_refresh_v1250){
 })();
 
 
-/* ===== V2.0.144 - Datos reales del usuario logueado en sidebar ===== */
+/* ===== V2.0.145 - Datos reales del usuario logueado en sidebar ===== */
 (function(){
-  const APP_VERSION_LOGGED_USER_FIX = "2.0.144";
+  const APP_VERSION_LOGGED_USER_FIX = "2.0.145";
 
   function _q(id){ return document.getElementById(id); }
   function _txt(v){ return (v===undefined || v===null) ? '' : String(v).trim(); }
@@ -8454,9 +8454,9 @@ if(_refresh_v1250){
   });
 })();
 
-/* ===== V2.0.144 - Clima compacto + PDF OEA + correcciones puntuales ===== */
+/* ===== V2.0.145 - Clima compacto + PDF OEA + correcciones puntuales ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   function $id(id){return document.getElementById(id);}
   function S(v){return v===undefined||v===null?'':String(v).trim();}
@@ -8626,9 +8626,9 @@ if(_refresh_v1250){
   setVersion();
 })();
 
-/* ===== V2.0.144 - Version + flotas del combo desde usuarios role=flota ===== */
+/* ===== V2.0.145 - Version + flotas del combo desde usuarios role=flota ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
   const E=(v)=>String(v==null?'':v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
@@ -8700,9 +8700,9 @@ if(_refresh_v1250){
   setVersion();
 })();
 
-/* ===== V2.0.144 - FIX DEFINITIVO: version, clima compacto y combo flotas desde Firebase ===== */
+/* ===== V2.0.145 - FIX DEFINITIVO: version, clima compacto y combo flotas desde Firebase ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
   const S=v=>String(v==null?'':v).trim();
@@ -8824,9 +8824,9 @@ if(_refresh_v1250){
   setVersionFinal();
 })();
 
-/* ===== V2.0.144 - Embarques: boton Ver cargas en Agregar carga ===== */
+/* ===== V2.0.145 - Embarques: boton Ver cargas en Agregar carga ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
   const S=v=>String(v==null?'':v).trim();
@@ -9062,9 +9062,9 @@ if(_refresh_v1250){
   setVersionV267();
 })();
 
-/* ===== V2.0.144 - Recuperar password, ajustes Configuracion, Embarques y KM Alertas ===== */
+/* ===== V2.0.145 - Recuperar password, ajustes Configuracion, Embarques y KM Alertas ===== */
 (function(){
-  const APP_VERSION_FIX='2.0.144';
+  const APP_VERSION_FIX='2.0.145';
   window.ELTA_APP_VERSION=APP_VERSION_FIX;
   window.APP_VERSION_V2=APP_VERSION_FIX;
   const $=(id)=>document.getElementById(id);
@@ -9193,9 +9193,9 @@ if(_refresh_v1250){
   setInterval(applyAllV270,1500);
 })();
 
-/* ===== V2.0.144 - Password visible en Configuracion y version unificada ===== */
+/* ===== V2.0.145 - Password visible en Configuracion y version unificada ===== */
 (function(){
-  const APP_VERSION_273='2.0.144';
+  const APP_VERSION_273='2.0.145';
   window.ELTA_APP_VERSION=APP_VERSION_273;
   window.APP_VERSION_V2=APP_VERSION_273;
 
@@ -9275,9 +9275,9 @@ if(_refresh_v1250){
 })();
 
 
-/* ===== V2.0.144 - Version lock definitivo ===== */
+/* ===== V2.0.145 - Version lock definitivo ===== */
 (function(){
-  const VERSION = '2.0.144';
+  const VERSION = '2.0.145';
   window.ELTA_APP_VERSION = VERSION;
   window.APP_VERSION_V2 = VERSION;
   function applyVersionLock(){
@@ -9292,9 +9292,9 @@ if(_refresh_v1250){
 })();
 
 
-/* ===== V2.0.144 - Embarques: eliminar registro con confirmacion ===== */
+/* ===== V2.0.145 - Embarques: eliminar registro con confirmacion ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   const S=v=>String(v==null?'':v).trim();
   const E=v=>S(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   const deletedKey='elta_deleted_embarques_v275';
@@ -9403,7 +9403,7 @@ if(_refresh_v1250){
 })();
 
 
-/* ===== V2.0.144 - Embarques: papelera sin fondo ===== */
+/* ===== V2.0.145 - Embarques: papelera sin fondo ===== */
 (function(){
   const css=document.createElement('style');
   css.id='v2080-delete-icon-clean';
@@ -9411,9 +9411,9 @@ if(_refresh_v1250){
   document.head.appendChild(css);
 })();
 
-/* ===== V2.0.144 - MENU LATERAL ESTABLE: sin intervalos ni reescrituras repetidas ===== */
+/* ===== V2.0.145 - MENU LATERAL ESTABLE: sin intervalos ni reescrituras repetidas ===== */
 (function(){
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
   const MENU=[
@@ -9472,10 +9472,10 @@ if(_refresh_v1250){
 })();
 
 
-/* ===== V2.0.144 - ENTREGAS: ROUTING UNICO SIN REFRESH ===== */
+/* ===== V2.0.145 - ENTREGAS: ROUTING UNICO SIN REFRESH ===== */
 (function(){
   'use strict';
-  const VERSION='2.0.144';
+  const VERSION='2.0.145';
   window.ELTA_APP_VERSION=VERSION;
   window.APP_VERSION_V2=VERSION;
 
