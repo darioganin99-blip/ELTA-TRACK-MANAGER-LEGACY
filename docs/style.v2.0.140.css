@@ -7859,3 +7859,62 @@ button:disabled{opacity:.65;cursor:wait;}
 .cfgPassTextV273{font-style:normal;color:#eaf3f9;font-weight:700;letter-spacing:1px;}
 .cfgPassEyeV273{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);color:#fff;border-radius:8px;padding:4px 8px;cursor:pointer;line-height:1;font-size:14px;}
 .cfgPassEyeV273:hover{background:rgba(122,255,74,.15);border-color:rgba(122,255,74,.45);}
+
+
+/* ===== v2.0.141 - Ajuste puntual menu expandido =====
+   Alcance: solo menu lateral expandido.
+   No modifica login, rutas, Entregas, tarjetas ni filtros. */
+
+/* En menu expandido se ocultan TODOS los iconos del menu. */
+body:not(.sidebarCollapsed) .sideNav button .menuIcon{
+  display:none !important;
+  visibility:hidden !important;
+  opacity:0 !important;
+  width:0 !important;
+  min-width:0 !important;
+  max-width:0 !important;
+  flex:0 0 0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+
+/* Mantener texto alineado cuando el menu esta expandido. */
+body:not(.sidebarCollapsed) .sideNav button{
+  gap:0 !important;
+  justify-content:flex-start !important;
+}
+
+body:not(.sidebarCollapsed) .sideNav button .menuText{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  width:100% !important;
+  max-width:none !important;
+}
+
+/* Quitar efecto/glow del item Alertas en el menu expandido. */
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"],
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"].active,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"].menuAlertPending,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"].hasPendingAlerts{
+  animation:none !important;
+  box-shadow:none !important;
+  filter:none !important;
+}
+
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"] .menuIcon,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"].menuAlertPending .menuIcon,
+body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"].hasPendingAlerts .menuIcon{
+  animation:none !important;
+  filter:none !important;
+  text-shadow:none !important;
+}
+
+/* En colapsado se conservan los iconos. */
+body.sidebarCollapsed .sideNav button .menuIcon{
+  display:inline-flex !important;
+  visibility:visible !important;
+  opacity:1 !important;
+}
+
