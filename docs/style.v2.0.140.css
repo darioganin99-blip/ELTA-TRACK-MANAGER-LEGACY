@@ -7859,3 +7859,22 @@ button:disabled{opacity:.65;cursor:wait;}
 .cfgPassTextV273{font-style:normal;color:#eaf3f9;font-weight:700;letter-spacing:1px;}
 .cfgPassEyeV273{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);color:#fff;border-radius:8px;padding:4px 8px;cursor:pointer;line-height:1;font-size:14px;}
 .cfgPassEyeV273:hover{background:rgba(122,255,74,.15);border-color:rgba(122,255,74,.45);}
+
+
+/* FIX MENU EXPANDIDO SIN ICONOS
+   Mantiene iconos solo en menu colapsado. No modifica rutas, tabs, tarjetas ni filtros. */
+body:not(.sidebarCollapsed) .sideNav button .menuIcon {
+  display: none !important;
+}
+body:not(.sidebarCollapsed) .sideNav button {
+  gap: 0 !important;
+  padding-left: 20px !important;
+}
+body:not(.sidebarCollapsed) .sideNav button .menuText {
+  display: block !important;
+  width: 100% !important;
+}
+body.sidebarCollapsed .sideNav button .menuIcon {
+  display: inline-flex !important;
+}
+
