@@ -1,0 +1,11 @@
+Paquete para GitHub Pages.
+
+GitHub Pages está configurado para publicar desde /docs.
+Subir la carpeta docs completa al repositorio.
+Contenido esperado:
+docs/index.html
+docs/app.v2.0.145.js
+docs/style.v2.0.145.css
+docs/assets/
+
+No subir archivos viejos app.v2.0.140.js / style.v2.0.140.css en docs.
