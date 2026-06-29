@@ -19,116 +19,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ITS Intelligent Traffic System</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="style.v2.0.147.css?v=2.0.147.final">
+<link rel="stylesheet" href="style.v2.0.148.css?v=2.0.148.final">
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-<style id="elta-menu-logo-line-fallback">
-body:not(.sidebarCollapsed) .sideNav:has(img:first-child)::before{
-  content:"";
-  position:absolute;
-  top:118px;
-  left:9%;
-  width:82%;
-  height:1px;
-  background:rgba(255,255,255,.82);
-}
-</style>
-
-
-<style id="elta-v2-0-147-menu-final">
-/* v2.0.147 - Correccion definitiva solo del menu lateral expandido */
-
-/* Logo y linea blanca inferior */
-body:not(.sidebarCollapsed) .sideNav {
-  text-align: left !important;
-}
-
-body:not(.sidebarCollapsed) .sideNav::after {
-  content: "";
-  position: absolute;
-  top: 112px;
-  left: 32px;
-  right: 32px;
-  height: 1px;
-  background: rgba(255,255,255,.88);
-  pointer-events: none;
-  z-index: 5;
-}
-
-/* Todos los botones del menu expandido compactos y alineados a la izquierda */
-body:not(.sidebarCollapsed) .sideNav button {
-  width: calc(100% - 36px) !important;
-  height: 38px !important;
-  min-height: 38px !important;
-  max-height: 38px !important;
-  margin: 3px 18px !important;
-  padding: 0 18px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
-  text-align: left !important;
-  gap: 0 !important;
-  box-sizing: border-box !important;
-}
-
-/* Forzar texto a izquierda y mas chico */
-body:not(.sidebarCollapsed) .sideNav button .menuText,
-body:not(.sidebarCollapsed) .sideNav button span:not(.menuIcon) {
-  display: block !important;
-  flex: 1 1 auto !important;
-  width: 100% !important;
-  max-width: none !important;
-  min-width: 0 !important;
-  text-align: left !important;
-  justify-content: flex-start !important;
-  align-items: center !important;
-  font-size: 15px !important;
-  line-height: 1 !important;
-  letter-spacing: 0 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-/* Ocultar iconos solo en menu expandido */
-body:not(.sidebarCollapsed) .sideNav button .menuIcon,
-body:not(.sidebarCollapsed) .sideNav button > span:first-child:not(.menuText) {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  width: 0 !important;
-  min-width: 0 !important;
-  max-width: 0 !important;
-  flex: 0 0 0 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow: hidden !important;
-}
-
-/* Quitar efecto del item Alertas cuando esta expandido */
-body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"],
-body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"].active,
-body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"].menuAlertPending,
-body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"].hasPendingAlerts {
-  animation: none !important;
-  box-shadow: none !important;
-  filter: none !important;
-}
-
-body:not(.sidebarCollapsed) .sideNav button[onclick*="alertas"] * {
-  animation: none !important;
-  text-shadow: none !important;
-  filter: none !important;
-}
-
-/* En colapsado conservar iconos */
-body.sidebarCollapsed .sideNav button .menuIcon {
-  display: inline-flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-</style>
 
 </head>
 <body>
@@ -164,7 +58,7 @@ body.sidebarCollapsed .sideNav button .menuIcon {
   <footer class="loginFooter">
     <span>🛡 Sistema seguro</span>
     <span>© 2025 ELTA Tracking Solutions</span>
-    <span>Versión 2.0.147</span>
+    <span>Versión 2.0.148</span>
   </footer>
 </section>
 
@@ -209,7 +103,7 @@ body.sidebarCollapsed .sideNav button .menuIcon {
       <div class="headerTitle">
         <h1 class="systemTitleSmall">ITS Intelligent Traffic System</h1>
         <p>Panel tráfico / coordinación</p>
-        <span>Versión 2.0.147</span>
+        <span>Versión 2.0.148</span>
       </div>
 
       <div class="headerActions">
@@ -483,12 +377,12 @@ body.sidebarCollapsed .sideNav button .menuIcon {
     <footer class="appFooter">
       <span>🛡 Sistema seguro</span>
       <span>© 2025 ELTA Tracking Solutions</span>
-      <span>Versión 2.0.147</span>
+      <span>Versión 2.0.148</span>
     </footer>
   </main>
 </section>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="app.v2.0.147.js?v=2.0.147.final"></script>
+<script src="app.v2.0.148.js?v=2.0.148.final"></script>
 </body>
 </html>
