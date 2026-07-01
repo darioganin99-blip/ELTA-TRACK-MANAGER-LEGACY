@@ -4,8 +4,8 @@ GitHub Pages está configurado para publicar desde /docs.
 Subir la carpeta docs completa al repositorio.
 Contenido esperado:
 docs/index.html
-docs/app.v2.0.172.js
-docs/style.v2.0.172.css
+docs/app.v2.0.173.js?v=173
+docs/style.v2.0.173.css?v=173
 docs/assets/
 
-No subir archivos viejos app.v2.0.172.js / style.v2.0.172.css en docs.
+No subir archivos viejos app.v2.0.173.js?v=173 / style.v2.0.173.css?v=173 en docs.
